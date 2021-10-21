@@ -88,6 +88,7 @@ public class PathAndConvertGson {
 		String os = getOsName();
 		String defaultFolder = System.getProperty("user.dir");
 		logger.debug("DefaultFolder: "+defaultFolder);
+		defaultFolder="/Users/jong/Desktop/dev/avsb/workspace_avsb1/avsb_base";
 		return defaultFolder;
 	}
 
