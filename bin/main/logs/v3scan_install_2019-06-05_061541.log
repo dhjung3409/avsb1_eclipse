@@ -1,0 +1,50 @@
+********* settings ***********
+TS_INSTALL_RMS=
+TS_INSTALL_CEDA=
+TS_USER_INSTALL=yes
+TS_DESTDIR=/home/jboss/v3engine
+TS_SERIAL_NUMBER=Qk1kAmvALtxy1xFqorqOUMt00Ub96mrVmAa6b7U9mCI=
+TS_CONSOLE_PASSWORD=tUCVJfDsLk0Mqw7kJSZAow==
+TS_MAKE_SYMLINKS=
+TS_MAKE_RC_SCRIPTS=
+TS_OPEN_CONSOLE_PORT=yes
+TS_CONSOLE_PORT=3033
+TS_USER_ID=
+TS_GROUP_ID=
+TS_USE_CIS_SERVER=n
+TS_DEST_CIS_SERVER=
+TS_CUSTOM_OPTION_FILE=
+TS_CUSTOM_CLIENT_OPTION_FILE=
+******************************
+
+Installation path: /home/jboss/v3engine
+The destination directory already exists.
+cmdline:  stop
+v3scan_server is not running.
+
+Copying AhnLab TS Engine Suite files...
+Wed Jun  5 06:15:42 EDT 2019
+
+"/home/jboss/v3engine/etc/rc.d/v3scan_server" start
+done.
+
+Installation completed.
+
+
+Installation summary:
+total 24
+drwxr-xr-x.  2 jboss jboss    6 Apr 24  2017 bin
+-rw-r--r--.  1 jboss jboss   59 Apr 24  2017 bldinfo.ini
+drwxr-xr-x.  5 jboss jboss   39 Apr 24  2017 etc
+drwxr-xr-x.  3 jboss jboss   84 Jun  5 06:15 install
+drwxr-xr-x.  2 jboss jboss   47 Dec  5  2016 lib
+drwxr-xr-x.  2 jboss jboss   81 Jun  5 06:15 log
+-rwxr-xr-x.  1 jboss jboss  573 Jun  5 06:15 readme.txt
+drwxr-xr-x.  3 jboss jboss   14 Dec  5  2016 sdk
+drwxr-xr-x. 11 jboss jboss 4096 Dec 25  2014 SUarez
+drwxr-xr-x.  2 jboss jboss   26 Dec  5  2016 test
+drwxr-xr-x.  2 jboss jboss    6 Apr 24  2017 tmp
+-rwxr-xr-x.  1 jboss jboss 5672 Dec 16  2014 ts_report.sh
+drwxr-xr-x.  3 jboss jboss 4096 Jun  5 06:15 v3daemon
+drwxr-xr-x.  2 jboss jboss    6 Apr 24  2017 v3java
+Wed Jun  5 06:16:21 EDT 2019

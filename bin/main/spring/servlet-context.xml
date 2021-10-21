@@ -1,0 +1,115 @@
+<beans:beans xmlns="http://www.springframework.org/schema/mvc"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xmlns:beans="http://www.springframework.org/schema/beans"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:task="http://www.springframework.org/schema/task"
+	xsi:schemaLocation="http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+		http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd
+		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd
+		http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task.xsd
+		http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/task/spring-task.xsd">
+
+	<!-- DispatcherServlet Context: defines this servlet's request-processing infrastructure -->
+	
+	<beans:bean id="currentCountScheduler" class="com.terais.avsb.cron.CurrentCountScheduler"/>
+	
+	
+	<task:scheduled-tasks scheduler="myScheduler">
+		<task:scheduled ref="currentCountScheduler" method="countCurrent" cron="0/10 * * * * *"/>		
+	</task:scheduled-tasks>
+	
+	<task:scheduler id="myScheduler" pool-size="10"/>
+	
+	<beans:bean id="taskExecutor" class="org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor">
+	  <beans:property name="corePoolSize" value="10" />
+	  <beans:property name="maxPoolSize" value="25" />
+	  <beans:property name="queueCapacity" value="25" />
+	</beans:bean>
+
+	<beans:bean id="taskExecutorLog" class="com.terais.avsb.cron.LogReadScheduler">
+		<beans:constructor-arg ref="taskExecutor"/>
+	</beans:bean>
+
+	<beans:bean id="taskExecutorScan" class="ScanScheduler">
+	  <beans:constructor-arg ref="taskExecutor" />
+	</beans:bean>
+
+	<task:executor id="taskExecutorScan" pool-size="5"
+		queue-capacity="10" />
+	<task:executor id="taskExecutorLog" pool-size="5"
+		queue-capacity="10" />
+
+	<beans:bean id="jsonMapper" class="com.fasterxml.jackson.databind.ObjectMapper" />
+	<beans:bean id="jsonView" class="org.springframework.web.servlet.view.json.MappingJackson2JsonView">
+ 		<beans:property name="objectMapper" ref="jsonMapper" />
+	</beans:bean>
+	<task:annotation-driven />
+
+	<mvc:annotation-driven />
+
+	<!-- Handles HTTP GET requests for /resources/** by efficiently serving 
+		up static resources in the ${webappRoot}/resources directory -->
+	<resources mapping="/static/**" location="/static/" />
+
+	<!-- Resolves views selected for rendering by @Controllers to .jsp resources in the /WEB-INF/views directory -->
+	<beans:bean	class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+		<beans:property name="prefix" value="/WEB-INF/jsp/" />
+		<beans:property name="suffix" value=".jsp" />
+	</beans:bean>
+	
+	<!-- 스프링 빈을 태그로 등록하지 않고 자동으로 검색(auto scan) -->
+	<context:component-scan base-package="com.terais.avsb" />
+	
+	
+	
+	<beans:bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+        <!-- max upload size in bytes -->
+<!--         <beans:property name="maxUploadSize" value="20971520" /> 20MB -->
+        <beans:property name="maxUploadSize" value="2097152000" />
+        <!-- max size of file in memory (in bytes) -->
+        <beans:property name="maxInMemorySize" value="2048576" /> <!-- 1MB -->
+ 	</beans:bean>
+ 	
+ 	<beans:bean class="org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder"/>
+ 	
+ 	<!-- <beans:bean id="timeoutConfig"
+ 		class="org.springframework.http.client.HttpComponentsClientHttpRequestFactory"
+ 		primary="false">
+ 		 <beans:property name="readtimeout" value="1000" />
+ 		<beans:property name="connecttimeout" value="1000" />
+ 	</beans:bean>
+
+ 	<beans:bean id="readtimeout" factory-bean="timeoutConfig" factory-method="setReadTimeout" >
+ 		<beans:constructor-arg value="1000"/>
+ 	</beans:bean>
+ 	
+ 	<beans:bean id="connecttimeout" factory-bean="timeoutConfig" factory-method="setConnectTimeout" >
+ 		<beans:constructor-arg value="1000"/>
+ 	</beans:bean>
+
+ 	<beans:bean class="org.springframework.web.client.RestTemplate" lazy-init="false" scope="prototype"> 		
+    	<beans:constructor-arg ref="timeoutConfig"/>
+	</beans:bean> -->
+
+
+
+
+
+
+ 	<!-- interceptor 
+  	<beans:bean id="LoginInterceptor" class="com.tera.avsb.core.session.LoginInterceptor" /> -->
+  
+<!-- 	<mvc:interceptors> -->
+<!-- 		<mvc:interceptor> -->
+<!-- 			<mvc:mapping path="/dashboard/**"/> -->
+<!-- 			<beans:ref bean="LoginInterceptor"/>		 -->
+<!-- 		</mvc:interceptor> -->
+<!-- 	</mvc:interceptors>   -->
+    
+</beans:beans>
