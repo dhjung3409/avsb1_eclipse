@@ -81,6 +81,7 @@ public class PathAndConvertGson {
 	public static String getOsName() {
 		// TODO Auto-generated method stub
 		String os = System.getProperty("os.name").toLowerCase();
+		System.out.println("jongtest");
 		return os;
 	}
 
