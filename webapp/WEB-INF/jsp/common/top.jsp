@@ -10,7 +10,8 @@
 		<div id='product-logo'><span>Anti-Virus Signature Bridge</span></div>
 		<div id='user-wrapper'>
 			<div id='btn-user'>
-				<span>admin 님 반갑습니다(관리자)</span>
+
+				<span><span id="muserStatus"></span><span id="muserId"></span>님 반갑습니다(<span id="muserRole"></span>)</span>
 				<img id='user-i' alt="" src="/static/img/dashboard/user.png" style="cursor: pointer;" width="32px;" height="32px;">
 				<img id='arrow-down' alt="" src="/static/img/dashboard/arrow_down.png" width="12px;" height="12px;" style="left: -12px; position: relative;">
 				<div id='btn-user-section' class='user_section'></div>
