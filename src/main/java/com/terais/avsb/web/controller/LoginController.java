@@ -42,8 +42,6 @@ public class LoginController {
 		} catch (IOException e) {
 			logger.error("root view error");
 		}
-		
-
 	}
 
 	@RequestMapping(value="login",method= RequestMethod.GET)
@@ -112,6 +110,12 @@ public class LoginController {
 			logger.error("Check Login IOEception: "+e.getMessage());
 		}
 		return "page/dashboard";
+	}
+
+	@RequestMapping(value = "login_failed", method=RequestMethod.GET)
+	public String rootHome2(HttpServletRequest req,HttpServletResponse response,HttpSession session,Principal prin){
+		logger.info("login failed");
+		return "login_fail";
 	}
 
 	@RequestMapping(value = "/fail", method = RequestMethod.GET)

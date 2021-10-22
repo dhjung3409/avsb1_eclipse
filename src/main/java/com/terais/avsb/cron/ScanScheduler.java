@@ -282,7 +282,6 @@ public class ScanScheduler {
 							sr.setResult("Failed");
 							resCount.put("Failed", resCount.get("Failed") + 1);
 						}
-
 						prop = null;
 					}
 					if (sr != null) {

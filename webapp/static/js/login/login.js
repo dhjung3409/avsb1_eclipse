@@ -13,8 +13,8 @@ function loginProcess(){
       pw.focus();
       return false;
     }else{
-			  document.loginForm.action="/memberLogin";	
-			  document.loginForm.submit();
+        document.loginForm.action="/memberLogin";
+        document.loginForm.submit();
     }
 }
 

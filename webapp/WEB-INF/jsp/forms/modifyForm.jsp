@@ -16,17 +16,12 @@
 <div class="modal fade" id="modifyModal" tabindex="-1" role="dialog" aria-labelledby="modifyModalLabel" data-backdrop="static">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
-<%--            <form id="userModifyForm" action="" method="post">--%>
+
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
                     <h4 class="modal-title" id="modifyModalLabel">계정 수정</h4>
                 </div>
                 <div class="modal-body" id="mod-modal-body" name="false">
-
-<%--                    <div class="form-group">--%>
-<%--                        <label for="userId">아이디</label>--%>
-<%--                        <label class="form-control" id="userId" name="userId"/>--%>
-<%--                    </div>--%>
 
                     <div class="form-group mod-pass" style="display: none">
                         <label for="userModifyPw">패스워드</label>

@@ -1,35 +1,3 @@
-function btnRefresh(){
-	location.reload();
-}
-
-function btnFormModal(){
-
-
-	$("#btn-user-add-modal").click();
-
-
-}
-
-function btnModifyModal(){
-
-		var items = document.querySelectorAll(".del-item");
-		// console.log("items",items);
-		var count = 0;
-		$.each(items, function(idx,sub){
-			// console.log(idx);
-			// console.log(sub);
-			count += sub.checked;
-		});
-
-		// console.log("count",count)
-
-	if(count == 1) {
-		$("#btn-mod-modal").click();
-	}
-
-
-
-}
 
 
 function validUserInfo(userId,userPw,userPwC,userRole,userName,type,status){
@@ -103,19 +71,6 @@ function validUserInfo(userId,userPw,userPwC,userRole,userName,type,status){
 	return result;
 }
 
-function changePass(){
-	var pass = document.getElementsByClassName("mod-pass");
-
-	for(var i of pass){
-		// console.log(i)
-		if(i.style.display=='none') {
-			i.style.display = 'inline';
-		}else{
-			i.style.display = 'none';
-		}
-	}
-}
-
 function editUser(){
 	var userCount =  getCheckItem();
 	// console.log(userCount)
@@ -127,13 +82,7 @@ function editUser(){
 		var userRole = document.getElementById("userModifyRole").value;
 		var userName = document.getElementById("userModifyName").value;
 		var result = validUserInfo(null, userPw, userPwC, userRole, userName,"edit",status);
-		// console.log("pw",userPw)
-		// console.log("pwC",userPwC)
-		// console.log(userId)
 		if (result == true) {
-			// console.log(userCount);
-
-
 			$.ajax({
 				url:"/account/mod",
 				method:"POST",
@@ -145,10 +94,8 @@ function editUser(){
 					userRole:userRole
 				},
 				error: function(err_res){
-				// 	console.log(err_res)
 				},
 				success: function(suc_res){
-					// console.log(suc_res)
 					btnRefresh();
 				}
 			})
@@ -183,54 +130,10 @@ function getCheckItem(){
 			var num = (items[i].id).substring(11);
 			itemArr.push(num);
 		}
-
 	}
-
 	return itemArr;
 }
 
-function deleteUser() {
-
-	var itemArr = getCheckItem();
-
-	var itemCount = 0;
-	itemCount = itemArr.length;
-
-	if(itemCount < 1){
-		notif({
-			type: "info",
-			msg: "삭제할 계정을 선택하여 주십시오.",
-			position: "center",
-			timeout: 1000,
-			bgcolor: "#a11232",
-			fade: true,
-		});
-		return;
-	}else{
-		var result = confirm("삭제하시겠습니까?");
-		if(result == true){
-
-				$.ajax({
-					url: "/account/userdel",
-					method:"POST",
-					data:{"items":itemArr},
-					error: function(err_res){
-
-					},
-					success: function(suc_res){
-						btnRefresh();
-					}
-				});
-
-		}
-
-	}
-
-
-
-
-
-}
 
 function refreshList() {
 
@@ -271,8 +174,19 @@ function accountTable(data){
 				checkboxes: {
 					'selectRow': true
 				},
-				render: function ( data, type, row, meta ) {
+				render: function ( data, type, row ) {
 					return '<input class="del-item dt-checkboxes" type="checkbox" id=item_number'+data+'>';
+				}
+			},
+			{
+				targets: 2,
+				render: function ( data, type, row ) {
+					if(data == "user"){
+						data="유저";
+					}else{
+						data="관리자";
+					}
+					return data;
 				}
 			}
 			],
@@ -307,8 +221,6 @@ function getAccountList() {
 
 		},
 		success: function (suc_res){
-			//account table
-			// console.log("list: suc_res",suc_res)
 			accountTable(suc_res);
 			showAccountList();
 		}

@@ -46,7 +46,7 @@
 			password-parameter = "userPw"
 			login-processing-url = "/memberLogin"
 			login-page = "/login" default-target-url="/success"			
-			authentication-failure-url="/"/>
+			authentication-failure-url="/login_failed"/>
 		<security:logout logout-url="/avsb/logout" invalidate-session="true"
 			logout-success-url="/"/>
 		<!-- <session-management session-authentication-strategy-ref="sas"> -->

@@ -10,7 +10,8 @@
 	<link rel="stylesheet" href="/static/plugins/datatables/Buttons-1.7.1/css/buttons.dataTables.min.css"><!-- dataTables CSS -->
 	<link rel="stylesheet" href="/static/plugins/datatables/datatables.checkbox.min.css"><!-- dataTables CSS -->
 	<link rel="stylesheet" href="/static/css/account/account.css"><!-- account CSS -->
-
+	<script src="/static/plugins/alert/notifIt.min.js"></script>
+	<script src="/static/js/account/accountInit.js"></script>
 	<title>AVSB - 계정관리 페이지</title>
 	</head>
 <body>
@@ -39,12 +40,7 @@
 							</div>
 							<div class="top-button" id="modify-wrapper" >
 								<span>
-<%--									<button id="btn-modify-modal" type="button" class="account-btn"--%>
-<%--											data-toggle="modal" data-target="#modifyModal">계정 수정</button>--%>
-
 									<button type="button" class="account-btn" onclick="btnModifyModal()">계정 수정</button>
-
-
 								</span>
 							</div>
 							<div class="top-button" id="add-del-wrapper" onclick="deleteUser()">
