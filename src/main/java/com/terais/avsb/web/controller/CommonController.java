@@ -1,9 +1,8 @@
 package com.terais.avsb.web.controller;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
+import com.terais.avsb.module.IpListSortByIp;
 import com.terais.avsb.service.impl.LoginServiceImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,33 +36,34 @@ public class CommonController {
 
 	@RequestMapping(value = "/currnet/count/refresh", method = RequestMethod.POST)
 	public Map<String, Boolean> restCheck() {
-
 		Map<String, Boolean> map = null;
-
 		return map;
 	}
 
 	@RequestMapping(value = "/currnet/result/log", method = RequestMethod.GET)
 	public List<String> getCheckLog() {
-
 		List<String> log = null;
-
 		return log;
 	}
 
 	@RequestMapping(value = "/currnet/result/refresh", method = RequestMethod.POST)
 	public Map<String, Boolean> resetCheckLog() {
-
 		Map<String, Boolean> map = null;
-
 		return map;
 	}
 
 	@RequestMapping(value="subip",method = RequestMethod.GET)
 	@ResponseBody
-	public Set<String> getLogIP(){
+	public List<String> getLogIP(){
 		logger.debug(PropertiesData.subIp.size()+"");
-		return PropertiesData.subIp;	
+
+		List<String> ipList = new ArrayList<String>();
+		for(String ip : PropertiesData.subIp){
+			ipList.add(ip);
+		}
+		Collections.sort(ipList, new IpListSortByIp());
+
+		return ipList;
 
 	}
 

@@ -5,6 +5,7 @@ package com.terais.avsb.service.impl;
 
 import com.google.gson.reflect.TypeToken;
 import com.terais.avsb.dto.Current;
+import com.terais.avsb.module.IpListSortByIp;
 import com.terais.avsb.module.RestURI;
 import com.terais.avsb.service.NodeAndCurrentGetService;
 import com.terais.avsb.vo.CurrentLogVO;
@@ -74,8 +75,6 @@ public class NodeAndCurrentGetServiceImpl implements NodeAndCurrentGetService {
 		return new Gson().fromJson(json,type);
 	}
 
-
-
 	public Map<Object,Object> getNode(String period){
 		Map<Object,Object> node = new HashMap<Object, Object>();
 		List<Object> infected = new ArrayList<Object>();
@@ -84,7 +83,15 @@ public class NodeAndCurrentGetServiceImpl implements NodeAndCurrentGetService {
 		List<Object> failed = new ArrayList<Object>();
 		List<Object> ips = new ArrayList<Object>();
 		String total = "0";
+
+		List<String> ipList = new ArrayList<String>();
 		for(String ip : PropertiesData.subIp){
+			ipList.add(ip);
+		}
+
+		Collections.sort(ipList, new IpListSortByIp());
+
+		for(String ip : ipList){
 			logger.debug("getNodeRest start");
 			String json = getRest(ip,"dashboard","node?period="+period);
 			if(json==null){
@@ -99,8 +106,24 @@ public class NodeAndCurrentGetServiceImpl implements NodeAndCurrentGetService {
 			if(Integer.parseInt(total)<Integer.parseInt(map.get("total").toString())){
 				total = map.get("total").toString();
 			}
-
 		}
+
+//		for(String ip : PropertiesData.subIp){
+//			logger.debug("getNodeRest start");
+//			String json = getRest(ip,"dashboard","node?period="+period);
+//			if(json==null){
+//				continue;
+//			}
+//			Map<?,?> map = new Gson().fromJson(json, Map.class);
+//			infected.add(map.get("infected"));
+//			normal.add(map.get("normal"));
+//			disinfected.add(map.get("disinfected"));
+//			failed.add(map.get("failed"));
+//			ips.add(ip);
+//			if(Integer.parseInt(total)<Integer.parseInt(map.get("total").toString())){
+//				total = map.get("total").toString();
+//			}
+//		}
 
 		node.put("ip",ips);
 		node.put("Infect",infected);
@@ -116,7 +139,14 @@ public class NodeAndCurrentGetServiceImpl implements NodeAndCurrentGetService {
 	public List<Object> getChart(String option,String currentReload){
 		List<Object> node = new ArrayList<Object>();
 		String json=null;
+
+		List<String> ipList = new ArrayList<String>();
 		for(String ip : PropertiesData.subIp){
+			ipList.add(ip);
+		}
+		Collections.sort(ipList, new IpListSortByIp());
+
+		for(String ip : ipList){
 			logger.debug("getRest start");
 			if(currentReload.equals("0")) {
 				json = getRest(ip, "dashboard", option);

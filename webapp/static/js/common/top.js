@@ -20,9 +20,9 @@ function setUserInfo(data) {
     var role;
 
     if (data["userRole"][0]["authority"] === "Role_admin") {
-        role = "admin";
+        role = " 관리자 ";
     } else {
-        role = "user";
+        role = " 유저 ";
     }
 
     var roleText = document.createTextNode(role);
@@ -30,7 +30,7 @@ function setUserInfo(data) {
     if(licenseRemain<=0){
 
     }else{
-        var license = document.createTextNode("라이센스 만료 "+licenseRemain+"일 전");
+        var license = document.createTextNode("[라이센스 만료 "+licenseRemain+"일 전]");
         document.getElementById("license").appendChild(license);
     }
     userName.appendChild(nameText);

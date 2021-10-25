@@ -5,7 +5,7 @@
 
 #wrapper-top{
     width: 100%;
-    min-width: 1500px;
+    /*min-width: 1500px;*/
     /*height: 20%;*/
     height: 150px;
     max-height: 150px;
@@ -59,7 +59,7 @@
 
 #wrapper-bottom{
     width: 100%;
-    min-width: 1500px;
+    /*min-width: 1500px;*/
     height: 80%;
     margin: auto;
     float: left;

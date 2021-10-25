@@ -4,6 +4,7 @@ package com.terais.avsb.service.impl;
 import java.util.*;
 
 import com.google.gson.Gson;
+import com.terais.avsb.module.IpListSortByIp;
 import com.terais.avsb.module.RestURI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,7 +41,14 @@ public class SystemInfoServiceImpl implements SystemInfoService {
 		Map<Object, Object> ipConnect = null;
 		List<Object> ipStatus =new ArrayList<Object>();
 		String engineInfo = null;
-		for(String ip:ips){
+
+		List<String> ipList = new ArrayList<String>();
+		for(String ip : PropertiesData.subIp){
+			ipList.add(ip);
+		}
+		Collections.sort(ipList, new IpListSortByIp());
+
+		for(String ip:ipList){
 			engineInfo = getEngineVersion(ip,rest);
 			ipConnect=new HashMap<Object, Object>();
 			ipConnect.put("engine",engineInfo);
