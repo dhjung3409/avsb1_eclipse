@@ -1,12 +1,16 @@
 package com.terais.avsb.service.impl;
 
 import java.io.FileNotFoundException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import com.terais.avsb.core.PropertiesData;
 import com.terais.avsb.cron.SubIPCheckSchduler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
@@ -58,6 +62,15 @@ public class LoginServiceImpl implements LoginService,UserDetailsService{
 		
 		logger.debug(loginInfo.toString());
 		return loginInfo;
-	}	
+	}
+
+	public Map<String,Object> getLoginUser(Authentication auth){
+		Map<String,Object> user = new HashMap<String, Object>();
+		user.put("userInfo",auth.getPrincipal());
+		user.put("userRole",auth.getAuthorities());
+		user.put("licenseStatus", PropertiesData.licenseRemain);
+
+		return user;
+	}
 	
 }

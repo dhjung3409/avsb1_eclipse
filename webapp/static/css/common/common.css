@@ -35,6 +35,10 @@ html,body{
 	font-family: 'nanum-n';
 }
 
+#license{
+    color:#e04040;
+    font-size: 10px;
+}
 /*top header*/
 #top-wrapper{
 	position: relative;

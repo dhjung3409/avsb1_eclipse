@@ -38,8 +38,8 @@ public class FilePath {
 	public static String scheduler = tmpFolder+"/scheduler.json";
 	public static String report = tmpFolder+"/report.json";
 	public static String tmpLib = tmpFolder+"/lib";
-	public static String license = tmpLib+"/.license";
-	public static String copyLicense = libsFolder+"/.license";
+	public static String license = defaultName+"/license.txt";
+//	public static String copyLicense = libsFolder+"/.license";
 	public static String copyDateLicense = null;
 	public static String tmpSeq = tmpFolder+"/.scheduler_report_seq.properties";
 	public static String enginePathFile = libsFolder+"/engine_path.properties";

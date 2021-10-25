@@ -67,8 +67,8 @@ public class SystemInfoServiceImpl implements SystemInfoService {
 
 	public Map<Object, Object> getAVSBInfo() {
 		Map<Object,Object> avsbInfo = new HashMap<Object, Object>();
-		Properties prop = PropertiesData.getProp(FilePath.license);
-		String period = prop.get("expired").toString();
+//		Properties prop = PropertiesData.getProp(FilePath.license);
+		String period = PropertiesData.licenseExpire;
 		avsbInfo.put("version", "1.0");
 		avsbInfo.put("License", period);
 		return avsbInfo;

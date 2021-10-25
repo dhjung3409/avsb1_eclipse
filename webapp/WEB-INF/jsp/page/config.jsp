@@ -164,7 +164,7 @@
 
                     <div id="chartInfo">
                         <div class="sub-title">
-                            <label>차트 설정</label>
+                            <label>차트 설정(리로드 시간 설정)</label>
                         </div>
                         <div class="table-wrapper">
                             <table class="table table-bordered">

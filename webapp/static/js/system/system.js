@@ -116,6 +116,7 @@ function serverList(data){
 function avsbInfo(data){
 	var id = "avsbInfo";
 	var obj = {version:"버전",License:"라이센스 기간"};
+	console.log(data);
 	tableForm(data,obj,id);
 }
 

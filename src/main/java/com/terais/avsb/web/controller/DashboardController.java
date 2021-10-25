@@ -1,14 +1,18 @@
 package com.terais.avsb.web.controller;
 
+import java.security.Principal;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import com.terais.avsb.cron.SubIPCheckSchduler;
 import com.terais.avsb.vo.CurrentLogVO;
+import com.terais.avsb.vo.LoginVO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -34,7 +38,7 @@ public class DashboardController {
 
 
 	@RequestMapping(value="view", method=RequestMethod.GET)
-	public ModelAndView dashBoardHome(){
+	public ModelAndView dashBoardHome(Authentication auth){
 		logger.debug("dashboard view");
 		ModelAndView mav = new ModelAndView();
 		List<Map<String,String>> nodeList = new ArrayList<Map<String,String>>();

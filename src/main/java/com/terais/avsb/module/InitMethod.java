@@ -6,9 +6,7 @@ import java.io.IOException;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 
-import com.terais.avsb.core.CurrentLog;
-import com.terais.avsb.core.PathAndConvertGson;
-import com.terais.avsb.core.ScanScheduleList;
+import com.terais.avsb.core.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,12 +28,15 @@ public class InitMethod implements ServletContextListener{
 	public void init(){
 
 		LogReadScheduler logRead=null;
-		try {
-			logger.info("server started!");
-			System.out.println(System.getProperty("user.dir"));
-			DefaultFolder.makeDefaultFolder();
-			LicenseCheck.getLicense();
-			ReadLogPath.readLogPath();
+		logger.info("server started!");
+		System.out.println(System.getProperty("user.dir"));
+		DefaultFolder.makeDefaultFolder();
+
+		ReadLogPath.readLogPath();
+		LicenseCheck lc = new LicenseCheck();
+		logger.debug("license status: "+ PropertiesData.licenseStatus);
+		LicenseCheck.checkPeriod();
+		if(PropertiesData.licenseStatus) {
 			CheckOS.osCheck();
 			File configFile = new File(FilePath.configFile);
 			File logFolder = new File(FilePath.logPath);
@@ -57,18 +58,11 @@ public class InitMethod implements ServletContextListener{
 			logRead.makeResultDirectory();
 			logRead.readLog();
 
-			LicenseCheck.checkLicenseFile();
-
 			CurrentCountScheduler.initList();
-			logger.debug("Properties Path:"+FilePath.v3properties);
+			logger.debug("Properties Path:" + FilePath.v3properties);
 			V3Scanner.setConfPropertiesPath(FilePath.v3properties);
-
-		} catch (IOException e) {
-			logger.error("Exception :"+FilePath.v3properties);
-			logger.error("InitMethod IOException: "+e.getMessage());
-		}finally{
-			logRead=null;
 		}
+
 	}
 
 	public void contextDestroyed(ServletContextEvent arg0) {

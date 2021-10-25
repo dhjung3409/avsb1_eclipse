@@ -32,7 +32,6 @@ public class ReadLogPath {
 		FileOutputStream fos = null;
 		String path = null;
 		try {
-
 			if(!file.exists()){
 				file.createNewFile();
 				prop.setProperty("engine","NoneEngine");
@@ -41,9 +40,6 @@ public class ReadLogPath {
 				prop.store(fos,filePath);
 			}
 			PropertiesData.callEngineInfo();
-
-
-
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			logger.error("ReadLog Failed: "+e.getMessage());
@@ -51,6 +47,7 @@ public class ReadLogPath {
 			PropertiesData.useEngine=PropertiesData.engine;
 		}
 		path = PropertiesData.enginePath;
+		logger.debug("path:" + path);
 		File engineFile = new File(path);
 		if(!engineFile.exists()){
 			path=FilePath.libsFolder+"/log";

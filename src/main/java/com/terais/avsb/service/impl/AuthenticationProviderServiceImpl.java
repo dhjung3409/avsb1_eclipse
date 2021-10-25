@@ -14,6 +14,9 @@ import com.terais.avsb.core.BCryptPasswordCore;
 import com.terais.avsb.core.PasswordAlgorithm;
 import com.terais.avsb.vo.LoginVO;
 
+import java.util.HashMap;
+import java.util.Map;
+
 
 public class AuthenticationProviderServiceImpl implements AuthenticationProvider{
 
@@ -64,7 +67,10 @@ public class AuthenticationProviderServiceImpl implements AuthenticationProvider
 		}
 		logger.debug("Set Authorities: "+loginInfo.getAuthorities());
 		logger.info("Login user: "+userId);
-		UsernamePasswordAuthenticationToken user = new UsernamePasswordAuthenticationToken(userId, userPw, loginInfo.getAuthorities());
+		Map<String,String> userInfo = new HashMap<String, String>();
+		userInfo.put("userId",userId);
+		userInfo.put("userName",loginInfo.getUserName());
+		UsernamePasswordAuthenticationToken user = new UsernamePasswordAuthenticationToken(userInfo, userPw, loginInfo.getAuthorities());
 		
 		
 		return user;

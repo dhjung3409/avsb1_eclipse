@@ -499,7 +499,7 @@ public class ScanScheduler {
 				BufferedReader bfr = new BufferedReader(new InputStreamReader(p.getInputStream()));
 
 				while ((line = bfr.readLine()) != null) {
-					if (line.contains("v3scan_server")) {
+					if (line.contains("v3scan")) {
 						break;
 					}else if(line.contains("vrsdk")){
 						break;
@@ -520,7 +520,7 @@ public class ScanScheduler {
 			logger.error("Engine checking failed IOException: "+e.getMessage());
 			result = false;
 		}
-		logger.info("engine status: "+result);
+		logger.debug("engine status: "+result);
 		return result;
 	}
 }

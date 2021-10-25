@@ -30,8 +30,10 @@ public class PropertiesData {
 	public static String currentReloadTime = null;
 	public static String logReloadTime = null;
 	public static String useEngine = "NoneEngine";
-	public static String licenseExpire = null;
+	public static String licenseExpire = "2021/10/28";
 	public static boolean licenseStatus = false;
+	public static boolean licenseMonthStatus = true;
+	public static int licenseRemain = 0;
 	public static int schedulerSeq = 0;
 	public static int reportSeq = 0;
 	public static String engine = null;

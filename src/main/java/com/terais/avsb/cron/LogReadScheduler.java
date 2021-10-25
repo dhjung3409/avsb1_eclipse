@@ -51,19 +51,19 @@ public class LogReadScheduler {
 
 	private static final Type type = new TypeToken<List<ReadLog>>() {}.getType();
 
-	@Scheduled(cron="0 1 0 * * *")
+	@Scheduled(cron="0 5 0 * * *")
 	public void getLicenseStatus(){
 		logger.debug("licenseCheck");
-		LicenseCheck.getLicense();
+		LicenseCheck.checkPeriod();
 	}
-	@Scheduled(cron="0 0 0 * * *")
-	public void checkLicenseStatus(){
-		try {
-			LicenseCheck.checkLicenseFile();
-		} catch (IOException e) {
-			logger.error("License Status Check IOException: "+e.getMessage());
-		}
-	}
+//	@Scheduled(cron="0 0 0 * * *")
+//	public void checkLicenseStatus(){
+//		try {
+//			LicenseCheck.checkLicenseFile();
+//		} catch (IOException e) {
+//			logger.error("License Status Check IOException: "+e.getMessage());
+//		}
+//	}
 	@Scheduled(cron="0 0 0 * * *")
 	public void setTodayFile(){
 		Date date = new Date();
@@ -430,8 +430,19 @@ public class LogReadScheduler {
     					++cnt;
     					ReadLog readLine= insertLog(line,logToLogJson,resultKeyAndValue,mappingKeyLogtoJson,logJsonList);
 
+						for(ReadLog log :logJsonList){
+							if(readLine==null){
+								break;
+							}else if(readLine.getDate().equals(log.getDate()) && readLine.getTarget().equals(log.getTarget()) && readLine.getResult().equals(log.getResult())){
+								readLine=null;
+								break;
+							}
+						}
+
     					if(readLine!=null){
-    						logJsonList.add(readLine);
+							if(readLine!=null) {
+								logJsonList.add(readLine);
+							}
     					}
     				}
     				logger.debug("logJsonList: "+logJsonList.toString());
@@ -444,7 +455,7 @@ public class LogReadScheduler {
 						newTempList.add(tempLine);
     				}
 
-					logger.debug("newTempListttt: "+newTempList.toString());
+					logger.debug("newTempList: "+newTempList.toString());
     				int total=0;
 					for(String key : resultKeyAndValue.keySet()){
 						addResult.setProperty(resultText.get(key), resultKeyAndValue.get(key).toString());
