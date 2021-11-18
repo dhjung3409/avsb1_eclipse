@@ -7,7 +7,6 @@ function getUserInfo(){
 
         },
         success:function(suc_res){
-            console.log(suc_res)
             setUserInfo(suc_res)
         }
     })
@@ -27,7 +26,7 @@ function setUserInfo(data) {
 
     var roleText = document.createTextNode(role);
     var licenseRemain = data["licenseStatus"];
-    if(licenseRemain<=0){
+    if(licenseRemain<0){
 
     }else{
         var license = document.createTextNode("[라이센스 만료 "+licenseRemain+"일 전]");

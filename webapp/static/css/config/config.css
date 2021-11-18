@@ -46,8 +46,14 @@
     top: 7px;
 }
 
-#records, #server, #report-count, #malware, #current, #current-log {
+#records, #server, #report-count, #malware, #current, #current-log{
     width: 200px;
+    float: left;
+}
+
+#http-selected{
+    margin-right: 5px;
+    width: 100px;
     float: left;
 }
 

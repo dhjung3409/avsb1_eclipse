@@ -1,10 +1,17 @@
 package com.terais.avsb.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public class ScanResultCount {
+    @JsonProperty
     int total;
+    @JsonProperty
     int normal;
+    @JsonProperty
     int infected;
+    @JsonProperty
     int cured;
+    @JsonProperty
     int failed;
 
     public int getTotal() {

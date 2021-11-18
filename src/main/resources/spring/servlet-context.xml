@@ -42,9 +42,9 @@
 	  <beans:constructor-arg ref="taskExecutor" />
 	</beans:bean>
 
-	<beans:bean id="taskExecutorCron" class="com.terais.avsb.cron.TestCron">
-		<beans:constructor-arg ref="taskExecutor"/>
-	</beans:bean>
+<!--	<beans:bean id="taskExecutorCron" class="com.terais.avsb.cron.TestCron">-->
+<!--		<beans:constructor-arg ref="taskExecutor"/>-->
+<!--	</beans:bean>-->
 
 	<task:executor id="taskExecutorScan" pool-size="1"
 		queue-capacity="10" />

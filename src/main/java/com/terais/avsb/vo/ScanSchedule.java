@@ -1,6 +1,7 @@
 package com.terais.avsb.vo;
 
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.terais.avsb.core.SimpleDateFormatCore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,16 +14,25 @@ import java.util.Date;
 public class ScanSchedule implements Comparable<ScanSchedule>, Comparator<ScanSchedule> {
 
 	private static final Logger logger = LoggerFactory.getLogger(ScanSchedule.class);
-
+	@JsonProperty
 	private long no;
+	@JsonProperty
 	private String reservationDate;
+	@JsonProperty
 	private String startDate;
+	@JsonProperty
 	private String endDate;
+	@JsonProperty
 	private String taskID;
+	@JsonProperty
 	private String type;
+	@JsonProperty
 	private String path;
+	@JsonProperty
 	private String result;
+	@JsonProperty
 	private String report;
+	@JsonProperty
 	private String cycle;
 
 	public long getNo() {

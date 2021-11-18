@@ -88,7 +88,6 @@ public class LocalScanSchedulerServiceImpl implements LocalScanSchedulerService 
 				logger.debug("Can Not Register Time.");
 				return 1;
 			}
-//
 		} catch (ParseException e) {
 			logger.error("RegistScheduler ParseException: "+e.getMessage());
 		}
@@ -244,7 +243,7 @@ public class LocalScanSchedulerServiceImpl implements LocalScanSchedulerService 
 				}
 				deleteInfo = "Date: "+scan.getReservationDate()+", Path: "+scan.getPath()+", TaskID: "+scan.getTaskID();
 				ss.remove(ss.get(i--));
-				logger.info("Delete Scheduler - "+deleteInfo);
+				logger.debug("Delete Scheduler - "+deleteInfo);
 			}
 		}
 		logger.debug("ss: "+ss.toString());
@@ -253,7 +252,7 @@ public class LocalScanSchedulerServiceImpl implements LocalScanSchedulerService 
 			fw = new FileWriter(path);
 			PathAndConvertGson.gson.toJson(ss,fw);
 			fw.flush();
-			logger.info("Scheduler Element Delete");
+			logger.debug("Scheduler Element Delete");
 		} catch (IOException e) {
 			logger.error("Delete Scheduler IOException: "+e.getMessage());
 		}finally{
@@ -278,7 +277,7 @@ public class LocalScanSchedulerServiceImpl implements LocalScanSchedulerService 
 			File file = new File(filePath);
 			PathAndConvertGson.deleteFile(file);
 			try {
-				logger.info(file.getCanonicalPath()+": delete");
+				logger.debug(file.getCanonicalPath()+": delete");
 			} catch (IOException e) {
 				logger.error("Delete File["+file.getPath()+"] IOException Failed: "+e.getMessage());
 			}

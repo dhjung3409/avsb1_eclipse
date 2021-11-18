@@ -25,7 +25,7 @@ public class DefaultConfigProperties {
 				logger.debug("Create properties file");
 				file.createNewFile();
 				prop.setProperty("use_api", "0");				
-				prop.setProperty("port", "8081");
+				prop.setProperty("port", "12394");
 				prop.setProperty("install_path", System.getProperty("user.dir"));
 				prop.setProperty("install_day",sdf.format(date));
 				prop.setProperty("report_count","30");
@@ -33,6 +33,7 @@ public class DefaultConfigProperties {
 				prop.setProperty("res_reload_time", "5");
 				prop.setProperty("current_reload_time", "10");
 				prop.setProperty("log_reload_time", "5");
+				prop.setProperty("HTTP", "https://");
 				FileOutputStream fos = new FileOutputStream(file);
 				prop.store( fos, file.getPath());				
 			}
@@ -89,82 +90,6 @@ public class DefaultConfigProperties {
 		}finally{
 			if(file.exists()) {
 				PropertiesData.callSchedulerSeq();
-			}
-		}
-	}
-
-	public static void updateFileCheck(){
-		String path = FilePath.update;
-		Properties prop = new Properties();
-		File file = new File(path);
-		FileInputStream fis =null;
-		FileOutputStream fos = null;
-		String date = null;
-		try {
-			fos = new FileOutputStream(file);
-			if(!file.exists()){
-				prop.setProperty("update","");
-				prop.store(fos,path);
-			}
-			fis = new FileInputStream(file);
-			prop.load(fis);
-			date = prop.getProperty("update");
-			if(date!=null&&!date.equals("")){
-				PropertiesData.updateDate=date;
-			}
-		} catch (FileNotFoundException e) {
-			logger.error("Update Data FileNotFoundException: "+e.getMessage());
-		} catch (IOException e) {
-			logger.error("Update Data IOException: "+e.getMessage());
-		}finally {
-			try {
-				if (fos != null) {
-					fos.close();
-				}
-			} catch(IOException e) {
-				logger.error("Update Data FileOutputStream: "+e.getMessage());
-			}
-			try {
-				if (fis != null) {
-					fis.close();
-				}
-			} catch(IOException e) {
-				logger.error("Update Data FileInputStream: "+e.getMessage());
-			}
-		}
-	}
-
-	public static void getUploadFileInfo(){
-		Properties prop = PropertiesData.getProp(FilePath.uploadFileInfo);
-		if(!prop.isEmpty()) {
-			String[] fileNames = prop.getProperty("file_name").split(",");
-			for (String fileName : fileNames) {
-				PropertiesData.updateFileNames.add(fileName);
-			}
-			String[] fileSize = prop.getProperty("file_size").split(",");
-			for (String size : fileSize) {
-//				logger.info("size: "+size);
-//				logger.info("boolean size: "+(size==null));
-				if(size==null|| size.contains("null")||size.length()==0){
-
-				}else {
-					long sizeToLong = Long.parseLong(size.trim());
-					PropertiesData.updateFileSize.add(sizeToLong);
-				}
-			}
-//			logger.info("size toString: "+PropertiesData.updateFileSize.toString());
-			String[] fileDate = prop.getProperty("file_date").split(",");
-			for (String date : fileDate) {
-				PropertiesData.updateFileDate.add(date);
-			}
-		}else{
-			File file = new File(FilePath.uploadFileInfo);
-			if(!file.exists()){
-				try {
-					file.createNewFile();
-				} catch (IOException e) {
-					logger.error("create upload info file IOException: "+e.getMessage());
-				}
 			}
 		}
 	}

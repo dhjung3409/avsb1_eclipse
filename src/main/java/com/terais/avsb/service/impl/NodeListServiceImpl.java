@@ -215,7 +215,7 @@ public class NodeListServiceImpl implements NodeListService{
 
 
 	public List<CurrentLogVO> getCurrentLastLog(String ip){
-		File file = new File(FilePath.logFile);
+		File file = new File(FilePath.logPath);
 		List<String> currentLog = CurrentLog.getCurrentLog(file);
 		List<CurrentLogVO> list = new ArrayList<CurrentLogVO>();
 		if(currentLog.size()>=1) {

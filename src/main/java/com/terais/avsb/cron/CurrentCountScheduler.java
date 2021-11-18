@@ -28,6 +28,8 @@ public class CurrentCountScheduler {
 
 	private static final Logger logger = LoggerFactory.getLogger(CurrentCountScheduler.class);
 
+	public static String LI_D1="3";
+
 	private static List<Integer> countList = new ArrayList<Integer>();	
 
 
@@ -43,7 +45,9 @@ public class CurrentCountScheduler {
 
 	public void countCurrent(){
 		if(PropertiesData.licenseStatus==false){
-			logger.error("License is Expired: "+PropertiesData.licenseExpire);
+			logger.debug("License is Expired: "+PropertiesData.licenseExpire);
+			countList.clear();
+			initList();
 			return;
 		}
 		logger.debug("Thread: {}",Thread.currentThread().getName());
@@ -103,11 +107,11 @@ public class CurrentCountScheduler {
 			countList.add(count);
 			
 		} catch (FileNotFoundException e) {
-			logger.error("CurrencCount FileNotFoundException Error: "+e.getMessage());
+			logger.error("CurrentCount FileNotFoundException Error: "+e.getMessage());
 		} catch (IOException e) {
-			logger.error("CurrencCount IOException Error: "+e.getMessage());
+			logger.error("CurrentCount IOException Error: "+e.getMessage());
 		} catch (Exception e){
-			logger.error("CurrencCount Exception Error: "+e.getMessage());
+			logger.error("CurrentCount Exception Error: "+e.getMessage());
 		}finally{
 			try {
 				if(fr!=null){

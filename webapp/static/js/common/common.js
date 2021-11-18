@@ -18,7 +18,6 @@ function systemInfoClick(){
 }
 
 function commmonInit(){
-	// console.log("this is common javascript. ")
 	toggleMenu();
 	passwordChange()
 }
@@ -26,14 +25,11 @@ function commmonInit(){
 function toggleMenu(){
 
 	$("#btn-user-section ").on("click", function(){
-		// console.log("THIS IS ARROW")
 		var status = document.getElementById("drop-down").style.display;
 
 		if(status == "none"){
-			// console.log("THIS IS ARROW : show")
 			document.getElementById("drop-down").style.display = "inline-block";
 		}else{
-			// console.log("THIS IS ARROW : none")
 			document.getElementById("drop-down").style.display = "none";
 		}
 
@@ -43,7 +39,6 @@ function toggleMenu(){
 
 function keyDisabled(){
 	$(window).keydown(function(e){
-		// console.log("keyCode",e.keyCode)
 			if(e.keyCode==27){
 				$("#resetModal").modal("show");
 			}
@@ -80,7 +75,6 @@ function passwordChange(){
 
 				},
 				success: function(suc_res){
-					// console.log(suc_res)
 					if(suc_res){
 						var count =4;
 						document.getElementById('btn-exit').style.display = "none";
@@ -106,7 +100,6 @@ function countdown(count){
 
 	count--;
 	var body = document.getElementById("reset-body");
-	// console.log("body",body.childNodes);
 	while(body.firstChild!=null) {
 		body.removeChild(body.firstChild);
 	}

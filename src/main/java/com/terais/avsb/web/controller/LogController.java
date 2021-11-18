@@ -56,7 +56,7 @@ public class LogController {
 	public ResultValue getYearResult(@PathVariable("year") String year){		
 		ResultValue rv = new ResultValue();		
 		try{						
-			String resultPath = FilePath.getDatePath(year);	
+			String resultPath = FilePath.getDatePath(year);
 			rv = moduleService.getTotal(resultPath, rv);
 			logger.debug("getTotal End: "+rv);
 		}catch(Exception e){
@@ -84,7 +84,7 @@ public class LogController {
 	public ResultValue getDayResult(@PathVariable("year") String year,@PathVariable("month") String month,@PathVariable("day") String day){
 		ResultValue rv = new ResultValue();
 		try{			
-			String resultPath = FilePath.getDatePath(year,month,day);		
+			String resultPath = FilePath.getDatePath(year,month,day);
 			rv = moduleService.getTotal(resultPath, rv);
 			logger.debug("getTotal End: "+rv);
 		}catch(Exception e){
@@ -97,13 +97,20 @@ public class LogController {
 	@RequestMapping(value="/rest/resultlog",method = RequestMethod.GET)
 	@ResponseBody
 	public List<ReadLog> getLogList(){
-		List<ReadLog> resultLog = pageLog.getPageLog();
+		List<ReadLog> resultLog=null;
+		try {
+			resultLog = pageLog.getPageLog();
+			logger.debug("resultLog: "+resultLog.toString());
+		}catch(Exception e){
+			logger.error("getLogList Exception: "+e.getMessage());
+		}
+		logger.debug("resultLog try end");
 		return resultLog;
 	}
 
 	@RequestMapping(value="list",method = RequestMethod.GET)
 	@ResponseBody
-	public List<Object> getLogList(@RequestParam(required=true) String ip) { //나중에 getLogList로 이름바꿀것
+	public List<Object> getLogList(@RequestParam(required=true) String ip) {
 		logger.debug("Input IP: " + ip);
 		List<Object> result = null;
 		result = new ArrayList<Object>();

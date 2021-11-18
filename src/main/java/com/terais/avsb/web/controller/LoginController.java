@@ -114,7 +114,7 @@ public class LoginController {
 
 	@RequestMapping(value = "login_failed", method=RequestMethod.GET)
 	public String rootHome2(HttpServletRequest req,HttpServletResponse response,HttpSession session,Principal prin){
-		logger.info("login failed");
+		logger.debug("login failed");
 		return "login_fail";
 	}
 

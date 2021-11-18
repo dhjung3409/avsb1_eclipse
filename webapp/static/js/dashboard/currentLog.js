@@ -9,7 +9,7 @@ function getCurrentLog(){
 
         },
         success:function(res_suc){
-            console.log(res_suc.reload)
+
             reload=res_suc["reload"];
             createTable(res_suc["currentLog"]);
 
@@ -46,7 +46,6 @@ function createTable(data){
         }
 
         keyword=[data[i]["ip"],splitTime[1],path,data[i]["result"]];
-        // console.log("table",table)
         keyTr = createTr(keyword,tbody,time,fullPath);
         tbody.appendChild(keyTr)
     }
@@ -78,7 +77,6 @@ function createTr(keyword,tbody,time,fullPath){
 
 function currentLogInit(){
     var interval = getCurrentLog();
-    console.log("interval",interval);
     setInterval(function(){
         getCurrentLog();
     },interval*1000*60);

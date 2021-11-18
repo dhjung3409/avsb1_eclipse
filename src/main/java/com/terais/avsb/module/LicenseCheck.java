@@ -34,24 +34,24 @@ public class LicenseCheck extends License {
     public static void checkPeriod(){
         try {
             Date expire= SimpleDateFormatCore.sdf2.parse(PropertiesData.licenseExpire);
-            logger.info("license expired: "+SimpleDateFormatCore.sdf2.format(expire));
+            logger.debug("license expired: "+SimpleDateFormatCore.sdf2.format(expire));
             Date today = new Date();
             Calendar cl = Calendar.getInstance();
             cl.setTime(expire);
             cl.add(Calendar.MONTH,-1);
             Date monthAgo = cl.getTime();
-            logger.info(SimpleDateFormatCore.sdf2.format(monthAgo));
+            logger.debug(SimpleDateFormatCore.sdf2.format(monthAgo));
             int monthResult = monthAgo.compareTo(today);
             int result = expire.compareTo(today);
-            logger.info("date monthResult: "+monthResult);
-            logger.info("date result: "+result);
+            logger.debug("date monthResult: "+monthResult);
+            logger.debug("date result: "+result);
             if(monthResult<0){
                 PropertiesData.licenseMonthStatus=false;
                 long diff = expire.getTime()-today.getTime();
                 long calDiff = diff/(24*60*60*1000);
-                int dayDiff = (int) calDiff;
-//                calDiff=Math.abs(calDiff);
-                logger.info("라이센스 만료 "+dayDiff+"일 전");
+                logger.debug("time: "+diff);
+                int dayDiff = (int) calDiff+1;
+                logger.debug("라이센스 만료 "+dayDiff+"일 전");
                 PropertiesData.licenseRemain=dayDiff;
                 if(result<0){
                     PropertiesData.licenseStatus=false;

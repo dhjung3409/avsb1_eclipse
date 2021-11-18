@@ -49,6 +49,8 @@ public class LogReadScheduler {
 
 	private static final Logger logger = LoggerFactory.getLogger(LogReadScheduler.class);
 
+	public static String LI_M2="2";
+
 	private static final Type type = new TypeToken<List<ReadLog>>() {}.getType();
 
 	@Scheduled(cron="0 5 0 * * *")
@@ -56,23 +58,45 @@ public class LogReadScheduler {
 		logger.debug("licenseCheck");
 		LicenseCheck.checkPeriod();
 	}
-//	@Scheduled(cron="0 0 0 * * *")
-//	public void checkLicenseStatus(){
-//		try {
-//			LicenseCheck.checkLicenseFile();
-//		} catch (IOException e) {
-//			logger.error("License Status Check IOException: "+e.getMessage());
-//		}
-//	}
-	@Scheduled(cron="0 0 0 * * *")
+
+	@Scheduled(cron="0 58 23 * * *")
 	public void setTodayFile(){
+		logger.debug("Date Change");
 		Date date = new Date();
+		Calendar cl = Calendar.getInstance();
+		cl.setTime(date);
+		cl.add(Calendar.DATE,1);
+		Date nextDate = cl.getTime();
+		setDateFile(nextDate);
+	}
+
+	@Scheduled(cron="0 2 0 * * *")
+	public void checkTodayFile(){
+		logger.debug(FilePath.todayResult);
+		Date date = new Date();
+		SimpleDateFormat today = new SimpleDateFormat("yyyy/MM/dd");
+		String stringToday = today.format(date);
+		logger.debug("stringToday: "+stringToday);
+		logger.debug("Date todayResult set today: "+(FilePath.todayResult.contains(stringToday)));
+		if(FilePath.todayResult.contains(stringToday)==false){
+			nowSetDateFile();
+		}
+	}
+
+	public void nowSetDateFile(){
+		Date date = new Date();
+		setDateFile(date);
+	}
+
+	public void setDateFile(Date date){
 		SimpleDateFormat today = new SimpleDateFormat("yyyy/MM/dd");
 		String[] todayCheck = today.format(date).split("/");
 
 		FilePath.todayResult=FilePath.getDatePath(todayCheck[0],todayCheck[1],todayCheck[2])+"/result";
 		FilePath.readTodayLogFile=FilePath.getDatePath(todayCheck[0],todayCheck[1],todayCheck[2])+"/log.json";
 	}
+
+
 
 	@Scheduled(cron = "0 0 0 * * *")
 	public void deleteLogFile(){
@@ -180,7 +204,7 @@ public class LogReadScheduler {
 	@Scheduled(cron="10 0/5 * * * *")
 	public void readLog() {
 		if(PropertiesData.licenseStatus==false){
-			logger.error("License is Expired: "+PropertiesData.licenseExpire);
+			logger.debug("License is Expired: "+PropertiesData.licenseExpire);
 			return;
 		}
 
@@ -333,6 +357,7 @@ public class LogReadScheduler {
 				jsonTempList = new ArrayList<String>();
 			}
 
+
 	    	newTempList = new ArrayList<String>();
 
 	    	checkNull = status.equals("normal");
@@ -430,6 +455,7 @@ public class LogReadScheduler {
     					++cnt;
     					ReadLog readLine= insertLog(line,logToLogJson,resultKeyAndValue,mappingKeyLogtoJson,logJsonList);
 
+
 						for(ReadLog log :logJsonList){
 							if(readLine==null){
 								break;
@@ -495,7 +521,6 @@ public class LogReadScheduler {
 					fos = new FileOutputStream(workName);
 					pro.store(fos, workName);
 				}
-				//===========================================================
 
 				PathAndConvertGson.gson.toJson(newTempList,lastWriter);
 				PathAndConvertGson.gson.toJson(logJsonList,jsonWriter);
@@ -603,8 +628,8 @@ public class LogReadScheduler {
 		ReadLog readLog=new ReadLog();	
 		if(line==null)return null;
 		List<String> logs = new ArrayList<String>(Arrays.asList(line.split(" ")));
-		int num=0;   						
-		
+		int num=0;
+
 		for(int k=0;k<logs.size();k++){								
 			String log = logs.get(k);
 			for (String key : logToLogJson.keySet()) {
@@ -619,12 +644,13 @@ public class LogReadScheduler {
 			}								
 			num++;
 		}
+
 		if(mappingKeyLogToJson.get("result").equals("NORMAL_FILE")){
 			mappingKeyLogToJson.clear();
 			logs.clear();
 			return null;
 		}
-
+		logger.debug("result: "+mappingKeyLogToJson.get("result"));
 		readLog.setClient_ip(mappingKeyLogToJson.get("client_ip"));
 		readLog.setDate(mappingKeyLogToJson.get("date"));
 		readLog.setResult(mappingKeyLogToJson.get("result"));
@@ -636,7 +662,7 @@ public class LogReadScheduler {
 		logs=null;
 		return readLog;
 	}
-	public List<File> checkFile(File[] files){
+	public static List<File> checkFile(File[] files){
 		List<File> returnFiles = new ArrayList<File>();
 		try{
 			for(File file:files){
@@ -696,7 +722,7 @@ public class LogReadScheduler {
 			raFile = new RandomAccessFile(file,"r");
 			raFileSize = raFile.length()-1;
 			raFileSize--;
-			CurrentLog.getLines(lastLines,5,raFile,raFileSize);
+			lastLines=CurrentLog.getLines(lastLines,5,raFile,raFileSize);
 			if(raFile!=null) {
 				raFile.close();
 			}
@@ -737,10 +763,10 @@ public class LogReadScheduler {
 					fw.write(line+"\n");
 					if(count==100000){
 						fw.flush();
+						page++;
 						filePath=divFilePath+"."+page;
 						divFile=new File(filePath);
 						fw=new FileWriter(divFile);
-						page++;
 						count=0;
 					}
 				}
@@ -763,14 +789,18 @@ public class LogReadScheduler {
 		File folder = new File(FilePath.tmpLib);
 		File[] files=folder.listFiles();
 		List<String> divFiles = new ArrayList<String>();
-		for(int i=0;i<files.length;i++){
-			if(files[i].getName().contains("log.txt")==true&&files[i].getName().contains("swp")==false){
-				try {
-					divFiles.add(files[i].getCanonicalPath());
-				} catch (IOException e) {
-					e.printStackTrace();
+		try {
+			for (int i = 0; i < files.length; i++) {
+				if (files[i].getName().contains("log.txt") == true && files[i].getName().contains("swp") == false) {
+					try {
+						divFiles.add(files[i].getCanonicalPath());
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
 				}
 			}
+		}catch(NullPointerException e){
+			logger.error("checkDivFile NullPointerException: "+e.getMessage());
 		}
  		return divFiles;
 	}
@@ -797,6 +827,7 @@ public class LogReadScheduler {
 		for(int i=0;i<fileList.size();i++){
 			logger.debug("getLogString for start");
 			fileName=fileName.substring(0,fileName.lastIndexOf(".")+1)+i;
+			logger.debug("Log File Name : "+fileName);
 			if(fileList.contains(fileName)) {
 				file = new File(fileName);
 				logger.debug(fileName);

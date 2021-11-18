@@ -62,6 +62,7 @@ public class PageLogServiceImpl implements PageLogService{
 		long afterTime = System.currentTimeMillis();
 		long differTime = (afterTime-beforeTime);
 		logger.debug("test time: "+differTime);
+		logger.debug("logList: "+logList);
 		return logList;
 	}
 	public Object getLogObject(ReadLog readLog){

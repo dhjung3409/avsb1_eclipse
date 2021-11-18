@@ -105,7 +105,7 @@ public class DashboardController {
 	@RequestMapping(value="/server/last/line",method=RequestMethod.GET)
 	@ResponseBody
 	public Map<String,Object> getServersCurrentLine(){
-		logger.debug("getServerNode Start");
+		logger.info("getServerNode Start");
 		return getService.getLastLine();
 	}
 

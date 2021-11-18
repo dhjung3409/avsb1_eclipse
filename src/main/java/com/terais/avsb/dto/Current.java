@@ -1,10 +1,14 @@
 package com.terais.avsb.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import java.util.List;
 
 public class Current {
 
+    @JsonProperty
     private String ip;
+    @JsonProperty
     private List<Integer> count;
 
     public String getIp() {

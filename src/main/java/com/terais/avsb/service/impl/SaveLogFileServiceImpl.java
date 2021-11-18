@@ -23,22 +23,28 @@ public class SaveLogFileServiceImpl implements SaveLogFileService{
 	NodeAndCurrentGetServiceImpl getService;
 	
 	public List<Object> getSaveLog(String ip){
-		logger.debug("getSaveLog");		
-		logger.debug(LOCAL);
-		logger.debug(ip=ip.trim());
-		logger.debug("{}",LOCAL!=ip);
+		logger.info("getSaveLog");
+		logger.info(LOCAL);
+		logger.info(ip=ip.trim());
+		logger.info("{}",LOCAL!=ip);
 		List<Object> logList = new ArrayList<Object>();
-		if(PropertiesData.subIp.contains(ip)==false&&ip.equals(LOCAL)==false){
-			logger.debug("Wrong IP");
+		if(setSubIP().contains(ip)==false&&ip.equals(LOCAL)==false){
+			logger.info("Wrong IP");
 			return logList;
 		}
 		String getLogs=null;
 		String option = "resultlog";
-		
-		getLogs = getService.getRest(ip, "log", option);
-		logger.debug("getLogs: "+getLogs);
+		String httpIP="";
+		for(String ipInfo:PropertiesData.subIp){
+			if(ipInfo.substring(ipInfo.indexOf("$")+1).equals(ip)){
+				httpIP=ipInfo;
+				break;
+			}
+		}
+		getLogs = getService.getRest(httpIP, "log", option);
+		logger.info("getLogs: "+getLogs);
 		ReadLog[] read=new Gson().fromJson(getLogs,ReadLog[].class);
-		logger.debug(read[0].toString());
+		logger.info(read[0].toString());
 		List<Object> log = null;
 		for(ReadLog rl: read){
 			log=new ArrayList<Object>();
@@ -60,6 +66,14 @@ public class SaveLogFileServiceImpl implements SaveLogFileService{
 		list.add(rl.getTarget());
 		list.add(rl.getResult());
 		return list;
+	}
+
+	public List<String> setSubIP(){
+		List<String> setIP = new ArrayList<String>();
+		for(String ip:PropertiesData.subIp){
+			setIP.add(ip.substring(ip.indexOf("$")+1));
+		}
+		return setIP;
 	}
 
 }

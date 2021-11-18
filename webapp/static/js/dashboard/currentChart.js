@@ -3,11 +3,8 @@ function addData(chart,label, data,count,allData) {
     for(var i=0;i<ylength;i++){
         chart.options.scales.yAxes[i].ticks.stepSize=getCurrentStepSize(allData);
     }
-    // console.log("this is work! ", data)
-    // console.log("this is work! dataset ", chart.data.datasets)
     for(var i=6-count;i<data.length;i++) {
         chart.data.datasets.forEach(function(dataset){
-            // console.log("label",dataset.label)
             if(dataset.label == label) {
                 dataset.data.shift();
             }
@@ -42,24 +39,13 @@ function getCurrentInfo(chartInfo){
             },
             success: function(res_suc){
                 result = res_suc;
-                // console.log("ip 전달 체크",res_suc);
                 if(chartInfo!=null){
-                    // console.log("this is line chart 1", chartInfo)
                     var count = res_suc.pop()/10;
-
-                    // removeData(chartInfo)
                     for(var i=0;i<res_suc.length;i++) {
                         addData(chartInfo, res_suc[i].ip, res_suc[i].count,count,res_suc);
                     }
 
                     chartInfo.update();
-
-                    // var data = res_suc[0].count[5];
-                    // currentArr.shift();
-                    // currentArr.push(res_suc[0].count[5]);
-                    // console.log(currentArr)
-
-
                 }
 
 
@@ -72,8 +58,6 @@ function getCurrentInfo(chartInfo){
 }
 
 function getCurrentStepSize(data){
-    // console.log("stepSizeData: ",data)
-    // data.pop();
     var num = 0;
     for(var i=0;i<data.length;i++){
         for(var j=0;j<data[i]["count"].length;j++) {
@@ -96,8 +80,6 @@ function initCurrentChart(data){
     var colors = ["#ffd2b8","#d3bcff","#99d0fa","#ff9c9c","#fdbbd8","#8be7ad","#ee9ef1","#fdf187","#abf4fc"];
 
     var stepSize = getCurrentStepSize(data);
-    // console.log(stepSize);
-    // var stepSize = 1;
     var dataset=[];
     for(var i=0;i<data.length;i++){
         dataset[i]={
@@ -128,7 +110,7 @@ function initCurrentChart(data){
             },
             title: {
                 display: true,
-                text: '실시간 악성 코드 검사 현황',
+                text: '실시간 검사 현황',
                 fontSize: 16
             },
             scales: {
@@ -173,8 +155,6 @@ function refreshCurrentChart(){
 }
 
 function currentChart(){
-    // console.log("chart created!")
-    //chart create
 
     var initInfo = getCurrentInfo();
     var interval = initInfo.pop();
@@ -182,10 +162,8 @@ function currentChart(){
     interval = interval*1000;
     chartInfo = initCurrentChart(initInfo);
 
-    // console.log("this is line chart ", chartInfo)
 
     currentInterval=setInterval(function(){
-        // console.log(test++);
         getCurrentInfo(chartInfo);
     }, interval);
 

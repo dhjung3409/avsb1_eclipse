@@ -3,6 +3,7 @@ package com.terais.avsb.vo;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -11,10 +12,15 @@ import org.springframework.security.core.userdetails.UserDetails;
 public class LoginVO implements UserDetails{
 
 	private static final long serialVersionUID = 4014438683256086864L;
+	@JsonProperty
 	private long no;
+	@JsonProperty
 	private String userId;
+	@JsonProperty
 	private String userPw;
+	@JsonProperty
 	private String userName;
+	@JsonProperty
 	private String userRole;
 
 	public long getNo() {

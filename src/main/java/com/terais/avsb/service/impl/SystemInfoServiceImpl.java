@@ -36,31 +36,37 @@ public class SystemInfoServiceImpl implements SystemInfoService {
 	}
 
 	public List<Object> getServerList() {
-		Set<String> ips = PropertiesData.subIp;
-		RestTemplate rest= TimeOutRestTemplate.getRestTemplate();
+//		Set<String> ips = PropertiesData.subIp;
+
+
 		Map<Object, Object> ipConnect = null;
 		List<Object> ipStatus =new ArrayList<Object>();
 		String engineInfo = null;
 
-		List<String> ipList = new ArrayList<String>();
-		for(String ip : PropertiesData.subIp){
-			ipList.add(ip);
-		}
-		Collections.sort(ipList, new IpListSortByIp());
+		List<String> ipList = IpListSortByIp.getIP();
 
 		for(String ip:ipList){
-			engineInfo = getEngineVersion(ip,rest);
+			String ipInfo=ip.substring(ip.indexOf("$")+1);
+			engineInfo = getEngineVersion(ip);
 			ipConnect=new HashMap<Object, Object>();
 			ipConnect.put("engine",engineInfo);
-			ipConnect.put("result", PropertiesData.ipConnect.get(ip));
-			ipConnect.put("server", ip);
+			ipConnect.put("result", PropertiesData.ipConnect.get(ipInfo));
+			ipConnect.put("server", ipInfo);
 			ipStatus.add(ipConnect);
 		}
 		return ipStatus;
 	}
 
-	public String getEngineVersion(String ip,RestTemplate rest){
-		String url = "http://"+ip+":"+PropertiesData.port+"/system/rest/server/engine";
+	public String getEngineVersion(String ip){
+		String[] httpIP=ip.split("\\$");
+		RestTemplate rest = null;
+		if(httpIP.equals("https://")){
+			rest = TimeOutRestTemplate.getHttpsRestTemplate();
+		}else{
+			rest = TimeOutRestTemplate.getHttpRestTemplate();
+		}
+
+		String url = httpIP[0]+httpIP[1]+":"+PropertiesData.port+"/system/rest/server/engine";
 		String result = RestURI.getRequestUri(rest,url);
 		String version;
 		Map<String, String> engineInfo = new Gson().fromJson(result,Map.class);
@@ -77,6 +83,7 @@ public class SystemInfoServiceImpl implements SystemInfoService {
 		Map<Object,Object> avsbInfo = new HashMap<Object, Object>();
 //		Properties prop = PropertiesData.getProp(FilePath.license);
 		String period = PropertiesData.licenseExpire;
+		period=period.replace("/","-");
 		avsbInfo.put("version", "1.0");
 		avsbInfo.put("License", period);
 		return avsbInfo;

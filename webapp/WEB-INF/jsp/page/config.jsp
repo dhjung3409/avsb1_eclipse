@@ -104,6 +104,11 @@
                                         <span class="little-title">서버 아이피</span>
                                     </td>
                                     <td style="padding-left: 40px;">
+                                        <select class="form-control" name="http" id="http-selected">
+                                            <option value="">--------</option>
+                                            <option value="http://">HTTP</option>
+                                            <option value="https://">HTTPS</option>
+                                        </select>
                                         <input class="form-control" type="text" id="server" name="server"
                                                maxlength="15">
                                         <input class="btn jbutton" id="btn-server" type="button" value="추가" onclick="addSubServer()">

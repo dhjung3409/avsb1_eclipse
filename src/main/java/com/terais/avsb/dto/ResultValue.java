@@ -1,12 +1,20 @@
 package com.terais.avsb.dto;
 
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public class ResultValue {
+	@JsonProperty
 	int normal;
+	@JsonProperty
 	int infected;
+	@JsonProperty
 	int disinfected;
+	@JsonProperty
 	int failed;
+	@JsonProperty
 	int deleteFail;
+	@JsonProperty
 	int total;
 	public int getNormal() {
 		return normal;

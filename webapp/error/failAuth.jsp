@@ -1,7 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
-    
-<%@page isErrorPage="true" %>    
+<%@page isErrorPage="true" %>
+<%@ page session="false" %>
     
 <%
     response.setStatus(200);
@@ -14,6 +14,21 @@
 <title>AVSB 라이센스 만료</title>
 
 </head>
+<script>
+    $.ajax({
+       url:"/etc/status/check",
+       method:"GET",
+       data:{},
+       error:function(){} ,
+       success:function(suc_res){
+           if(suc_res == true){
+               location.href="/avsb/logout";
+           }
+       } ,
+    });
+
+</script>
+
 <%--<script src="/static/plugins/jquery/jquery-1.12.4.js"></script><!-- jQuery -->--%>
 <%--<script type="text/javascript">--%>
 

@@ -1,11 +1,19 @@
 package com.terais.avsb.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public class ScanResult {
+	@JsonProperty
 	private long no;
+	@JsonProperty
 	private String date;
+	@JsonProperty
 	private String filepath;
+	@JsonProperty
 	private String name;
+	@JsonProperty
 	private String size;
+	@JsonProperty
 	private String result;
 	
 	public long getNo() {

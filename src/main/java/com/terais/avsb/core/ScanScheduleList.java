@@ -18,6 +18,7 @@ public class ScanScheduleList {
 
     private static final Logger logger = LoggerFactory.getLogger(ScanScheduleList.class);
 
+    public static String LI_D2="1";
 
     private static final Type type = new TypeToken<List<ScanSchedule>>() {}.getType();
 

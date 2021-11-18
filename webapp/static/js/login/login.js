@@ -19,7 +19,6 @@ function loginProcess(){
 }
 
 function loginInit(){
-	// console.log("this is Login Page");
 }
 
 loginInit();

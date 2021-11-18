@@ -1,27 +1,20 @@
 package com.terais.avsb.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public class ReadLog {
+	@JsonProperty
 	private long no;
+	@JsonProperty
 	private String date;
+	@JsonProperty
 	private String result;
+	@JsonProperty
 	private String client_ip;
+	@JsonProperty
 	private String target;
 
-	public ReadLog(){
-		
-	}
 
-	public ReadLog(long no, String date, String result, String client_ip, String target) {
-		this.no = no;
-		this.date = date;
-		this.result = result;
-		this.client_ip = client_ip;
-		this.target = target;
-
-
-
-	}	
-	
 	@Override
     public boolean equals(Object object)
     {

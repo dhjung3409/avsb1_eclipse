@@ -26,6 +26,8 @@ public class PathAndConvertGson {
 
 	private static final Logger logger = LoggerFactory.getLogger(PathAndConvertGson.class);
 
+	public static String LI_Y3="2";
+
 	public static final Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
 	public static <T> List<T> convertGson(String fileName) {
@@ -86,10 +88,7 @@ public class PathAndConvertGson {
 	}
 
 	public static String getOSFolder() {
-		String os = getOsName();
 		String defaultFolder = System.getProperty("user.dir");
-		logger.debug("DefaultFolder: "+defaultFolder);
-//		defaultFolder="/Users/jong/Desktop/dev/avsb/workspace_avsb1/avsb_base";
 		return defaultFolder;
 	}
 

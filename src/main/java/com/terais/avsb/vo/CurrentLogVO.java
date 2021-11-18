@@ -1,6 +1,7 @@
 package com.terais.avsb.vo;
 
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.terais.avsb.core.SimpleDateFormatCore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,11 +12,13 @@ import java.util.Date;
 
 public class CurrentLogVO implements  Comparable<CurrentLogVO>,Comparator<CurrentLogVO> {
 
-    private static final Logger logger = LoggerFactory.getLogger(CurrentLogVO.class);
-
+    @JsonProperty
     private String ip;
+    @JsonProperty
     private String time;
+    @JsonProperty
     private String path;
+    @JsonProperty
     private String result;
 
     public String getIp() {

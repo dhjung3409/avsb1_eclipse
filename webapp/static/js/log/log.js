@@ -18,7 +18,6 @@ function getLogIP(){
 			
 		},
 		success:function(suc_res){
-//			console.log(suc_res)
 			selectOption(suc_res)
 		}
 	})
@@ -48,13 +47,9 @@ function getLogList(ip) {
 		method:"GET",
 		data:{ip:ip},
 		error: function(err_res){
-			// console.log("this is error, can not found account lists");
 		},
 		success: function (suc_res){
-			//account table
-			// console.log(suc_res);
 			logTable(suc_res);
-//			showLogList()
 		}
 	});
 
@@ -157,23 +152,13 @@ function logTable(data){
 function logChange(){
 	var sop = document.getElementById("servers");
 	var ip = sop.options[sop.selectedIndex].value;
-//	console.log(ip)
 	getLogList(ip+"")
-	// $("#log-table_wrapper").remove();
 }
 
 function logInit(){
-	
-//	 console.log("this is log page")
 	var testip = "127.0.0.1";
 
 	getLogIP();
 }
 
 logInit();
-
-
-//
-
-
-

@@ -9,12 +9,13 @@ import com.terais.avsb.core.PropertiesData;
 public class FilePath {	
 	
 	public static String defaultName = PathAndConvertGson.getOSFolder();
-	public static String uploadFolder = defaultName+"/upload";
-	public static String uploadExtractFolder = uploadFolder+"/extract";
-	public static String extractFolder = defaultName+"/extract";
-	public static String uploadFile = "";
-	public static String uploadFileSavePath = uploadFolder+"/vaccine_file.tar";
-	public static String secondFileSavePath = uploadFolder+"/vaccine_file_0.tar";
+
+//	public static String uploadFolder = defaultName+"/upload";
+//	public static String uploadExtractFolder = uploadFolder+"/extract";
+//	public static String extractFolder = defaultName+"/extract";
+//	public static String uploadFile = "";
+//	public static String uploadFileSavePath = uploadFolder+"/vaccine_file.tar";
+//	public static String secondFileSavePath = uploadFolder+"/vaccine_file_0.tar";
 	public static String logFolder = defaultName+"/log";
 	public static String infoFolder = defaultName+"/info";
 	public static String configFolder = defaultName+"/config";
@@ -33,21 +34,23 @@ public class FilePath {
 	public static String readTodayLogFile = null;
 	public static String tmpLogJson = logFolder+"/.log_tmp.json";
 	public static String workName = infoFolder+"/workers.ini";
-	public static String update = infoFolder+"/update_check.properties";
 	public static String todayResult = null;
 	public static String scheduler = tmpFolder+"/scheduler.json";
 	public static String report = tmpFolder+"/report.json";
 	public static String tmpLib = tmpFolder+"/lib";
 	public static String license = defaultName+"/license.txt";
-//	public static String copyLicense = libsFolder+"/.license";
 	public static String copyDateLicense = null;
 	public static String tmpSeq = tmpFolder+"/.scheduler_report_seq.properties";
 	public static String enginePathFile = libsFolder+"/engine_path.properties";
 	public static String fileListPath = tmpFolder+"/file_list.json";
-	public static String uploadFileInfo = infoFolder+"/upload_file_info.properties";
 	public static String v3properties = (libsFolder+"/vendor/ahnlab/V3Scanner.properties").trim();
 	public static String v3option = null;
 	public static String copyV3option = null;
+	public static String LI_DA="/";
+	public static String sslKey = infoFolder+"/.teraKey";
+
+
+
 
 	public static String dummyFile = "TERA_SYSTEM_CHECK_DUMMY_FILE";
 	

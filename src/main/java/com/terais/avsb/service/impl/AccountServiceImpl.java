@@ -201,23 +201,43 @@ public class AccountServiceImpl implements AccountService{
 	}
 
 	public List<Object> viewAccountList(String myAccount){
-		logger.debug("myAccount: "+myAccount);
+
+		String[] splitAccount = myAccount.split(" ");
+		String name=null;
+		for(String text: splitAccount){
+			if(text.contains("userId")){
+				text = text.replaceAll("}"," ");
+				text.trim();
+				name = text.substring(text.indexOf("userId=")+7);
+				name = name.replace(",","");
+			}
+		}
+
+		name = name.trim();
+
 		String fileName = FilePath.accountFile;		
 		List<LoginVO> accountList=PathAndConvertGson.convertGson(fileName);
-		logger.debug(accountList.size()+"");
 		List<Object> accounts = new ArrayList<Object>();
-		try {
-			for(LoginVO account:accountList){
-				if(PasswordAlgorithm.decrypt(account.getUserId()).equals(myAccount)){
-					continue;
+		if(name!=null) {
+			try {
+				logger.debug("LoginId: ["+name+"]");
+				for (LoginVO account : accountList) {
+					logger.debug("userId: "+PasswordAlgorithm.decrypt(account.getUserId()));
+
+					if ((PasswordAlgorithm.decrypt(account.getUserId())).equals(name)) {
+						logger.debug("This is LoginId");
+						continue;
+					}
+					accounts.add(addAccount(account));
 				}
-				accounts.add(addAccount(account));
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				logger.error("View Account Exception: " + e.getMessage());
 			}
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			logger.error("View Account Exception: "+e.getMessage());
-		}	
-		logger.debug(accounts.toString());
+			logger.debug(accounts.toString());
+		}else{
+
+		}
 		return accounts;
 	}
 

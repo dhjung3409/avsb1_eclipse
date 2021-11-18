@@ -1,13 +1,9 @@
 function initSelectBox(){
 	var date = new Date();
-	// console.log("date",date)
 	var dateObj = new Date(date);
-	// console.log("dateObj",dateObj)
 	dateObj.setMinutes(date.getMinutes()+2)
 	var month = dateObj.getMonth()+1;
-	// console.log("month",month)
 	var today = dateObj.getDate();
-	// console.log("today",today)
 	var hour = dateObj.getHours();
 	var minute = dateObj.getMinutes();
 	var monthSelect = document.getElementById('schedule-month');
@@ -68,16 +64,13 @@ function getCheckItem(className){
 function deleteScheduler(){
 	var itemArr=getCheckItem('check-status-scheduler');
 	var scheduleMainCheck = document.getElementById('schedule-check');
-	// console.log("itemArr",itemArr)
 	$.ajax({
 		url:"/filescan/scheduler/delete",
 		type:"POST",
 		data:{items:itemArr},
 		error: function (err_res){
-			// console.log("err_res",err_res)
 		},
 		success: function (suc_res){
-			// console.log("suc_res",suc_res)
 			if(scheduleMainCheck.checked){
 				scheduleMainCheck.checked=false;
 			}
@@ -90,16 +83,13 @@ function deleteScheduler(){
 function deleteReport(){
 	var itemArr=getCheckItem('check-status-report');
 	var reportMainCheck = document.getElementById('report-check');
-	// console.log("itemArr",itemArr)
 	$.ajax({
 		url:"/filescan/report/delete",
 		type:"POST",
 		data:{items:itemArr},
 		error: function (err_res){
-			// console.log("err_res",err_res)
 		},
 		success: function (suc_res){
-			// console.log("suc_res",suc_res)
 			if(reportMainCheck.checked){
 				reportMainCheck.checked=false;
 			}
@@ -148,45 +138,55 @@ function sendFilePath(){
 	}
 	var hour = document.getElementById("schedule-time").value;
 	var min = document.getElementById("schedule-min").value;
-	// console.log("type: "+ type)
-	// console.log("period: "+period)
-	// console.log("hour: "+hour)
-	// console.log("min: "+min)
 
-	$.ajax({
-		url:"/filescan/scheduler",
-		method:"POST",
-		data:{
-			path:filePath,
-			type:type,
-			year:year,
-			period:period,
-			hour:hour,
-			min:min,
-			time:time
-		},
-		error: function(err_res){
-			// console.log("err",err_res)
-		},
-		success:function(suc_res){
-			// console.log("suc",suc_res)
-			// console.log(document.getElementById("filepath"));
-			if(suc_res.result) {
-				document.getElementById("filepath").value = "";
-				getReport();
-				getScheduler();
-			}else{
-				notif({
-					type: "info",
-					msg: getMessage(suc_res.message),
-					position: "center",
-					timeout: 1000,
-					bgcolor: "#a11232",
-					fade: true,
-				});
+
+	if(filePath == "/" || filePath == ""){
+		notif({
+			type: "info",
+			msg: "루트(/) 경로를 제외한 절대경로로 입력 바랍니다.",
+			position: "center",
+			timeout: 1000,
+			bgcolor: "#a11232",
+			fade: true,
+		});
+	}else{
+		$.ajax({
+			url:"/filescan/scheduler",
+			method:"POST",
+			data:{
+				path:filePath,
+				type:type,
+				year:year,
+				period:period,
+				hour:hour,
+				min:min,
+				time:time
+			},
+			error: function(err_res){
+				// console.log("err",err_res)
+			},
+			success:function(suc_res){
+				// console.log("suc",suc_res)
+				// console.log(document.getElementById("filepath"));
+				if(suc_res.result) {
+					document.getElementById("filepath").value = "";
+					getReport();
+					getScheduler();
+				}else{
+					notif({
+						type: "info",
+						msg: getMessage(suc_res.message),
+						position: "center",
+						timeout: 1000,
+						bgcolor: "#a11232",
+						fade: true,
+					});
+				}
 			}
-		}
-	});
+		});
+	}
+
+
 
 }
 function getMessage(message){
@@ -246,7 +246,7 @@ function getScheduler(){
 			// console.log("err",err_res)
 		},
 		success:function(suc_res){
-			// console.log("suc",suc_res)
+			console.log("suc",suc_res)
 			viewScheduler(suc_res)
 		}
 	});
@@ -391,13 +391,13 @@ function viewBody(data,id){
 function display_wrapper(){
 
 	var total_wrapper = $('#filescan-wrapper').height();
-	var wrapper_top = 110;
+	var wrapper_top = 150;
 	var wrapper_bottom = total_wrapper - wrapper_top;
 
 	document.getElementById('wrapper-bottom').style.height = wrapper_bottom+"px";
 	$(window).resize(function(){
 		var total_wrapper = $('#filescan-wrapper').height();
-		var wrapper_top = 110;
+		var wrapper_top = 150;
 		var wrapper_bottom = total_wrapper - wrapper_top;
 		document.getElementById('wrapper-bottom').style.height = wrapper_bottom+"px";
 	});

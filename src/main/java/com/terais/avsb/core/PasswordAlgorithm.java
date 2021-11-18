@@ -16,6 +16,8 @@ import com.terais.avsb.cron.CurrentCountScheduler;
 public class PasswordAlgorithm {
 	
 	private static final Logger logger = LoggerFactory.getLogger(PasswordAlgorithm.class);
+
+	public static String LI_Y1="2";
 	
 	private static final String KEY = "avsignaturebridge1deskey";
 

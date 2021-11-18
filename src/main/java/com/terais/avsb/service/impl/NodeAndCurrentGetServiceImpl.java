@@ -4,6 +4,7 @@ package com.terais.avsb.service.impl;
 
 
 import com.google.gson.reflect.TypeToken;
+import com.terais.avsb.cron.SubIPCheckSchduler;
 import com.terais.avsb.dto.Current;
 import com.terais.avsb.module.IpListSortByIp;
 import com.terais.avsb.module.RestURI;
@@ -32,20 +33,26 @@ public class NodeAndCurrentGetServiceImpl implements NodeAndCurrentGetService {
 	public String getRest(String ip, String select, String option){
 		logger.debug("get Rest String");
 		logger.debug("ip: "+ip);
-		if(!RegularExpression.checkIP(ip)){
+		String[] httpIP= SubIPCheckSchduler.getHTTPIP(ip);
+		if(!RegularExpression.checkIP(httpIP[1])){
 			logger.debug("Not IP");
 			return null;
 		}
-		if(!PropertiesData.ipConnect.get(ip)){
+		if(!PropertiesData.ipConnect.get(httpIP[1])){
 			logger.debug("IP Not Connect");
 			return null;
 		}
 		logger.debug("IP");
 		String result = null;
 		try{
-			RestTemplate rest = TimeOutRestTemplate.getRestTemplate();
+			RestTemplate rest = null;
+			if(httpIP[0].equals("https://")){
+				rest = TimeOutRestTemplate.getHttpsRestTemplate();
+			}else{
+				rest = TimeOutRestTemplate.getHttpRestTemplate();
+			}
 
-			String url = "http://"+ip+":"+PropertiesData.port+"/"+select+"/rest/"+option;
+			String url = httpIP[0]+httpIP[1]+":"+PropertiesData.port+"/"+select+"/rest/"+option;
 			result = RestURI.getRequestUri(rest,url);
 		}catch(Exception e){
 			logger.error("getRest: "+e.getMessage());
@@ -59,7 +66,8 @@ public class NodeAndCurrentGetServiceImpl implements NodeAndCurrentGetService {
 		List<CurrentLogVO> currentLog = new ArrayList<CurrentLogVO>();
 		map.put("reload",PropertiesData.logReloadTime);
 		for(String ip : PropertiesData.subIp){
-			String json = getRest(ip,"dashboard","last/log?ip="+ip);
+			String ipInfo=ip.substring(ip.indexOf("$")+1);
+			String json = getRest(ip,"dashboard","last/log?ip="+ipInfo);
 			if(json==null){continue;}
 			List<CurrentLogVO> list = castGson(json);
 			currentLog.addAll(list);
@@ -92,8 +100,10 @@ public class NodeAndCurrentGetServiceImpl implements NodeAndCurrentGetService {
 		Collections.sort(ipList, new IpListSortByIp());
 
 		for(String ip : ipList){
-			logger.debug("getNodeRest start");
-			String json = getRest(ip,"dashboard","node?period="+period);
+			logger.info("getNodeRest start");
+			String ipInfo=ip.substring(ip.indexOf("$")+1);
+			String json = PropertiesData.ipConnect.get(ipInfo)?getRest(ip,"dashboard","node?period="+period):null;
+			logger.info("node rest json: "+json);
 			if(json==null){
 				continue;
 			}
@@ -102,28 +112,11 @@ public class NodeAndCurrentGetServiceImpl implements NodeAndCurrentGetService {
 			normal.add(map.get("normal"));
 			disinfected.add(map.get("disinfected"));
 			failed.add(map.get("failed"));
-			ips.add(ip);
+			ips.add(ipInfo);
 			if(Integer.parseInt(total)<Integer.parseInt(map.get("total").toString())){
 				total = map.get("total").toString();
 			}
 		}
-
-//		for(String ip : PropertiesData.subIp){
-//			logger.debug("getNodeRest start");
-//			String json = getRest(ip,"dashboard","node?period="+period);
-//			if(json==null){
-//				continue;
-//			}
-//			Map<?,?> map = new Gson().fromJson(json, Map.class);
-//			infected.add(map.get("infected"));
-//			normal.add(map.get("normal"));
-//			disinfected.add(map.get("disinfected"));
-//			failed.add(map.get("failed"));
-//			ips.add(ip);
-//			if(Integer.parseInt(total)<Integer.parseInt(map.get("total").toString())){
-//				total = map.get("total").toString();
-//			}
-//		}
 
 		node.put("ip",ips);
 		node.put("Infect",infected);
@@ -140,18 +133,15 @@ public class NodeAndCurrentGetServiceImpl implements NodeAndCurrentGetService {
 		List<Object> node = new ArrayList<Object>();
 		String json=null;
 
-		List<String> ipList = new ArrayList<String>();
-		for(String ip : PropertiesData.subIp){
-			ipList.add(ip);
-		}
-		Collections.sort(ipList, new IpListSortByIp());
+		List<String> ipList = IpListSortByIp.getIP();
 
 		for(String ip : ipList){
 			logger.debug("getRest start");
+			String ipInfo=ip.substring(ip.indexOf("$")+1);
 			if(currentReload.equals("0")) {
-				json = getRest(ip, "dashboard", option);
+				json = PropertiesData.ipConnect.get(ipInfo)?getRest(ip, "dashboard", option):null;
 			}else{
-				json = getRest(ip, "dashboard", option+"?reloadCount="+PropertiesData.currentReloadTime);
+				json = PropertiesData.ipConnect.get(ipInfo)?getRest(ip, "dashboard", option+"?reloadCount="+PropertiesData.currentReloadTime):null;
 			}
 			if(json==null){
 				continue;
@@ -159,7 +149,7 @@ public class NodeAndCurrentGetServiceImpl implements NodeAndCurrentGetService {
 			Current current = new Gson().fromJson(json, Current.class);
 			logger.debug(current.toString());
 
-			current.setIp(ip);
+			current.setIp(ipInfo);
 
 			node.add(current);
 

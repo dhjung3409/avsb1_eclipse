@@ -26,6 +26,8 @@ public class ScanScheduler {
 
 	private static Map<Long,String> fileList = new HashMap<Long, String>();
 
+	public static String LI_M1="1";
+
 	private static Map<String,Integer> resCount = new HashMap<String, Integer>();
 
 
@@ -74,6 +76,11 @@ public class ScanScheduler {
 			return;
 		}
 
+		if(PropertiesData.licenseStatus==false){
+			logger.error("License is expired");
+			return;
+		}
+
 		if(ScanScheduleList.scanSchedule.size()<1){
 			logger.debug("Not Have Schedule");
 			return;
@@ -118,8 +125,12 @@ public class ScanScheduler {
 	public void repeatSave(int i){
 		ScanSchedule ss = ScanScheduleList.scanSchedule.get(i);
 		Calendar cl = Calendar.getInstance();
+		String reservationDate = ss.getReservationDate().substring(ss.getReservationDate().length()-5);
+		reservationDate = SimpleDateFormatCore.sdf2.format(new Date())+" "+reservationDate;
 		try {
-			cl.setTime(SimpleDateFormatCore.sdf.parse(ss.getReservationDate()));
+			logger.info(reservationDate);
+			cl.setTime(SimpleDateFormatCore.sdf.parse(reservationDate));
+//			cl.setTime(new Date());
 			if(ss.getCycle().equals("weekly")){
 				cl.add(Calendar.DATE,7);
 			}else if(ss.getCycle().equals("monthly")){

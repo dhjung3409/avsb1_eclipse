@@ -1,13 +1,9 @@
 function tableForm(data,obj,id){
 	var serverInfo = document.getElementById(id).getElementsByClassName("table-wrapper");
-	// console.log(serverInfo)
 	var table = serverInfo[0].getElementsByTagName("table");
-	// console.log(table)
-//	var obj = {os:"운영체제",arch:"아키텍처",version:"버전"};
 	var infoTbody = document.createElement("tbody");
 	if(typeof obj ==="object"){
 		for(var variable in data){
-			// console.log(variable)
 			var serverTr = document.createElement("tr");
 			
 			var serverFirstTd = document.createElement("td");
@@ -26,8 +22,6 @@ function tableForm(data,obj,id){
 			infoTbody.appendChild(serverTr);
 		}		
 	}else if(typeof obj === "string"){
-		// console.log("String: "+obj)
-		// console.log(data.length)
 		for(var i=0;i<data.length;i++){
 			
 			var serverTr = document.createElement("tr");
@@ -36,25 +30,16 @@ function tableForm(data,obj,id){
 			serverFirstTd.setAttribute("style","text-align: center;");
 			var system = document.createTextNode(data[i]["server"]);		
 			serverFirstTd.appendChild(system);
-			// console.log(serverFirstTd)
 			var serverSecondTd = document.createElement("td");
 			serverSecondTd.setAttribute("style","padding-left: 40px;");
 			var upload=null;
 			if(data[i]["result"]===true){
-				// console.log("engine data",data[i]['engine'])
 				if(data[i]['engine']=='null[null]'){
 					data[i]['engine']='엔진이 비활성화 되었습니다.';
 				}else{
 
 				}
 				var info = document.createTextNode("연결됨 / "+data[i]["engine"]);
-				// upload = document.createElement("input");
-				// upload.setAttribute("type","file")
-				// upload.setAttribute("class","update_file")
-				//
-				// var file = document.createTextNode("업로드");
-				// upload.appendChild(file);
-				// info.appendChild(upload);
 			}else{
 				var info = document.createTextNode("연결안됨");
 			}
@@ -71,9 +56,6 @@ function tableForm(data,obj,id){
 			infoTbody.appendChild(serverTr);			
 		}
 	}else{
-		// var infobody=table[0].getElementsByTagName("tbody");
-		// console.log("String: "+obj)
-		// console.log(data.length)
 
 		var serverTr = document.createElement("tr");
 			
@@ -116,7 +98,6 @@ function serverList(data){
 function avsbInfo(data){
 	var id = "avsbInfo";
 	var obj = {version:"버전",License:"라이센스 기간"};
-	console.log(data);
 	tableForm(data,obj,id);
 }
 
@@ -135,7 +116,6 @@ function getInfo(){
 			
 		},
 		success:function(suc_res){
-			// console.log(suc_res)
 			serverInfo(suc_res);
 			
 		}
@@ -150,7 +130,6 @@ function getStatus(){
 			
 		},
 		success:function(suc_res){
-			console.log(suc_res)
 			serverList(suc_res);
 		}
 	})
@@ -164,7 +143,6 @@ function getEngine(){
 			
 		},
 		success:function(suc_res){
-			// console.log(suc_res)
 			engineInfo(suc_res);
 		}
 	})
@@ -178,13 +156,11 @@ function getAvsb(){
 			
 		},
 		success:function(suc_res){
-			// console.log(suc_res)
 			avsbInfo(suc_res);
 		}
 	})
 }
 function systemInit(){
-	 // console.log("this is system page")
 	getInfo();
 	getStatus();
 	getEngine();

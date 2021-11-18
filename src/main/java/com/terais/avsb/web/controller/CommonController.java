@@ -59,7 +59,8 @@ public class CommonController {
 
 		List<String> ipList = new ArrayList<String>();
 		for(String ip : PropertiesData.subIp){
-			ipList.add(ip);
+			String ipInfo=ip.substring(ip.indexOf("$")+1);
+			ipList.add(ipInfo);
 		}
 		Collections.sort(ipList, new IpListSortByIp());
 
@@ -79,5 +80,13 @@ public class CommonController {
 	@RequestMapping(value="debug",method = RequestMethod.GET)
 	public void debugBreak(){
 		logger.info("stop");
+	}
+
+	@RequestMapping(value="status/check", method=RequestMethod.GET)
+	@ResponseBody
+	public boolean getLicenseStatus(){
+		boolean result = false;
+		result = PropertiesData.licenseStatus;
+		return result;
 	}
 }

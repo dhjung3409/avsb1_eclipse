@@ -90,8 +90,7 @@ public class AccountController {
 	@RequestMapping(value="/list",method=RequestMethod.GET)
 	@ResponseBody
 	public List<Object> getAccountList(Principal principal){
-		String name = principal!=null?principal.getName():null;
-		List<Object> accountList = accountService.viewAccountList(name);
+		List<Object> accountList = accountService.viewAccountList(principal.getName().toString());
 		return accountList;
 	}
 

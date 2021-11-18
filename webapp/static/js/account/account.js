@@ -73,10 +73,8 @@ function validUserInfo(userId,userPw,userPwC,userRole,userName,type,status){
 
 function editUser(){
 	var userCount =  getCheckItem();
-	// console.log(userCount)
 	if(userCount.length===1) {
 		var status = document.getElementsByClassName("mod-pass")[0].style.display=='none'?false:true;
-		// console.log(status)
 		var userPw = document.getElementById("userModifyPw").value;
 		var userPwC = document.getElementById("userModifyPwC").value;
 		var userRole = document.getElementById("userModifyRole").value;

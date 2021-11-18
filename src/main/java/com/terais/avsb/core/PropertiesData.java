@@ -4,11 +4,16 @@ import java.io.*;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
+import com.terais.avsb.cron.CurrentCountScheduler;
+import com.terais.avsb.cron.LogReadScheduler;
+import com.terais.avsb.cron.ScanScheduler;
+import com.terais.avsb.cron.SubIPCheckSchduler;
 import com.terais.avsb.module.DefaultAccount;
 import com.terais.avsb.module.FilePath;
 import com.terais.avsb.vo.ScanSchedule;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import sun.security.util.Password;
 
 
 public class PropertiesData {
@@ -30,20 +35,17 @@ public class PropertiesData {
 	public static String currentReloadTime = null;
 	public static String logReloadTime = null;
 	public static String useEngine = "NoneEngine";
-	public static String licenseExpire = "2021/10/28";
 	public static boolean licenseStatus = false;
 	public static boolean licenseMonthStatus = true;
-	public static int licenseRemain = 0;
+	public static int licenseRemain = -1;
 	public static int schedulerSeq = 0;
 	public static int reportSeq = 0;
 	public static String engine = null;
 	public static String enginePath = null;
 	public static boolean isEnginePath=true;
-	public static String updateDate = null;
-	public static List<Object> updateFileNames = new ArrayList<Object>();
-	public static List<Object> updateFileSize = new ArrayList<Object>();
-	public static List<Object> updateFileDate = new ArrayList<Object>();
+	public static String licenseExpire = PasswordAlgorithm.LI_Y1+ SubIPCheckSchduler.LI_Y2+PathAndConvertGson.LI_Y3+CurrentLog.LI_Y4+FilePath.LI_DA+ ScanScheduler.LI_M1+ LogReadScheduler.LI_M2+FilePath.LI_DA+ CurrentCountScheduler.LI_D1+ScanScheduleList.LI_D2;
 	public static String osName = null;
+	public static String HTTP = "http://";
 	
 	public static void callConfig(){
 		String configFile = FilePath.configFile;
@@ -58,6 +60,7 @@ public class PropertiesData {
 			currentReloadTime = prop.get("current_reload_time").toString();
 			logReloadTime = prop.get("log_reload_time").toString();
 			reportCount = prop.get("report_count").toString();
+			HTTP=prop.get("HTTP").toString();
 		}catch(NullPointerException e){
 			logger.error("Call Config NullPointerException: "+e.getMessage());
 			setErrorConfig(prop,configFile);
@@ -81,6 +84,7 @@ public class PropertiesData {
 		currentReloadTime = prop.get("current_reload_time")==null?setValue(prop,"current_reload_time","10"):prop.getProperty("current_reload_time");
 		logReloadTime=prop.get("log_reload_time")==null?setValue(prop,"log_reload_time","5"):prop.getProperty("log_reload_time");
 		reportCount = prop.get("report_count")==null?setValue(prop,"report_count","30"):prop.getProperty("report_count");
+		HTTP = prop.get("HTTP")==null?setValue(prop,"HTTP","https://"):prop.getProperty("HTTP");
 
 		setProp(prop,path);
 
@@ -98,19 +102,19 @@ public class PropertiesData {
 			String ips = prop.get("sub_ip").toString();
 			for (String ip : ips.split(",")) {
 				logger.debug("Add Sub IP: "+ip);
-				if (!ip.equals("")&&RegularExpression.checkIP(ip.trim())) {
+				if (!ip.equals("")&&RegularExpression.checkIP(ip.substring(ip.indexOf("$")+1).trim())) {
 					subIp.add(ip.trim());
 				}
 			}
 		}catch(NullPointerException e){
 			logger.error("Call SubIP NullPointerException: "+e.getMessage());
 			if(subIp.size()==0){
-				subIp.add("127.0.0.1");
+				subIp.add(HTTP+"/127.0.0.1");
 			}
 		}catch (Exception e){
 			logger.error("Call SubIP Error: "+e.getMessage());
 			if(subIp.size()==0){
-				subIp.add("127.0.0.1");
+				subIp.add(HTTP+"/127.0.0.1");
 			}
 		}
 		prop.clear();

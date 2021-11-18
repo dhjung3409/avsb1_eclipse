@@ -83,15 +83,17 @@ public class ConfigController {
 	}
 
 	@RequestMapping(value="server", method=RequestMethod.POST)
-	public void addSubServer(@RequestParam String server){
+	public void addSubServer(@RequestParam String server,@RequestParam String httpStatus){
 
 		try{
 
 			logger.debug("server : "+server);
 			boolean ipRes = RegularExpression.checkIP(server);
-			if(ipRes==true){
+			boolean checkHttp = httpStatus.equals("http://")||httpStatus.equals("https://")?true:false;
+			if(ipRes==true && checkHttp == true){
+				String ip = httpStatus+"$"+server;
 				logger.debug("Input IP");
-				configService.setSubIP(server);
+				configService.setSubIP(ip);
 			}
 			logger.debug(PropertiesData.subIp.toString());
 
@@ -188,30 +190,4 @@ public class ConfigController {
 		}
 	}
 
-	@RequestMapping(value="/rest/update/radio",method=RequestMethod.POST)
-	@ResponseBody
-	public Map<String, List<Object>> sendUpdateFileInfo(){
-		return configService.getUpdateFile();
-	}
-
-	@RequestMapping(value="/rest/update/info",method=RequestMethod.POST)
-	@ResponseBody
-	public boolean getUpdateFileInfo(@RequestParam String fileName, @RequestParam long fileSize, Principal principal){
-		logger.info("Upload File Name: "+fileName+", File Size: "+fileSize);
-		return configService.saveFileInfo(fileName,fileSize,principal);
-	}
-
-	@RequestMapping(value="/rest/update/files",method=RequestMethod.POST)
-	@ResponseBody
-	public int getUpdateFiles(MultipartHttpServletRequest req){
-		logger.info("update File");
-		return configService.fileTest(req);
-	}
-
-	@RequestMapping(value="/rest/update/real_time",method=RequestMethod.POST)
-	@ResponseBody
-	public List<Object> getUpdateFiles(@RequestParam int num){
-		logger.info("update File");
-		return configService.updateEngine(num);
-	}
 }
