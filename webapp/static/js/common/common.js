@@ -1,19 +1,25 @@
 function dashBoardClick(){
+	// console.log("redirect dashboard")
 	location.replace("/dashboard/view")
 }
 function logViewerClick(){
+	// console.log("redirect log")
 	location.replace("/log/view")
 }
 function fileScanClick(){
+	// console.log("redirect filescan")
 	location.replace("/filescan/view")
 }
 function configClick(){
+	// console.log("redirect config")
 	location.replace("/config/view")
 }
 function accountClick(){
+	// console.log("redirect account")
 	location.replace("/account/view")
 }
 function systemInfoClick(){
+	// console.log("redirect system")
 	location.replace("/system/view")
 }
 

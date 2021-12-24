@@ -19,18 +19,33 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
+/**
+  * 일정 주기마다 스캔 동작을 실행하는 스케줄러를 가지고 있는 클래스
+  */
 @Component
 public class ScanScheduler {
 
 	private static final Logger logger = LoggerFactory.getLogger(ScanScheduler.class);
 
+	/**
+	 * 검사할 디렉토리가 지니고 있는 파일 목록의 절대경로를 가지고 있는 객체
+	 */
 	private static Map<Long,String> fileList = new HashMap<Long, String>();
 
-	public static String LI_M1="1";
+	/**
+	 * 라이센스 기간 중 월의 십의 자리 수
+	 */
+	public static String LI_M1="0";
 
+	/**
+	 * 검사 결과 값들을 카운팅해 담아둔 맵 객체
+	 */
 	private static Map<String,Integer> resCount = new HashMap<String, Integer>();
 
 
+	/**
+	  * resCount 초기화 메소드
+	  */
 	public void initResCount(){
 		resCount.put("Total",0);
 		resCount.put("Normal",0);
@@ -39,6 +54,9 @@ public class ScanScheduler {
 		resCount.put("Failed",0);
 	}
 
+	/**
+	  * file_list.json에 저장되어있는 fileList 파일들에 대한 정보를 fileList에 적용시키는 메소드
+	  */
 	public void initFileList(){
 		if(fileList.size()>0){
 			return;
@@ -68,6 +86,9 @@ public class ScanScheduler {
 		}
 	}
 
+	/**
+	  * 스캔작업을 진행시키는 메소드
+	  */
 	@Scheduled(cron="0 0/1 * * * *")
 	public void scanFile(){
 		if(checkEngineWorking()==false){
@@ -105,6 +126,12 @@ public class ScanScheduler {
 		saveJsonFile(FilePath.scheduler,ScanScheduleList.scanSchedule);
 	}
 
+	/**
+	  * 스캔 작업이 끝난 스케줄이 반복형인지 단발형인지 확인하고, 형식에 맞춰 지우거나 반복 주기를 적용시키는 메소드
+	  * @param list 스케줄 리스트
+	  * @param scheduleSize 스케줄의 개수
+	  * @return list 스케줄의 변동사항이 적용된 스케줄 리스트
+	  */
 	public List<ScanSchedule> resultSchedule(List<ScanSchedule> list,int scheduleSize){
 		for(int i=0;i<scheduleSize;i++){
 			if(list.size()<=i){
@@ -122,13 +149,17 @@ public class ScanScheduler {
 		return list;
 	}
 
+	/**
+	  * 들어온 스케줄이 반복형인 경우 주기에 맞춰서 변형 적용시키는 메소드
+	  * @param i 변경시킬 스케줄의 번호
+	  */
 	public void repeatSave(int i){
 		ScanSchedule ss = ScanScheduleList.scanSchedule.get(i);
 		Calendar cl = Calendar.getInstance();
 		String reservationDate = ss.getReservationDate().substring(ss.getReservationDate().length()-5);
 		reservationDate = SimpleDateFormatCore.sdf2.format(new Date())+" "+reservationDate;
 		try {
-			logger.info(reservationDate);
+			logger.debug(reservationDate);
 			cl.setTime(SimpleDateFormatCore.sdf.parse(reservationDate));
 //			cl.setTime(new Date());
 			if(ss.getCycle().equals("weekly")){
@@ -150,6 +181,10 @@ public class ScanScheduler {
 		}
 	}
 
+	/**
+	  * 현재 시간에 검사 해야 하는 스케줄의 갯수를 카운팅하는 메소드
+	  * @return 검사를 진행해야 하는 스케줄 카운팅 갯수
+	  */
 	public int pendingCheck(){
 		int count =0;
 		for(int i=0;i<ScanScheduleList.scanSchedule.size();i++){
@@ -161,6 +196,13 @@ public class ScanScheduler {
 		}
 		return count;
 	}
+	
+	/**
+	  * 스캔 항목이 가리키는 경로에 있는 파일들의 목록을 작성한 파일을 생성하는 메소드
+	  * @param list 스케줄 리스트
+	  * @param i 스케줄 번호
+	  * @param schedulerPath file_list.json 경로
+	  */
 	public void putFileList(List<ScanSchedule> list,int i,String schedulerPath){
 		FileWriter fw = null;
 		String fileListPath = "";
@@ -182,6 +224,12 @@ public class ScanScheduler {
 
 	}
 
+	/**
+	  * wait 상태의 스케줄 증 검사시간이 되었을 경우 pending 상태로 전환 혹은 processing 상태로 강제종료된 경우 pending 상태로 전환시키는 메소드
+	  * @param list 스케줄 리스트
+	  * @param schedulerPath 검사할 스케줄의 폴더 혹은 파일의 경로
+	  * @return list 변환된 스케줄 리스트
+	  */
 	public List<ScanSchedule> convertPendingPath(List<ScanSchedule> list, String schedulerPath){
 		SimpleDateFormat sdf = SimpleDateFormatCore.sdf;
 		Date date = new Date();
@@ -207,7 +255,7 @@ public class ScanScheduler {
 			}else if(list.get(i).getResult().equals("processing")){
 				list.get(i).setResult("pending");
 			}else{
-				logger.debug("Not Scan Start Time.");
+				logger.debug("Not Scan Start Time: "+list.get(i).toString());
 			}
 
 			if(fileList.containsKey(list.get(i).getNo())==false&&list.get(i).getResult().equals("wait")==false){
@@ -220,6 +268,10 @@ public class ScanScheduler {
 		return list;
 	}
 
+	/**
+	  * 스케줄 데이터를 토대로 스캔시키는 메소드
+	  * @param ss 진행할 스캐줄 정보
+	  */
 	public void startScanFile(ScanSchedule ss) {
 		int index = ScanScheduleList.scanSchedule.indexOf(ss);
 		ss.setResult("processing");
@@ -344,6 +396,10 @@ public class ScanScheduler {
 		}
 	}
 
+	/**
+	  * 스케줄 검사 결과를 카운팅해 properties 파일로 저장하는 메소드
+	  * @param path 저장할 파일의 경로
+	  */
 	public void saveResultProp(String path){
 		FileOutputStream fos = null;
 		Properties prop = new Properties();
@@ -367,6 +423,11 @@ public class ScanScheduler {
 		}
 	}
 
+	/**
+	  * 스케줄 검사 경로 하위에 존재하는 모든 파일의 절대경로를 file_list.txt 파일에 저장하는 메소드
+	  * @param path 스케줄 검사 경로
+	  * @param fw 스케줄 검사 경로 하위 파일들을 텍스트 파일로 저장시키는 객체
+	  */
 	public void writeFilePath(String path, FileWriter fw){
 		File file = new File(path);
 		try {
@@ -383,6 +444,9 @@ public class ScanScheduler {
 		}
 	}
 
+	/**
+	  * fileList 객체에 저장되어있는 스케줄러들의 file_list.txt 경로들을 JSON 파일로 모아놓는 메소드
+	  */
 	public void saveFileList(){
 		FileWriter fw = null;
 		File file = new File(FilePath.fileListPath);
@@ -411,6 +475,10 @@ public class ScanScheduler {
 		}
 	}
 
+	/**
+	  * 스케줄러 검사 정보, 검사 결과를 출력한 파일에 대한 경로등의 정보를 report.json 파일에 저장시키는 메소드
+	  * @param ss 스캐줄러 검사 정보
+	  */
 	public void saveReport(ScanSchedule ss){
 		File file = new File(FilePath.report);
 		FileWriter writer = null;
@@ -440,6 +508,11 @@ public class ScanScheduler {
 		saveJsonFile(FilePath.report,ScanScheduleList.scanReport);
 	}
 
+	/**
+	  * ScanSchedule 객체에 담긴 스캔 데이터를 다른 ScanSchedule 객체에 저장하는 메소드
+	  * @param ss 데이터를 담고 있는 ScanSchedule 객체
+	  * @return 데이터를 옮긴 ScanSchedule 객체
+	  */
 	public ScanSchedule setScanSchedule(ScanSchedule ss){
 		ScanSchedule scanInfo = new ScanSchedule();
 		scanInfo.setNo(PropertiesData.reportSeq);
@@ -454,6 +527,9 @@ public class ScanScheduler {
 		return scanInfo;
 	}
 
+	/**
+	  * 일정 수를 넘긴 report.txt, log.txt 파일을 삭제하는 메소드
+	  */
 	public void deleteReportFile(){
 		ScanSchedule report = ScanScheduleList.scanReport.get(0);
 		String reportLog = report.getReport();
@@ -464,6 +540,11 @@ public class ScanScheduler {
 		PathAndConvertGson.deleteFile(reportFile);
 	}
 
+	/**
+	  * 리스트 데이터를 JSON 파일로 저장하는 메소드
+	  * @param path 데이터를 저장할 경로
+	  * @param list 저장할 데이터를 가지고 있는 리스트
+	  */
 	public static <T> void saveJsonFile(String path, List<T> list){
 		FileWriter writer = null;
 		File file = new File(path);
@@ -495,6 +576,10 @@ public class ScanScheduler {
 		}
 	}
 
+	/**
+	  * 엔진이 동작하고 있는지 확인하는 메소드
+	  * @return 엔진 동작의 여부
+	  */
 	public boolean checkEngineWorking(){
 		boolean result = true;
 		String[][] commands={{"/bin/bash","-c","ps -e | grep v3scan"},

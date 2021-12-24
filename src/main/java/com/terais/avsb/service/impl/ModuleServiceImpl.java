@@ -11,11 +11,20 @@ import org.springframework.stereotype.Service;
 import com.terais.avsb.service.ModuleService;
 import com.terais.avsb.dto.ResultValue;
 
+/**
+  * 통합한 로그 기록을 가지고 오는 클래스
+  */
 @Service
 public class ModuleServiceImpl implements ModuleService{
 
 	private static final Logger logger = LoggerFactory.getLogger(ModuleServiceImpl.class);
 
+	/**
+	  * 입력된 디렉토리 하위에 있는 로그 기록 정보들을 통합해서 보여주는 메소드
+	  * @param fileName 로그 정보들의 상위 디렉토리
+	  * @param rv 로그 정보를 담을 ResultValue 객체
+	  * @return 기록된 데이터를 통합한 ResultValue 객체
+	  */
 	public ResultValue getTotal(String fileName, ResultValue rv) {
 		// TODO Auto-generated method stub
 		File dayDir = new File(fileName);

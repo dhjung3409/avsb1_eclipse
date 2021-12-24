@@ -112,6 +112,7 @@ function getInfo(){
 		url:"/system/rest/server/info",
 		method:"GET",
 		data:{},
+		cache:false,
 		error: function(err_res){
 			
 		},
@@ -126,6 +127,7 @@ function getStatus(){
 		url:"/system/rest/server/status",
 		method:"GET",
 		data:{},
+		cache:false,
 		error: function(err_res){
 			
 		},
@@ -139,6 +141,7 @@ function getEngine(){
 		url:"/system/rest/server/engine",
 		method:"GET",
 		data:{},
+		cache:false,
 		error: function(err_res){
 			
 		},

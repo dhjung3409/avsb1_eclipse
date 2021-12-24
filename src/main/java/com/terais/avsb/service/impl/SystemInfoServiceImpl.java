@@ -14,16 +14,21 @@ import org.springframework.web.client.RestTemplate;
 import com.ahnlab.v3engine.V3Const;
 import com.ahnlab.v3engine.V3Scanner;
 import com.terais.avsb.core.PropertiesData;
-import com.terais.avsb.core.TimeOutRestTemplate;
 import com.terais.avsb.module.FilePath;
 import com.terais.avsb.service.SystemInfoService;
 
+/**
+  * 시스템에 대한 정보를 가져오는 메소드
+  */
 @Service
 public class SystemInfoServiceImpl implements SystemInfoService {
 
-
 	private static final Logger logger = LoggerFactory.getLogger(SystemInfoServiceImpl.class);
 
+	/**
+	  * 서버 OS 정보를 가져오는 메소드
+	  * @return 서버 OS 정보
+	  */
 	public Map<Object, Object> getServerInfo() {
 		String os = System.getProperty("os.name");
 		String arch = System.getProperty("os.arch");
@@ -35,6 +40,10 @@ public class SystemInfoServiceImpl implements SystemInfoService {
 		return serverInfo;
 	}
 
+	/**
+	  * 등록된 IP 서버 목록을 가져오는 세모드
+	  * @return 등록된 IP 서버 목록
+	  */
 	public List<Object> getServerList() {
 //		Set<String> ips = PropertiesData.subIp;
 
@@ -57,17 +66,22 @@ public class SystemInfoServiceImpl implements SystemInfoService {
 		return ipStatus;
 	}
 
+	/**
+	  * IP 서버가 가지고 있는 엔진에 대한 버전을 가져오는 메소드
+	  * @param ip 엔진 버전을 가지고 올 IP
+	  * @return 서버의 엔진 버전
+	  */
 	public String getEngineVersion(String ip){
 		String[] httpIP=ip.split("\\$");
-		RestTemplate rest = null;
-		if(httpIP.equals("https://")){
-			rest = TimeOutRestTemplate.getHttpsRestTemplate();
-		}else{
-			rest = TimeOutRestTemplate.getHttpRestTemplate();
-		}
+//		RestTemplate rest = null;
+//		if(httpIP[0].equals("https://")){
+//			rest = TimeOutRestTemplate.getHttpsRestTemplate();
+//		}else{
+//			rest = TimeOutRestTemplate.getHttpRestTemplate();
+//		}
 
 		String url = httpIP[0]+httpIP[1]+":"+PropertiesData.port+"/system/rest/server/engine";
-		String result = RestURI.getRequestUri(rest,url);
+		String result = RestURI.getRequestURL(url);
 		String version;
 		Map<String, String> engineInfo = new Gson().fromJson(result,Map.class);
 		if(engineInfo!=null){
@@ -79,6 +93,10 @@ public class SystemInfoServiceImpl implements SystemInfoService {
 	}
 
 
+	/**
+	  * AVSB1 버전, 라이센스 기간을 가져오는 메소드
+	  * @return AVSB1 버전, 라이센스 기간
+	  */
 	public Map<Object, Object> getAVSBInfo() {
 		Map<Object,Object> avsbInfo = new HashMap<Object, Object>();
 //		Properties prop = PropertiesData.getProp(FilePath.license);
@@ -89,6 +107,10 @@ public class SystemInfoServiceImpl implements SystemInfoService {
 		return avsbInfo;
 	}
 
+	/**
+	  * Local 서버에서 사용하고 있는 엔진에 대한 정보를 가져오는 메소드
+	  * @return Local 서버 엔진 정보
+	  */
 	public Map<Object, Object> getEngineInfo() {
 		Map<Object,Object> engineInfo = new HashMap<Object, Object>();
 		Properties prop = new Properties();

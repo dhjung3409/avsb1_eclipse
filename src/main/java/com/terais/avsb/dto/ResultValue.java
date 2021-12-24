@@ -3,19 +3,47 @@ package com.terais.avsb.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+/**
+  * 로그의 검사 결과를 분류해 카운팅하고 저장하는 클래스
+  */
 public class ResultValue {
+
+	/**
+	 * 검사 결과 NORMAL_FILE 카운팅 개수
+	 */
 	@JsonProperty
 	int normal;
+
+	/**
+	 * 검사 결과 INFECTED 카운팅 개수
+	 */
 	@JsonProperty
 	int infected;
+
+	/**
+	 * 검사 결과 SCAN_CURE_DELETE_SUCCESS 카운팅 개수
+	 */
 	@JsonProperty
 	int disinfected;
+
+	/**
+	 * 검사 결과 SCAN_FAILED 카운팅 개수
+	 */
 	@JsonProperty
 	int failed;
+
+	/**
+	 * 검사 결과 SCAN_CURE_DELETE_FAIL_BY_CONFIGURE 카운팅 개수
+	 */
 	@JsonProperty
 	int deleteFail;
+
+	/**
+	 * 전체 검사 수
+	 */
 	@JsonProperty
 	int total;
+
 	public int getNormal() {
 		return normal;
 	}

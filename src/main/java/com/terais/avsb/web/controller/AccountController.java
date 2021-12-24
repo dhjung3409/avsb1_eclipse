@@ -7,8 +7,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -18,16 +16,26 @@ import org.springframework.web.servlet.ModelAndView;
 import com.terais.avsb.service.impl.AccountServiceImpl;
 import com.terais.avsb.vo.LoginVO;
 
+/**
+  * 계정관리 관련 컨트롤러
+  */
 @Controller
 @RequestMapping("account/*")
 public class AccountController {
 
 	private static final Logger logger = LoggerFactory.getLogger(AccountController.class);
 
+	/**
+	 * bean 등록된 AccountServiceImpl 클래스 객체
+	 */
 	@Autowired
 	private AccountServiceImpl accountService;
 	
 
+	/**
+	  * 계정관리 페이지 뷰 포인트
+	  * @return 계정관리 페이지
+	  */
 	@RequestMapping(value="/view", method=RequestMethod.GET)
 	public ModelAndView accountHome(){
 		logger.debug("account view");
@@ -40,24 +48,24 @@ public class AccountController {
 	}
 
 
-	@RequestMapping(value="/shutdown",method=RequestMethod.GET)
-	@ResponseBody
-	public void systemShutdown(){
-		logger.debug("this gonna be shutdown");
-		System.exit(-1);
-		logger.debug("this gonna be shutdown successfully");
-	}
+//	/**
+//	  *
+//	  * @param prin
+//	  * @return
+//	  */
+//	@RequestMapping(value="/test",method=RequestMethod.GET)
+//	@ResponseBody
+//	public List<Object> getAccounts(Principal prin){
+//
+//		String name = prin!=null?prin.getName():null;
+//		List<Object> accountList = accountService.viewAccountList(name);
+//		return accountList;
+//	}
 
-
-	@RequestMapping(value="/test",method=RequestMethod.GET)
-	@ResponseBody
-	public List<Object> getAccounts(Principal prin){
-
-		String name = prin!=null?prin.getName():null;
-		List<Object> accountList = accountService.viewAccountList(name);
-		return accountList;
-	}
-
+	/**
+	  * 계정 삭제
+	  * @param delItems 삭제할 계정 고유 번호 리스트
+	  */
 	@RequestMapping(value="/userdel",method=RequestMethod.POST)
 	@ResponseBody
 	public void removeUser(@RequestParam(value="items[]") List<String> delItems){
@@ -66,6 +74,14 @@ public class AccountController {
 		accountService.delAccount(delItems);
 	}
 
+	/**
+	  * 계정 추가
+	  * @param userId 계정 아이디
+	  * @param userPw 계정 패스워드
+	  * @param userRole 계정 권한
+	  * @param userName 계정 이름
+	  * @return 계정관리 페이지
+	  */
 	@RequestMapping(value="/useradd",method=RequestMethod.POST)
 	@ResponseBody
 	public ModelAndView addUser(@RequestParam ("userId")String userId,
@@ -87,6 +103,11 @@ public class AccountController {
 	}
 
 
+	/**
+	  * 계정 목록
+	  * @param principal 로그인한 계정 정보
+	  * @return 계정 목록
+	  */
 	@RequestMapping(value="/list",method=RequestMethod.GET)
 	@ResponseBody
 	public List<Object> getAccountList(Principal principal){
@@ -95,6 +116,15 @@ public class AccountController {
 	}
 
 
+	/**
+	  * 계정 수정
+	  * @param userCount 수정 할 계정 고유 번호
+	  * @param status 계정 패스워드 수정 유무
+	  * @param userPw 계정 패스워드
+	  * @param userName 계정 이름
+	  * @param userRole 계정 역할
+	  * @return 수정한 계정 정보
+	  */
 	@RequestMapping(value="/mod",method=RequestMethod.POST)
 	@ResponseBody
 	public LoginVO editAccountDetail(@RequestParam long userCount,
@@ -113,16 +143,32 @@ public class AccountController {
 		return account;
 	}
 
-	@RequestMapping(value="/{accountNo}",method=RequestMethod.DELETE)
-	@ResponseBody
-	public LoginVO eraseAccountDetail(@PathVariable("accountNo") long accountNo){
-		LoginVO vo = new LoginVO();
-		vo.setNo(accountNo);
-		LoginVO account=accountService.editAccount(vo, false, "DELETE");
-		
-		return account;
-	}
+//	/**
+//	  * @Method Name : eraseAccountDetail
+//	  * @작성일 : 2021. 12. 17.
+//	  * @작성자 : DooHee Jung
+//	  * @변경이력 : None
+//	  * @Method 설명 :
+//	  * @param accountNo
+//	  * @return
+//	  */
+//	@RequestMapping(value="/{accountNo}",method=RequestMethod.DELETE)
+//	@ResponseBody
+//	public LoginVO eraseAccountDetail(@PathVariable("accountNo") long accountNo){
+//		LoginVO vo = new LoginVO();
+//		vo.setNo(accountNo);
+//		LoginVO account=accountService.editAccount(vo, false, "DELETE");
+//
+//		return account;
+//	}
 
+	/**
+	  * 로그인한 계정 패스워드 변경
+	  * @param nowPass 현재 패스워드
+	  * @param newPass 바꿀 패스워드
+	  * @param prin 로그인한 계정 정보
+	  * @return 패스워드 변경 성공, 실패 여부
+	  */
 	@RequestMapping(value = "/password/reset",method = RequestMethod.POST)
 	@ResponseBody
 	public boolean resetPassword(@RequestParam String nowPass, @RequestParam String newPass, Principal prin){

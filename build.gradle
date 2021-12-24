@@ -43,12 +43,7 @@ dependencies {
 		compile files("lib/jackson/jackson-databind-2.1.0.jar")
 		compile files("lib/jackson/jackson-core-2.1.0.jar")
 		compile files("lib/jackson/jackson-annotations-2.1.0.jar")
-		
-		//loggger
-		//compile files("lib/logger/logback-classic-1.0.7.jar")
-		//compile files("lib/logger/logback-core-1.0.7.jar")
-		//compile files("lib/logger/logback-ext-spring-0.1.1.jar")
-		//compile files("lib/logger/slf4j-api-1.7.0.jar")
+
 		
 		//log4j
 		compile files("lib/log4j/log4j-1.2.15.jar")

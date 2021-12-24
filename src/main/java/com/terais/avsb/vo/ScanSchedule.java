@@ -11,27 +11,70 @@ import java.util.Comparator;
 import java.util.Date;
 
 
+/**
+  * 스케줄러 검사 VO
+  */
 public class ScanSchedule implements Comparable<ScanSchedule>, Comparator<ScanSchedule> {
 
 	private static final Logger logger = LoggerFactory.getLogger(ScanSchedule.class);
+
+	/**
+	 * 검사 고유 번호
+	 */
 	@JsonProperty
 	private long no;
+
+	/**
+	 * 검사 등록 시간
+	 */
 	@JsonProperty
 	private String reservationDate;
+
+	/**
+	 * 검사 시작 시간
+	 */
 	@JsonProperty
 	private String startDate;
+
+	/**
+	 * 검사 종료 시간
+	 */
 	@JsonProperty
 	private String endDate;
+
+	/**
+	 * 검사 Task ID
+	 */
 	@JsonProperty
 	private String taskID;
+
+	/**
+	 * 검사 유형
+	 */
 	@JsonProperty
 	private String type;
+
+	/**
+	 * 검사 경로
+	 */
 	@JsonProperty
 	private String path;
+
+	/**
+	 * 검사 결과물 경로
+	 */
 	@JsonProperty
 	private String result;
+
+	/**
+	 * 검사 상황
+	 */
 	@JsonProperty
 	private String report;
+
+	/**
+	 * 검사 주기
+	 */
 	@JsonProperty
 	private String cycle;
 

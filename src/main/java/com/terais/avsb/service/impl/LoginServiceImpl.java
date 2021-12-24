@@ -1,15 +1,12 @@
 package com.terais.avsb.service.impl;
 
-import java.io.FileNotFoundException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import com.terais.avsb.core.PropertiesData;
-import com.terais.avsb.cron.SubIPCheckSchduler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -21,11 +18,18 @@ import com.terais.avsb.service.LoginService;
 import com.terais.avsb.vo.LoginVO;
 
 
+/**
+  * 로그인 사용자에 대한 정보를 가져오는 클래스
+  */
 public class LoginServiceImpl implements LoginService,UserDetailsService{
-	
 
 	private static final Logger logger = LoggerFactory.getLogger(LoginServiceImpl.class);
 
+	/**
+	  * 로그인한 사용자 아이디로 로그인 유저에 대한 정보를 가져오는 메소드
+	  * @param userId 로그인 사용자 아이디
+	  * return 로그인 사용자 계정 정보
+	  */
 	public LoginVO getLogin(String userId){	
 		logger.debug("getLogin Start");
 		logger.debug("userId: "+userId);
@@ -45,14 +49,19 @@ public class LoginServiceImpl implements LoginService,UserDetailsService{
 				}
 			}
 			
-		} catch (FileNotFoundException e) {
+		}/* catch (FileNotFoundException e) {
 			logger.error("getLogin FileNotFoundException Failed: "+e.getMessage());
-		} catch (Exception e) {
+		}*/ catch (Exception e) {
 			logger.error("getLogin Exception Failed: "+e.getMessage());
 		}
 		return null;
 	}
 
+	/**
+	  * 입력된 유저 아이디로 해당 계정의 존재 여부, 계정이 존재하는 경우 계정 정보를 가져오는 메소드
+	  * @param userId 입력된 유저 아이디
+	  * @return 유저 아이디로 확인된 계정 정보
+	  */
 	public LoginVO loadUserByUsername(String userId) throws UsernameNotFoundException {
 		logger.debug(userId);
 		LoginVO loginInfo = getLogin(userId);		
@@ -64,6 +73,11 @@ public class LoginServiceImpl implements LoginService,UserDetailsService{
 		return loginInfo;
 	}
 
+	/**
+	  * 유저 이름, 권한, 라이센스 유효기간을 가져오는 메소드
+	  * @param auth 로그인한 유저 정보
+	  * @return 유저 이름, 권한, 라이센스 유효기간
+	  */
 	public Map<String,Object> getLoginUser(Authentication auth){
 		Map<String,Object> user = new HashMap<String, Object>();
 		user.put("userInfo",auth.getPrincipal());

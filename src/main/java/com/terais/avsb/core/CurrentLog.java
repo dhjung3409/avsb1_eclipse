@@ -13,14 +13,28 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+/**
+  * 최근에 사용한 로그를 가져오는 클래스
+  */
 public class CurrentLog {
 
     private static final Logger logger = LoggerFactory.getLogger(CurrentLog.class);
 
+    /**
+     * 라이센스 기간 중 연도의 일의 자리 수
+     */
     public static String LI_Y4="2";
 
+    /**
+     * 최근에 기록된 50개 로그를 가지고 있는 List
+     */
     public static List<String> currentLog = new ArrayList<String>();
 
+    /**
+      * 최근에 있었던 로그를 currentLog에 담는 메소드
+      * @param file Engine 로그 파일
+      * @return 최근 로그를 가지고 있는 리스트
+      */
     public static List<String> getCurrentLog(File file){
         currentLog.clear();
         List<File> files = LogReadScheduler.checkFile(file.listFiles());
@@ -57,6 +71,14 @@ public class CurrentLog {
         return currentLog;
     }
 
+    /**
+      * 지정된 개수의 로그를 파일로부터 읽어들이는 메소드
+      * @param lines 로그를 저장할 리스트
+      * @param counting 저장할 로그의 갯수
+      * @param raFile 파일로부터 로그를 읽어들이는 객체
+      * @param raFileSize raFile의 크기
+      * @return 로그를 저장한 리스트
+      */
     public static List<String> getLines(List<String> lines,int counting,RandomAccessFile raFile,long raFileSize){
         StringBuilder builder = new StringBuilder();
         int count = 0;

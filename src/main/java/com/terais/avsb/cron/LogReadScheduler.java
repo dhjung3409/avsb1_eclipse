@@ -36,29 +36,36 @@ import com.terais.avsb.module.FilePath;
 
 
 /**  
-* @FileName : LogReadSchedule.java  
-* @Project : module  
-* @Date : 2021. 5. 20.
-* @작성자 : DooHee Jung
-* @변경이력 : None  
-* @프로그램 설명 : 저장된 로그를 읽어들여 JSON파일로 저장, 파일 검사의 결과값을 각 날짜별로 나눠 저장 
-* @see : NORMAL_FILE - 정상파일 / INFECTED - 감염파일 / SCAN_CURE_DELETE_SUCCESS - 치료성공 / SCAN_FAILED - 검사실패 / SCAN_CURE_DELETE_FAIL_BY_CONFIGURE - 치료실패
+* 저장된 로그를 읽어들여 JSON파일로 저장, 파일 검사의 결과값을 각 날짜별로 나눠 저장 <br>
+* NORMAL_FILE - 정상파일 / INFECTED - 감염파일 / SCAN_CURE_DELETE_SUCCESS - 치료성공 / SCAN_FAILED - 검사실패 / SCAN_CURE_DELETE_FAIL_BY_CONFIGURE - 치료실패
 */
 @Component
 public class LogReadScheduler {
 
 	private static final Logger logger = LoggerFactory.getLogger(LogReadScheduler.class);
 
-	public static String LI_M2="2";
+	/**
+	 * 라이센스 기간 중 달의 일의 자리 수
+	 */
+	public static String LI_M2="5";
 
+	/**
+	 * Gson 객체에서 사용 할 List<ReadLog>의 TypeToken
+	 */
 	private static final Type type = new TypeToken<List<ReadLog>>() {}.getType();
 
+	/**
+	  * 라이센스 상태를 확인하는 스케줄러
+	  */
 	@Scheduled(cron="0 5 0 * * *")
 	public void getLicenseStatus(){
 		logger.debug("licenseCheck");
 		LicenseCheck.checkPeriod();
 	}
 
+	/**
+	  * 날짜를 갱신해 파일을 생성하는 스케줄
+	  */
 	@Scheduled(cron="0 58 23 * * *")
 	public void setTodayFile(){
 		logger.debug("Date Change");
@@ -70,6 +77,9 @@ public class LogReadScheduler {
 		setDateFile(nextDate);
 	}
 
+	/**
+	  * 날짜에 맞춰 파일이 제대로 생성되었는지 확인하는 스케줄러
+	  */
 	@Scheduled(cron="0 2 0 * * *")
 	public void checkTodayFile(){
 		logger.debug(FilePath.todayResult);
@@ -83,11 +93,18 @@ public class LogReadScheduler {
 		}
 	}
 
+	/**
+	  * 로그 정보를 저장하는 금일자 파일을 생성하는 메소드
+	  */
 	public void nowSetDateFile(){
 		Date date = new Date();
 		setDateFile(date);
 	}
 
+	/**
+	  * 파일 생성 메소드
+	  * @param date 파일을 생성할 날짜
+	  */
 	public void setDateFile(Date date){
 		SimpleDateFormat today = new SimpleDateFormat("yyyy/MM/dd");
 		String[] todayCheck = today.format(date).split("/");
@@ -98,6 +115,9 @@ public class LogReadScheduler {
 
 
 
+	/**
+	  * 보관 일수가 지나간 파일을 삭제하는 스케줄러
+	  */
 	@Scheduled(cron = "0 0 0 * * *")
 	public void deleteLogFile(){
 		Date date = new Date();
@@ -108,6 +128,11 @@ public class LogReadScheduler {
 		checkRepoFolder(file,cl.getTime());
 	}
 
+	/**
+	  * 일정 날짜 이전의 repo 폴더 안의 로그 정보들을 빈값으로 전환해 데이터를 지우는 메소드
+	  * @param file 확인 해야되는 파일
+	  * @param date 보존 해야 하는 마지막 날짜
+	  */
 	public void checkRepoFolder(File file,Date date){
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
 		String checkDate = sdf.format(date);
@@ -125,7 +150,7 @@ public class LogReadScheduler {
 					break;
 				}else{
 					logger.debug(repoFile.getCanonicalPath());
-					if(repoFile.canWrite()) {
+					if(repoFile.canWrite()&&repoFile.length()>0) {
 						fw = new FileWriter(repoFile.getCanonicalPath());
 						fw.write("");
 						fw.flush();
@@ -138,6 +163,13 @@ public class LogReadScheduler {
 		}
 	}
 
+	/**
+	  * 지정된 파일 경로의 날짜를 확인용 날짜와 비교해서 이전인지 이후인지 확인하는 메소드
+	  * @param filePath repo/yyyy/MM/dd의 날짜 형식을 가지는 파일 경로
+	  * @param checkDate yyyy/MM/dd 형식의 확인해야하는 날짜
+	  * @param sdf yyyy/MM/dd 형식을 가지는 날짜 포멧 객체
+	  * @return 날짜의 전후를 표시하는 boolean 값 (파일 날짜가 체크 날짜보다 이전이라면 false 이후라면 true)
+	  */
 	public boolean getFileDate(String filePath,String checkDate,SimpleDateFormat sdf){
 		filePath = filePath.substring(filePath.indexOf("repo"));
 		filePath = filePath.replace("repo/","");
@@ -150,12 +182,15 @@ public class LogReadScheduler {
 		try {
 			afterDate = sdf.parse(checkDate).before(sdf.parse(filePath));
 		} catch (ParseException e) {
-			logger.warn("parse failed: "+e.getMessage());
+			logger.error("parse failed: "+e.getMessage());
 		}
 
 		return afterDate;
 	}
 
+	/**
+	  * 읽어들인 로그의 정보를 날짜별로 남기기 위해서 금년과 내년 날짜의 폴더를 생성하는 메소드
+	  */
 	@Scheduled(cron="0 0 0/6 * * *")
 	public void makeResultDirectory() {
 		logger.debug("Thread: {}",Thread.currentThread().getName());
@@ -201,6 +236,9 @@ public class LogReadScheduler {
 	   }
 	}
 
+	/**
+	  * 로그 정보를 읽어들여 저장하는 메소드
+	  */
 	@Scheduled(cron="10 0/5 * * * *")
 	public void readLog() {
 		if(PropertiesData.licenseStatus==false){
@@ -546,6 +584,12 @@ public class LogReadScheduler {
 		}
 	}
 
+	/**
+	  * 로그파일의 모든 로그 정보를 가져오는 메소드
+	  * @param readLog 읽어들인 로그를 저장하는 리스트
+	  * @param file 읽어들일 로그 파일
+	  * @return 로그 파일의 모든 로그 정보를 저장한 리스트
+	  */
 	public List<String> getReadLog(List<String> readLog, File file){
 		FileReader fr = null;
 		BufferedReader bfr = null;
@@ -570,6 +614,13 @@ public class LogReadScheduler {
 	}
 
 
+	/**
+	  * log.json 파일과 .log_tmp.json 파일이 손상된 경우 빈 JSON 파일로 바꾸는 메소드
+	  * @param tmpLogJson .log_tmp.json 파일의 경로
+	  * @param logFilePath log.json 파일의 경로
+	  * @param pro worker.ini 파일에 저장할 정보를 가지고 있는 Properties
+	  * @param workName worker.ini 파일의 경로
+	  */
 	public void initJson(String tmpLogJson, String logFilePath, Properties pro, String workName){
 		File logFile = new File(logFilePath);
 		File tmpFile = new File(tmpLogJson);
@@ -595,6 +646,10 @@ public class LogReadScheduler {
 		}
 	}
 
+	/**
+	  * 해당 파일을 빈 JSON 파일로 생성하는 메소드
+	  * @param file 빈 JSON 파일로 만들 파일
+	  */
 	public void initJson(File file){
 		FileWriter fw=null;
 		try {
@@ -624,6 +679,15 @@ public class LogReadScheduler {
 		}
 	}
 
+	/**
+	  * 로그의 result 값을 분류해 카운팅 하고 그 값을 result 파일에 저장, Normal 이외의 결과값을 log.json 파일에 저장하는 메소드
+	  * @param line 읽어들인 로그 한 줄
+	  * @param logToLogJson result 파일에 로그 결과값을 분류하는 Map 객체
+	  * @param resultKeyAndValue 분류된 결과값을 카운팅하는 Map 객체
+	  * @param mappingKeyLogToJson 로그 한 줄의 날짜, 결과값, IP, 경로의 값들을 저장한 Map 객체
+	  * @param logJsonList ReadLog 객체에 맞춰서 로그의 정보를 저장한 리스트
+	  * @return 읽어들인 로그 한 줄의 정보를 담은 ReadLog 객체
+	  */
 	public ReadLog insertLog(String line,Map<String,String> logToLogJson,Map<String,Integer> resultKeyAndValue,Map<String,String> mappingKeyLogToJson,List<ReadLog> logJsonList){
 		ReadLog readLog=new ReadLog();	
 		if(line==null)return null;
@@ -662,6 +726,12 @@ public class LogReadScheduler {
 		logs=null;
 		return readLog;
 	}
+
+	/**
+	  * 해당 파일이 v3scan_res.log 파일인지 확인하는 메소드
+	  * @param files 확인할 파일의 리스트
+	  * @return 확인된 로그파일들
+	  */
 	public static List<File> checkFile(File[] files){
 		List<File> returnFiles = new ArrayList<File>();
 		try{
@@ -679,14 +749,27 @@ public class LogReadScheduler {
 		return returnFiles;
 	}
 
+	/**
+	  * 검사 결과를 카운팅하는 메소드
+	  * @param resultKeyAndValue 결과 카운팅 값을 가지고 있는 객체
+	  * @param key 결과의 종류
+	  */
 	public void mapPlus(Map<String,Integer> resultKeyAndValue,String key){
-		int failed = resultKeyAndValue.get(key)+1;
-		resultKeyAndValue.put(key, failed);
+		int scanResult = resultKeyAndValue.get(key)+1;
+		resultKeyAndValue.put(key, scanResult);
 	}
 
+	/**
+	  * 키값을 배제한 로그값을 추출하는 메소드
+	  * @param num 리스트에 존재하는 값의 위치
+	  * @param log 추출해야 하는 로그 값
+	  * @param logs 필요한 로그 값이 저장되어있는 리스트
+	  * @param item 키값
+	  * @return 추출한 로그 값
+	  */
 	public String getItemsLog(int num, String log, List<String> logs, String item){
 		log=log.replace(item, "");
-		
+
 		if(item=="target="){
 			log=getTarget(num,logs,log);
 		}else if(item=="scanTime="){
@@ -698,9 +781,16 @@ public class LogReadScheduler {
 		return log;
 	}
 
+	/**
+	  * Target 경로를 구하기 위한 함수
+	  * @param num 리스트 내에 필요한 로그 값을 가지고 있는 위치
+	  * @param logs 필요한 로그 값이 저장되어있는 리스트
+	  * @param log 추출해야 하는 로그 값
+	  * @return 추출한 Target 경로 로그 값
+	  */
 	public String getTarget(int num, List<String> logs, String log){
 		try{
-			
+
 			if(logs.get(num).indexOf(",")!=-1)return log;			
 			
 			for(int i=num+1;i<logs.size();i++){
@@ -714,6 +804,11 @@ public class LogReadScheduler {
 		return log;
 	}
 
+	/**
+	  * 로그 파일 내부에 저장된 로그 중 중복 체크를 위해 사용 될 마지막 5 라인을 추출하는 메소드
+	  * @param file 로그 파일
+	  * @return 추출된 마지막 5 라인
+	  */
 	public List<String> getLastLine(File file){
 		List<String> lastLines=new ArrayList<String>();
 		RandomAccessFile raFile;
@@ -739,6 +834,10 @@ public class LogReadScheduler {
 		return lastLines;
 	}
 
+	/**
+	  * 용량이 큰 로그 파일을 분할시키는 메소드
+	  * @param logFile 로그파일의 경로
+	  */
 	public void divLogFile(String logFile){
 		File file = new File(logFile);
 		if(file.length()>(1024*1024)*20){
@@ -785,6 +884,10 @@ public class LogReadScheduler {
 		}
 	}
 
+	/**
+	  * 분할된 로그파일을 확인하는 메소드
+	  * @return 분할시킨 로그 파일 리스트
+	  */
 	public List<String> checkDivFile(){
 		File folder = new File(FilePath.tmpLib);
 		File[] files=folder.listFiles();
@@ -805,6 +908,10 @@ public class LogReadScheduler {
  		return divFiles;
 	}
 
+	/**
+	  * 분할시켰던 로그파일을 삭제하는 메소드
+	  * @param fileList 분할시켰던 로그파일 리스트
+	  */
 	public void delDivFile(List<String> fileList){
 		File file = null;
 		for(int i=0;i< fileList.size();i++){
@@ -815,6 +922,12 @@ public class LogReadScheduler {
 		}
 	}
 
+	/**
+	  * 분할된 로그파일이 지닌 로그를 담아내는 메소드
+	  * @param list 로그를 담을 리스트
+	  * @param lastLines 중복 검사 확인을 위한 이전 마지막 읽어낸 로그
+	  * @return 로그가 담긴 리스트
+	  */
 	public List<String> getLogString(List<String> list,List<String> lastLines){
 		logger.debug("getLogString start");
 		List<String> fileList = checkDivFile();
@@ -877,8 +990,17 @@ public class LogReadScheduler {
 }
 
 
+/**
+  * 배열 정렬 클래스
+  */
 class AscendingFile implements Comparator<File> { 
 
+	/**
+	  * 내림차순 정렬 메소드
+	  * @param a 비교변수 a
+	  * @param b 비교변수 b
+	  * @return 비교 결과값
+	  */
 	public int compare(File a, File b) {			
 		return b.compareTo(a); 
 	} 

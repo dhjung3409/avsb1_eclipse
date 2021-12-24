@@ -13,8 +13,6 @@ import java.util.Properties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.terais.avsb.core.BCryptPasswordCore;
 import com.terais.avsb.core.PasswordAlgorithm;
 import com.terais.avsb.core.PathAndConvertGson;
@@ -24,10 +22,21 @@ import com.terais.avsb.module.FilePath;
 import com.terais.avsb.service.AccountService;
 import com.terais.avsb.vo.LoginVO;
 
+/**
+  * 계정 정보를 다루는 서비스 클래스
+  */
 public class AccountServiceImpl implements AccountService{
 
-	private static final Logger logger = LoggerFactory.getLogger(LoginServiceImpl.class);
+	private static final Logger logger = LoggerFactory.getLogger(AccountServiceImpl.class);
 
+	/**
+	  * 계정 생성 메소드
+	  * @param userId 아이디
+	  * @param userPw 패스워드
+	  * @param userName 사용자 이름
+	  * @param userRole 사용자 권한
+	  * @return 생성된 계정 정보
+	  */
 	public LoginVO createAccount(String userId,String userPw, String userName, String userRole) {
 		LoginVO user = new LoginVO();
 		String fileName = FilePath.accountFile;
@@ -74,6 +83,12 @@ public class AccountServiceImpl implements AccountService{
 		return user;
 	}
 
+	/**
+	  * ID 중복 처리 확인
+	  * @param list 계정 정보 리스트
+	  * @param userId 생성하려는 아이디
+	  * @return 계정의 중복 여부
+	  */
 	public boolean checkIDOverlap(List<LoginVO> list, String userId){
 		boolean result = false;
 		String registerId = "";
@@ -93,6 +108,13 @@ public class AccountServiceImpl implements AccountService{
 	}
 
 
+	/**
+	  * 계정 정보를 수정하는 메소드
+	  * @param user 수정하려는 계정 정보
+	  * @param status 패스워드 변경 여부
+	  * @param method 메소드 실행 분류 | 'POST' : 계정 정보 변경 | 'PUT' : 로그인 계정 패스워드 암호화 갱신
+	  * @return 변경된 유저 정보
+	  */
 	public LoginVO editAccount(LoginVO user, boolean status, String method) {
 		logger.debug("editAccount Start");
 		String fileName = FilePath.accountFile;		
@@ -122,11 +144,11 @@ public class AccountServiceImpl implements AccountService{
 					}
 					accountList.add(loginVO);					
 					break;
-				}else if(loginVO.getNo()==user.getNo()&&method.equals("DELETE")){
+				}/*else if(loginVO.getNo()==user.getNo()&&method.equals("DELETE")){
 					accountList.remove(i);
 					loginVO=null;
 					break;
-				}else{
+				}*/else{
 					loginVO=null;
 					continue;
 				}			
@@ -145,6 +167,10 @@ public class AccountServiceImpl implements AccountService{
 		return loginVO;
 	}
 
+	/**
+	  * 계정 정보 삭제
+	  * @param no 삭제할 계정 고유 번호의 리스트
+	  */
 	public void delAccount(List<String> no){
 		logger.debug("delAccount start");
 		try{
@@ -200,6 +226,11 @@ public class AccountServiceImpl implements AccountService{
 		
 	}
 
+	/**
+	  * 계정 정보 출력
+	  * @param myAccount - 계정 정보를 요청한 계정
+	  * @return 해당 계정이 조회 할 수 있는 모든 계정 정보
+	  */
 	public List<Object> viewAccountList(String myAccount){
 
 		String[] splitAccount = myAccount.split(" ");
@@ -241,6 +272,11 @@ public class AccountServiceImpl implements AccountService{
 		return accounts;
 	}
 
+	/**
+	  * viewAccountList 메소드에서 계정 정보를 요구 할 때, 암호화된 계정 정보를 복호화 시켜주는 메소드
+	  * @param account 요구된 계정 정보
+	  * @return 복호화된 계정 정보
+	  */
 	public List<Object> addAccount(LoginVO account){
 		List<Object> accountSource=new ArrayList<Object>();
 		accountSource.add(account.getNo());
@@ -260,6 +296,13 @@ public class AccountServiceImpl implements AccountService{
 		return accountSource;
 	}
 
+	/**
+	  * 현재 접속한 계정의 패스워드를 변경하는 메소드
+	  * @param id 현재 접속한 계정
+	  * @param nowPass 현재 패스워드
+	  * @param newPass 변경 할 패스워드
+	  * @return 계정 정보 변경 성공 여부
+	  */
 	public boolean changePassword(String id, String nowPass, String newPass){
 		boolean result = false;
 		logger.debug("nowPass: "+nowPass);

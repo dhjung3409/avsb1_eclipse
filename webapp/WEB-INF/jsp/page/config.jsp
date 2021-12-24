@@ -162,6 +162,14 @@
                                         </table>
                                     </td>
                                 </tr>
+                                <tr>
+                                    <td style="text-align: center;"><span class="little-title">로컬 포트 변경</span></td>
+                                    <td style="padding-left: 40px;">
+                                        <input class="form-control" type="text" id="server-port" name="server"
+                                               maxlength="5" onkeypress="return checkNumber(event)"/>
+                                        <input class="btn jbutton" id="btn-port" type="button" value="변경" onclick="changePort()">
+                                    </td>
+                                </tr>
                                 </tbody>
                             </table>
                         </div>

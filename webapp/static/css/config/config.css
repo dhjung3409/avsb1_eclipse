@@ -51,6 +51,12 @@
     float: left;
 }
 
+#server-port{
+    margin-right: 5px;
+    width: 200px;
+    float: left;
+}
+
 #http-selected{
     margin-right: 5px;
     width: 100px;

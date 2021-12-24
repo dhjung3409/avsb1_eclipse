@@ -3,34 +3,34 @@ package com.terais.avsb.web.controller;
 import java.io.IOException;
 import java.security.Principal;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 
-import jdk.nashorn.internal.ir.RuntimeNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.terais.avsb.core.PropertiesData;
 
+
+/**
+  * 로그인 컨트롤러
+  */
 @Controller
 public class LoginController {
 
 	private static final Logger logger = LoggerFactory.getLogger(LoginController.class);
 
+	/**
+	  * 루트 페이지 연결 시 접속 상태에 따라 로그인 페이지, 대시보드 페이지로 연결시켜주는 메소드
+	  * @param response HttpServletResponse
+	  * @param prin 로그인 계정 정보
+	  */
 	@RequestMapping(value="",method= RequestMethod.GET)
-	public void rootHome(HttpServletRequest req,HttpServletResponse response,HttpSession session,Principal prin){
+	public void rootHome(HttpServletResponse response,Principal prin){
 		logger.debug("root view");
-		logger.debug(req.getSession().getServletContext().getRealPath("/"));
-		logger.debug("Session timeout: "+session.getMaxInactiveInterval());
 		String name = prin==null?null:prin.getName();	
 		try {
 			if(name!=null){
@@ -44,8 +44,14 @@ public class LoginController {
 		}
 	}
 
+	/**
+	  * 로그인 페이지 뷰 포인트
+	  * @param response HttpServletResponse
+	  * @param prin 로그인 계정 정보
+	  * @return 로그인 페이지
+	  */
 	@RequestMapping(value="login",method= RequestMethod.GET)
-	public ModelAndView loginHome(HttpSession session, HttpServletResponse response,Principal prin){
+	public ModelAndView loginHome(HttpServletResponse response,Principal prin){
 		logger.debug("login view");				
 		String name = prin==null?null:prin.getName();		
 		logger.debug("name: "+name);
@@ -55,13 +61,6 @@ public class LoginController {
 			// TODO Auto-generated catch block
 			logger.error("Login Home IOException: "+e.getMessage());
 		}
-		logger.debug("accountCount: "+PropertiesData.accountCount);
-		logger.debug("InstallPath: "+PropertiesData.installPath);
-		logger.debug("LoginStatus: "+PropertiesData.logStatus);
-		logger.debug("Port: "+PropertiesData.port);
-		logger.debug("UseAPI: "+PropertiesData.useApi);
-		logger.debug("Worker: "+PropertiesData.worker);
-		logger.debug("SubIp: "+PropertiesData.subIp.toString());
 		
 		ModelAndView mav = new ModelAndView();
 		mav.setViewName("login");
@@ -70,6 +69,13 @@ public class LoginController {
 		return mav;
 	}
 
+	/**
+	  * 로그인 성공 페이지 뷰 포인트
+	  * @param response HttpServletResponse
+	  * @param prin 로그인 계정 정보
+	  * @param sch SecurityContextHolder
+	  * @return 대시보드 페이지
+	  */
 	@RequestMapping(value = "success", method = RequestMethod.GET)
 	public String loginSuccess(HttpServletResponse response,Principal prin,SecurityContextHolder sch) {
 		String name = prin==null?null:prin.getName();
@@ -82,6 +88,8 @@ public class LoginController {
 				response.sendRedirect("/login");			
 			}else if(auth.equals("Role_expired")){
 				response.sendRedirect("/fail");
+			}else{
+
 			}
 		} catch (IOException e) {
 				// TODO Auto-generated catch block
@@ -91,6 +99,13 @@ public class LoginController {
 		return "page/dashboard";
 	}
 
+	/**
+	  * 루트 uri 리다이렉트 페이지
+	  * @param response HttpServletResponse
+	  * @param prin 로그인 계정 정보
+	  * @param sch SecurityContextHolder
+	  * @return 대시보드 페이지
+	  */
 	@RequestMapping(value = "/check", method = RequestMethod.GET)
 	public String checkLogin(HttpServletResponse response, Principal prin, SecurityContextHolder sch) {
 		String name = prin==null?null:prin.getName();		
@@ -112,12 +127,20 @@ public class LoginController {
 		return "page/dashboard";
 	}
 
+	/**
+	  * 로그인 실패 페이지 뷰 포인트
+	  * @return 로그인 실패 페이지
+	  */
 	@RequestMapping(value = "login_failed", method=RequestMethod.GET)
-	public String rootHome2(HttpServletRequest req,HttpServletResponse response,HttpSession session,Principal prin){
+	public String rootHome2(){
 		logger.debug("login failed");
 		return "login_fail";
 	}
 
+	/**
+	  * 라이센스 만료 페이지 뷰 포인트
+	  * @return 라이센스 만료 페이지
+	  */
 	@RequestMapping(value = "/fail", method = RequestMethod.GET)
 	public String failAuthorities(){
 

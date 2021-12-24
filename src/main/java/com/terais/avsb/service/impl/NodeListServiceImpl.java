@@ -27,17 +27,27 @@ import com.terais.avsb.cron.CurrentCountScheduler;
 import com.terais.avsb.module.FilePath;
 import com.terais.avsb.service.NodeListService;
 
+/**
+  * Local 서버의 악성코드 감염 현황, 실시간 검사 현황, 최근 로그 현황 데이터를 가져오는 클래스
+  */
 @Service
 public class NodeListServiceImpl implements NodeListService{
 
 	private static final Logger logger = LoggerFactory.getLogger(NodeListServiceImpl.class);
 
+//	/**
+//	 *
+//	 */
+//	@Autowired
+//	private ServletContext servletContext;
 
-	@Autowired
-	private ServletContext servletContext;
-
+	/**
+	  * Local 서버가 가지고 있는 악성코드 감염 현황 데이터를 가져오는 메소드
+	  * @param period 표시할 데이터 기간
+	  * @return Local 서버 악성코드 감염 현황
+	  */
 	public Map<String, String> getResultValue(String period) {
-		logger.debug("context: "+servletContext.getRealPath("/resource"));
+//		logger.debug("context: "+servletContext.getRealPath("/resource"));
 		Map<String, String> result = new HashMap<String,String>();
 		Properties prop = new Properties();
 		List<String> dates = getDateProp(period);
@@ -98,6 +108,11 @@ public class NodeListServiceImpl implements NodeListService{
 
 		return result;
 	}
+	/**
+	  * 금일 날짜를 기준으로 입력된 기간(일 , 주 , 월)에 맞춘 날짜 데이터를 가져오는 메소드
+	  * @param period 지정된 기간
+	  * @return 지정된 기간부터 오늘까지 날짜 데이터 리스트
+	  */
 	public List<String> getDateProp(String period){
 		List<String> dates = new ArrayList<String>();
 
@@ -120,6 +135,12 @@ public class NodeListServiceImpl implements NodeListService{
 		return dates;
 	}
 
+	/**
+	  * Properties 파일의 데이터를 가져오는 메소드
+	  * @param logFile 데이터를 가져올 파일
+	  * @param pro 데이터를 담아놓을 Properties 객체
+	  * @return 데이터가 담긴 Properties 객체
+	  */
 	public Properties getProperties(File logFile,Properties pro){
 		try {
 			FileInputStream fis = new FileInputStream(logFile);
@@ -130,6 +151,12 @@ public class NodeListServiceImpl implements NodeListService{
 
 		return pro;
 	}
+	
+	/**
+	  * 입력된 기간 일 수를 가져오는 메소드
+	  * @param period 기간
+	  * @return 기간 일 수
+	  */
 	public int getPeriodInteger(String period){
 		if(period.equals("weekly")){
 			return 6;
@@ -139,6 +166,11 @@ public class NodeListServiceImpl implements NodeListService{
 			return 0;
 		}
 	}
+	
+	/**
+	  * 몇월인지에 따라 기간을 카운팅하는 메소드
+	  * @return 한달 기간 일 수
+	  */
 	public int countMonth(){
 		Date date = new Date();
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM");
@@ -161,59 +193,88 @@ public class NodeListServiceImpl implements NodeListService{
 		return month;
 	}
 
-	public Map<String,String> getTypeAndIPAddress(){
-		Map<String, String> result = new HashMap<String,String>();
-		InetAddress ip=null;
-		try {
-			ip = InetAddress.getLocalHost();
+//	/**
+//	  *
+//	  * @return
+//	  */
+//	public Map<String,String> getTypeAndIPAddress(){
+//		Map<String, String> result = new HashMap<String,String>();
+//		InetAddress ip=null;
+//		try {
+//			ip = InetAddress.getLocalHost();
+//
+//			if(ip.getHostAddress().contains("127.0.")){
+//				result.put("ip", "localhost");
+//			}else {
+//				result.put("ip", ip.getHostAddress());
+//			}
+//			logger.info(result.get("ip"));
+//			logger.info(result.get("type"));
+//		} catch (UnknownHostException e) {
+//			logger.error("Get IP UnknownHostException: "+e.getMessage());
+//		}
+//
+//
+//		return result;
+//	}
 
-			if(ip.getHostAddress().contains("127.0.")){
-				result.put("ip", "localhost");
-			}else {
-				result.put("ip", ip.getHostAddress());
-			}
-			logger.debug(result.get("ip"));
-			logger.debug(result.get("type"));
-		} catch (UnknownHostException e) {
-			logger.error("Get IP UnknownHostException: "+e.getMessage());
-		}
-
-
-		return result;
-	}
-
-	public Map<String, String> getSumNode(String period){
-		Map<String,String> node = getTypeAndIPAddress();
-		node.putAll(getResultValue(period));
-		logger.debug(node.toString());
-		return node;
-	}
+//	/**
+//	  * Local 서버의 악성코드 현황
+//	  * @param period
+//	  * @return
+//	  */
+//	public Map<String, String> getSumNode(String period){
+//		Map<String,String> node = new HashMap<String,String>();
+//		node.putAll(getResultValue(period));
+//		logger.debug(node.toString());
+//		return node;
+//	}
+	
+	/**
+	  * Local 실시간 검사 현황 데이터를 가져오는 메소드
+	  * @return Local 실시간 검사 현황 데이터
+	  */
 	public Map<String,Object> getCurrentChart(){
-		Map<String,String> node = getTypeAndIPAddress();
+		Map<String,String> node = new HashMap<String,String>();
 		Map<String,Object> chart = new HashMap<String, Object>();
 		chart.putAll(node);
 		chart.put("count",CurrentCountScheduler.getCountList());
 		return chart;
 	}
-	public List<Map<String,String>> getNodeList(){
-		List<Map<String,String>> nodeList = new ArrayList<Map<String,String>>();
-		return nodeList;
-	}
+	
+//	/**
+//	  *
+//	  * @return
+//	  */
+//	public List<Map<String,String>> getNodeList(){
+//		List<Map<String,String>> nodeList = new ArrayList<Map<String,String>>();
+//		return nodeList;
+//	}
 
-	public Map<String,Object> getReloadChart(String reloadCount){
-		Map<String,String> node = getTypeAndIPAddress();
-		Map<String,Object> chart = new HashMap<String, Object>();
-		chart.putAll(node);
-		List<Object> current = new ArrayList<Object>();
-		int currentCount = Integer.parseInt(reloadCount);
-		for(int i=6-(currentCount/10);i<6;i++){
-			current.add(CurrentCountScheduler.getCountList().get(i));
-		}
-		chart.put("count",current);
-		return chart;
-	}
+//	/**
+//	  *
+//	  * @param reloadCount
+//	  * @return
+//	  */
+//	public Map<String,Object> getReloadChart(String reloadCount){
+//		Map<String,String> node = new HashMap<String,String>();
+//		Map<String,Object> chart = new HashMap<String, Object>();
+//		chart.putAll(node);
+//		List<Object> current = new ArrayList<Object>();
+//		int currentCount = Integer.parseInt(reloadCount);
+//		for(int i=6-(currentCount/10);i<6;i++){
+//			current.add(CurrentCountScheduler.getCountList().get(i));
+//		}
+//		chart.put("count",current);
+//		return chart;
+//	}
 
 
+	/**
+	  * Local 최근 검사 로그를 가져오는 메소드
+	  * @param ip Local 서버의 IP
+	  * @return 현재 Local 서버가 가지고 있는 최근 검사 로그와 서버의 IP
+	  */
 	public List<CurrentLogVO> getCurrentLastLog(String ip){
 		File file = new File(FilePath.logPath);
 		List<String> currentLog = CurrentLog.getCurrentLog(file);

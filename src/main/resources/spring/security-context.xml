@@ -2,7 +2,6 @@
 	xmlns:beans="http://www.springframework.org/schema/beans"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:mvc="http://www.springframework.org/schema/mvc"
-
 	xmlns:context="http://www.springframework.org/schema/context"
 	xmlns:aop="http://www.springframework.org/schema/aop"
 	xmlns:tx="http://www.springframework.org/schema/tx"
@@ -62,7 +61,7 @@
 	<beans:bean id = "concurrencyFilter" class = "org.springframework.security.web.session.ConcurrentSessionFilter">
 		<beans:constructor-arg name="sessionRegistry" ref="sessionRegistry"/>
 		<beans:constructor-arg name="expiredUrl" value="/login"/>
-	</beans:bean>	
+	</beans:bean>
 
 	 
 	<beans:bean id="sessionRegistry" class="org.springframework.security.core.session.SessionRegistryImpl"/>
@@ -72,7 +71,7 @@
 	
 	<authentication-manager>
 		<authentication-provider ref="authProvider"/>
-       <authentication-provider user-service-ref="userService">              
+       <authentication-provider user-service-ref="userService">
        </authentication-provider>
     </authentication-manager>
 </beans:beans>

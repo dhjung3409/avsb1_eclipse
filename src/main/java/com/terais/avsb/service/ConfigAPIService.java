@@ -4,6 +4,9 @@ import java.util.List;
 import java.util.Properties;
 import java.util.Set;
 
+/**
+  *
+  */
 public interface ConfigAPIService {
 	public void setPropData(Properties prop,String filePath);
 	public void setUseAPI(String useAPI);	

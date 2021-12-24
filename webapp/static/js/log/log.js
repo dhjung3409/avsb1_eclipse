@@ -14,6 +14,7 @@ function getLogIP(){
 		url:"/etc/subip",
 		method:"GET",
 		data:{},
+		cache:false,
 		error: function(err_res){
 			
 		},
@@ -46,6 +47,7 @@ function getLogList(ip) {
 		url:"/log/list",
 		method:"GET",
 		data:{ip:ip},
+		cache:false,
 		error: function(err_res){
 		},
 		success: function (suc_res){

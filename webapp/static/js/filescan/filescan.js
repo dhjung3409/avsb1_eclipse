@@ -242,11 +242,12 @@ function getScheduler(){
 		url:"/filescan/scheduler",
 		method:"GET",
 		data:{},
+		cache:false,
 		error: function(err_res){
 			// console.log("err",err_res)
 		},
 		success:function(suc_res){
-			console.log("suc",suc_res)
+			//console.log("suc",suc_res)
 			viewScheduler(suc_res)
 		}
 	});
@@ -257,6 +258,7 @@ function getReport(){
 		url:"/filescan/report",
 		method:"GET",
 		data:{},
+		cache:false,
 		error: function(err_res){
 			// console.log("err",err_res)
 		},
@@ -298,6 +300,9 @@ function viewBody(data,id){
 
 		var tdPath = document.createElement("td");
 		var fullPath = data[i]['path'];
+		if(fullPath[fullPath.length-1]==="/"){
+			fullPath=fullPath.slice(0,-1);
+		}
 		tdPath.setAttribute("title",fullPath);
 
 		var splitPath = data[i]['path'].split("/");
@@ -418,7 +423,7 @@ function showReport(){
 	$(".viewReport").on("click", function(){
 
 		var no = this.getAttribute('no');
-		console.log("number : "+no)
+		//console.log("number : "+no)
 		// console.log(document.getElementById('myModalLabel'))
 		$.ajax({
 			url:'/filescan/report/result',
@@ -426,6 +431,7 @@ function showReport(){
 			data:{
 				no:no
 			},
+			cache:false,
 			beforeSend: function(bfs_res){
 				// console.log("wait..");
 			}
@@ -437,7 +443,7 @@ function showReport(){
 			success:function(suc_res){
 				// console.log("suc",suc_res)
 				if((suc_res["log"]==null||suc_res["log"].length==0)&&suc_res["report"]==null){
-					console.log("suc_res is null",suc_res)
+					//console.log("suc_res is null",suc_res)
 					errorModal();
 				}else {
 					viewModal(suc_res);
@@ -449,7 +455,7 @@ function showReport(){
 
 }
 function viewModal(data){
-	console.log(data)
+	//console.log(data)
 	var modalBody = document.getElementById('report-body');
 	modalBody.removeChild(document.getElementById('report-print'));
 

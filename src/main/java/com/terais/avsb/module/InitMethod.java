@@ -15,16 +15,22 @@ import com.terais.avsb.cron.CurrentCountScheduler;
 import com.terais.avsb.cron.LogReadScheduler;
 
 
+/**
+  * AVSB 시작 초기화 구동 클래스
+  */
 public class InitMethod implements ServletContextListener{
-	
+
 	private static final Logger logger = LoggerFactory.getLogger(InitMethod.class);
 	
 	public InitMethod(){
 		
 	}
 
+	/**
+	  * AVSB 초기화 동작 메소드
+	  */
 	public void init(){
-
+		logger.info("java version: "+System.getProperty("java.version"));
 		LogReadScheduler logRead=null;
 		logger.info("server started!");
 		System.out.println(System.getProperty("user.dir"));
@@ -60,10 +66,12 @@ public class InitMethod implements ServletContextListener{
 
 	}
 
+
 	public void contextDestroyed(ServletContextEvent arg0) {
 		// TODO Auto-generated method stub
 		
 	}
+
 
 	public void contextInitialized(ServletContextEvent arg0) {
 		// TODO Auto-generated method stub

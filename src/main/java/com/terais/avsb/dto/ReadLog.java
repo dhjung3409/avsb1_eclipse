@@ -2,15 +2,37 @@ package com.terais.avsb.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+/**
+  * 로그 정보를 저장하는 DTO 클래스
+  */
 public class ReadLog {
+	/**
+	 * 로그 고유 번호
+	 */
 	@JsonProperty
 	private long no;
+
+	/**
+	 * 파일 검사 시간
+	 */
 	@JsonProperty
 	private String date;
+
+	/**
+	 * 파일 검사 결과
+	 */
 	@JsonProperty
 	private String result;
+
+	/**
+	 * 파일 검사가 진행된 IP
+	 */
 	@JsonProperty
 	private String client_ip;
+
+	/**
+	 * 검사한 파일 경로
+	 */
 	@JsonProperty
 	private String target;
 

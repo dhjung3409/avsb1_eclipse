@@ -22,14 +22,28 @@ import com.terais.avsb.dto.ReadLog;
 import com.terais.avsb.vo.LoginVO;
 
 
+/**
+  * JSON 자료를 List로 변환하는 클래스
+  */
 public class PathAndConvertGson {
 
 	private static final Logger logger = LoggerFactory.getLogger(PathAndConvertGson.class);
 
+	/**
+	 * 라이센스 기간 중 연도의 십의 자리 수
+	 */
 	public static String LI_Y3="2";
 
+	/**
+	 * 알아보기 쉽게 배열한 JSON 파일 생성 Gson 객체
+	 */
 	public static final Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
+	/**
+	  * JSON 파일을 읽어들여 리스트로 전환하는 메소드
+	  * @param fileName 읽어들일 JSON 파일
+	  * @return JSON 자료가 담긴 리스트
+	  */
 	public static <T> List<T> convertGson(String fileName) {
 		// TODO Auto-generated method stub
 		List<T> list=new ArrayList<T>();
@@ -74,12 +88,20 @@ public class PathAndConvertGson {
 		return list;
 	}
 
+	/**
+	  * 파일을 삭제하는 메소드
+	  * @param file 삭제할 파일
+	  */
 	public static void deleteFile(File file){
 		if(file.exists()){
 			file.delete();
 		}
 	}
 
+	/**
+	  * OS 이름을 가져오는 메소드
+	  * @return OS 이름
+	  */
 	public static String getOsName() {
 		// TODO Auto-generated method stub
 		String os = System.getProperty("os.name").toLowerCase();
@@ -87,11 +109,20 @@ public class PathAndConvertGson {
 		return os;
 	}
 
+	/**
+	  * 기본 폴더를 지정하는 메소드
+	  * @return 기본 폴더
+	  */
 	public static String getOSFolder() {
 		String defaultFolder = System.getProperty("user.dir");
 		return defaultFolder;
 	}
 
+	/**
+	  * 입력된 문자열에서 '[', ']' 두가지 기호를 제거하는 메소드
+	  * @param inputString 수정할 문자열
+	  * @return 기호가 제거된 문자열
+	  */
 	public static String modListString(String inputString){
 		inputString = inputString.replace("[","");
 		inputString = inputString.replace("]","");

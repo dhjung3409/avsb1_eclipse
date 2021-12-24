@@ -18,21 +18,38 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.*;
 
+/**
+  * 스케줄러 검사 관련 데이터들을 다루는 클래스
+  */
 @Service
 public class ReadSchedulerServiceImpl implements ReadSchedulerService {
 
     private static final Logger logger = LoggerFactory.getLogger(ReadSchedulerServiceImpl.class);
 
+    /**
+      * 스케줄러 검사 목록을 가져오는 메소드
+      * @return 스케줄러 검사 목록
+      */
     public List<ScanSchedule> getSchedulerLines(){
         List<ScanSchedule> scheduler = PathAndConvertGson.convertGson(FilePath.scheduler);
         return scheduler;
     }
+    
+    /**
+      * 스케줄러 검사 결과 목록을 가져오는 메소드
+      * @return 스케줄러 검사 결과 목록
+      */
     public List<ScanSchedule> getReportLines(){
         List<ScanSchedule> scheduler = PathAndConvertGson.convertGson(FilePath.report);
         logger.debug(scheduler.toString());
         return scheduler;
     }
 
+    /**
+      * 스케줄러 검사 결과 데이터를 가져오는 메소드
+      * @param no 스케줄러 검사 결과 고유 번호
+      * @return 스케줄러 검사 결과 result, log 데이터
+      */
     public Map<Object,Object> getReportText(String no){
         Map<Object,Object> res = new HashMap<Object, Object>();
         List<ScanSchedule> reports = PathAndConvertGson.convertGson(FilePath.report);
@@ -64,6 +81,11 @@ public class ReadSchedulerServiceImpl implements ReadSchedulerService {
         return res;
     }
 
+    /**
+      * 스케줄러 검사 결과 report 파일의 데이터를 가져오는 메소드
+      * @param path report 파일의 경로
+      * @return report 파일에 저장된 데이터
+      */
     public ScanResultCount getScanReport(String path){
         ScanResultCount src = new ScanResultCount();
         Properties prop = new Properties();
@@ -93,6 +115,11 @@ public class ReadSchedulerServiceImpl implements ReadSchedulerService {
         return src;
     }
 
+    /**
+      * report 파일 읽어오기에 문제가 생겼을 경우 기본 값으로 잡아주는 메소드
+      * @param prop report 파일의 Properties 데이터
+      * @param path report 파일의 경로
+      */
     public void setErrorProp(Properties prop, String path){
         prop.setProperty("Total","0");
         prop.setProperty("Normal","0");

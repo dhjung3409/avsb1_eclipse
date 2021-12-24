@@ -23,7 +23,7 @@
 	
 	<task:scheduled-tasks scheduler="myScheduler">
 		<task:scheduled ref="currentCountScheduler" method="countCurrent" cron="1/10 * * * * *"/>
-		<task:scheduled ref="subIPCheckSchduler" method="setSubIPConnect" fixed-rate="40000"/>
+		<task:scheduled ref="subIPCheckScheduler" method="setSubIPConnect" fixed-rate="40000"/>
 	</task:scheduled-tasks>
 	
 	<task:scheduler id="myScheduler" pool-size="20"/>
@@ -52,6 +52,8 @@
 				   queue-capacity="10" />
 	<task:executor id="taskExecutorLog" pool-size="5"
 		queue-capacity="10" />
+
+<!--	<beans:bean id="keyStore" class="javax.net.ssl.></beans:bean>-->
 
 	<beans:bean id="jsonMapper" class="com.fasterxml.jackson.databind.ObjectMapper" />
 	<beans:bean id="jsonView" class="org.springframework.web.servlet.view.json.MappingJackson2JsonView">
@@ -86,39 +88,5 @@
  	<beans:bean class="org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder"/>
 
 
- 	
- 	<!-- <beans:bean id="timeoutConfig"
- 		class="org.springframework.http.client.HttpComponentsClientHttpRequestFactory"
- 		primary="false">
- 		 <beans:property name="readtimeout" value="1000" />
- 		<beans:property name="connecttimeout" value="1000" />
- 	</beans:bean>
-
- 	<beans:bean id="readtimeout" factory-bean="timeoutConfig" factory-method="setReadTimeout" >
- 		<beans:constructor-arg value="1000"/>
- 	</beans:bean>
- 	
- 	<beans:bean id="connecttimeout" factory-bean="timeoutConfig" factory-method="setConnectTimeout" >
- 		<beans:constructor-arg value="1000"/>
- 	</beans:bean>
-
- 	<beans:bean class="org.springframework.web.client.RestTemplate" lazy-init="false" scope="prototype"> 		
-    	<beans:constructor-arg ref="timeoutConfig"/>
-	</beans:bean> -->
-
-
-
-
-
-
- 	<!-- interceptor 
-  	<beans:bean id="LoginInterceptor" class="com.tera.avsb.core.session.LoginInterceptor" /> -->
-  
-<!-- 	<mvc:interceptors> -->
-<!-- 		<mvc:interceptor> -->
-<!-- 			<mvc:mapping path="/dashboard/**"/> -->
-<!-- 			<beans:ref bean="LoginInterceptor"/>		 -->
-<!-- 		</mvc:interceptor> -->
-<!-- 	</mvc:interceptors>   -->
     
 </beans:beans>

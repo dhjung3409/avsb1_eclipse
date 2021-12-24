@@ -100,8 +100,8 @@ html,body{
 
 #product-logo{
  position: relative;
- width: 70%;
- min-width: 840px;
+ width: 55%;
+ min-width: 660px;
  height: 100%;
  float: left;
  font-weight: 600;
@@ -111,11 +111,20 @@ html,body{
  font-family: cali-n;
  font-weight: bold;
 }
+/*#server-time-view{*/
+/*    position: relative;*/
+/*    width: 15%;*/
+/*    min-width: 180px;*/
+/*    height: 100%;*/
+/*    float: left;*/
+/*    text-align: right;*/
+/*    padding-top: 4px;*/
+/*}*/
 
 #user-wrapper{
 	position: relative;
-	width: 30%;
-    min-width: 360px;
+	width: 45%;
+    min-width: 540px;
 	height: 100%;
 	float: left;
 	text-align: right;
@@ -131,6 +140,25 @@ html,body{
   top: 3px;
   z-index: 1020;
   cursor: pointer;
+}
+
+/*#time-text{*/
+/*    position: relative;*/
+/*    width: 100%;*/
+/*    float: right;*/
+/*    top: 4px;*/
+/*    padding-top: 7px;*/
+/*    margin-right: 10px;*/
+/*}*/
+
+#server-time-text{
+    color : #FFFFFF;
+    font-weight: bold;
+}
+
+#server-time{
+    color : #FFFFFF;
+    padding-right: 13px;
 }
 
 #btn-user{

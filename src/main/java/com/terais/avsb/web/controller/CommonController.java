@@ -17,41 +17,67 @@ import com.terais.avsb.core.PropertiesData;
 import com.terais.avsb.cron.CurrentCountScheduler;
 
 
+/**
+  * 기타 기능 컨트롤러
+  */
 @Controller
 @RequestMapping("etc/*")
 public class CommonController {
 
 	private static final Logger logger = LoggerFactory.getLogger(CommonController.class);
 
+	/**
+	 * bean 등록된 LoginServiceImpl 클래스 객체
+	 */
 	@Autowired
-	LoginServiceImpl loginService;
+	private LoginServiceImpl loginService;
 
-	@RequestMapping(value = "/current/detect", method = RequestMethod.GET)
-	@ResponseBody
-	public List<Integer> getCheckMinute() {
-		List<Integer> list = null;
-		 list = CurrentCountScheduler.getCountList();
-		return list;
-	}
+//	/**
+//	  *
+//	  * @return
+//	  */
+//	@RequestMapping(value = "/current/detect", method = RequestMethod.GET)
+//	@ResponseBody
+//	public List<Integer> getCheckMinute() {
+//		List<Integer> list = null;
+//		 list = CurrentCountScheduler.getCountList();
+//		return list;
+//	}
 
-	@RequestMapping(value = "/currnet/count/refresh", method = RequestMethod.POST)
-	public Map<String, Boolean> restCheck() {
-		Map<String, Boolean> map = null;
-		return map;
-	}
+//	/**
+//	  *
+//	  * @return
+//	  */
+//	@RequestMapping(value = "/currnet/count/refresh", method = RequestMethod.POST)
+//	public Map<String, Boolean> restCheck() {
+//		Map<String, Boolean> map = null;
+//		return map;
+//	}
+//
+//	/**
+//	  *
+//	  * @return
+//	  */
+//	@RequestMapping(value = "/currnet/result/log", method = RequestMethod.GET)
+//	public List<String> getCheckLog() {
+//		List<String> log = null;
+//		return log;
+//	}
 
-	@RequestMapping(value = "/currnet/result/log", method = RequestMethod.GET)
-	public List<String> getCheckLog() {
-		List<String> log = null;
-		return log;
-	}
+//	/**
+//	  *
+//	  * @return
+//	  */
+//	@RequestMapping(value = "/currnet/result/refresh", method = RequestMethod.POST)
+//	public Map<String, Boolean> resetCheckLog() {
+//		Map<String, Boolean> map = null;
+//		return map;
+//	}
 
-	@RequestMapping(value = "/currnet/result/refresh", method = RequestMethod.POST)
-	public Map<String, Boolean> resetCheckLog() {
-		Map<String, Boolean> map = null;
-		return map;
-	}
-
+	/**
+	  * 등록된 IP 출력
+	  * @return 등록된 IP
+	  */
 	@RequestMapping(value="subip",method = RequestMethod.GET)
 	@ResponseBody
 	public List<String> getLogIP(){
@@ -68,6 +94,11 @@ public class CommonController {
 
 	}
 
+	/**
+	  * 로그인 계정의 유저 이름, 권한, 라이센스 기간 데이터
+	  * @param auth 로그인한 계정 정보
+	  * @return 유저 이름, 권한, 라이센스 기간
+	  */
 	@RequestMapping(value="license/user/check",method = RequestMethod.GET)
 	@ResponseBody
 	public Map<String,Object> getUserInfo(Authentication auth){
@@ -77,16 +108,33 @@ public class CommonController {
 		return loginService.getLoginUser(auth);
 	}
 
-	@RequestMapping(value="debug",method = RequestMethod.GET)
-	public void debugBreak(){
-		logger.info("stop");
-	}
+//	/**
+//	  *
+//	  */
+//	@RequestMapping(value="debug",method = RequestMethod.GET)
+//	public void debugBreak(){
+//		logger.info("stop");
+//	}
 
-	@RequestMapping(value="status/check", method=RequestMethod.GET)
+//	/**
+//	  *
+//	  * @return
+//	  */
+//	@RequestMapping(value="status/check", method=RequestMethod.GET)
+//	@ResponseBody
+//	public boolean getLicenseStatus(){
+//		boolean result = false;
+//		result = PropertiesData.licenseStatus;
+//		return result;
+//	}
+
+	/**
+	  * 현재 시간 출력
+	  * @return 현재 시
+	  */
+	@RequestMapping(value="clock/time", method = RequestMethod.GET)
 	@ResponseBody
-	public boolean getLicenseStatus(){
-		boolean result = false;
-		result = PropertiesData.licenseStatus;
-		return result;
+	public Date getServerTime(){
+		return new Date();
 	}
 }

@@ -1,10 +1,27 @@
 package com.terais.avsb.vo;
 
+/**
+  * APILog VO
+  */
 public class APILog {
-
+    /**
+     *
+     */
     private String date;
+
+    /**
+     *
+     */
     private String client;
+
+    /**
+     *
+     */
     private String path;
+
+    /**
+     *
+     */
     private String result;
 
     public String getDate() {

@@ -26,21 +26,37 @@ import com.terais.avsb.service.impl.SaveLogFileServiceImpl;
 
 
 
+/**
+  * 로그 뷰어 컨트롤러
+  */
 @Controller
 @RequestMapping("log/*")
 public class LogController {
 
 	private static final Logger logger = LoggerFactory.getLogger(LogController.class);
 
-	@Autowired
-	private ModuleServiceImpl moduleService;
+//	/**
+//	 * @FieldName : moduleService - [ModuleServiceImpl]
+//	 */
+//	@Autowired
+//	private ModuleServiceImpl moduleService;
 
+	/**
+	 * bean 등록된 PageLogServiceImpl 클래스 객체
+	 */
 	@Autowired
 	private PageLogServiceImpl pageLog;
 	
+	/**
+	 * bean 등록된 SaveLogFileServiceImpl 클래스 객체
+	 */
 	@Autowired
 	private SaveLogFileServiceImpl logService;
 
+	/**
+	  * 로그 페이지 뷰 포인트
+	  * @return 로그 페이지
+	  */
 	@RequestMapping("view")
 	public ModelAndView logHome(){
 		logger.debug("log view");
@@ -51,49 +67,79 @@ public class LogController {
 		return mav;
 	}
 
-	@RequestMapping(value = "/result/{year}", method = RequestMethod.GET)
-	@ResponseBody
-	public ResultValue getYearResult(@PathVariable("year") String year){		
-		ResultValue rv = new ResultValue();		
-		try{						
-			String resultPath = FilePath.getDatePath(year);
-			rv = moduleService.getTotal(resultPath, rv);
-			logger.debug("getTotal End: "+rv);
-		}catch(Exception e){
-			logger.error("Error day: "+e);
-		}
-		return rv;
-	}
+//	/**
+//	  * @Method Name : getYearResult
+//	  * @작성일 : 2021. 12. 17.
+//	  * @작성자 : DooHee Jung
+//	  * @변경이력 : None
+//	  * @Method 설명 :
+//	  * @param year
+//	  * @return
+//	  */
+//	@RequestMapping(value = "/result/{year}", method = RequestMethod.GET)
+//	@ResponseBody
+//	public ResultValue getYearResult(@PathVariable("year") String year){
+//		ResultValue rv = new ResultValue();
+//		try{
+//			String resultPath = FilePath.getDatePath(year);
+//			rv = moduleService.getTotal(resultPath, rv);
+//			logger.debug("getTotal End: "+rv);
+//		}catch(Exception e){
+//			logger.error("Error day: "+e);
+//		}
+//		return rv;
+//	}
+//
+//	/**
+//	  * @Method Name : getMonthResult
+//	  * @작성일 : 2021. 12. 17.
+//	  * @작성자 : DooHee Jung
+//	  * @변경이력 : None
+//	  * @Method 설명 :
+//	  * @param year
+//	  * @param month
+//	  * @return
+//	  */
+//	@RequestMapping(value = "/result/{year}/{month}", method = RequestMethod.GET)
+//	@ResponseBody
+//	public ResultValue getMonthResult(@PathVariable("year") String year,@PathVariable("month") String month) {
+//		ResultValue rv = new ResultValue();
+//		try{
+//			String resultPath = FilePath.getDatePath(year,month);
+//			rv = moduleService.getTotal(resultPath, rv);
+//			logger.debug("getTotal End: "+rv);
+//		}catch(Exception e){
+//			logger.error("Error day: "+e);
+//		}
+//		return rv;
+//	}
+//
+//	/**
+//	  *
+//	  * @param year
+//	  * @param month
+//	  * @param day
+//	  * @return
+//	  */
+//	@RequestMapping(value = "/result/{year}/{month}/{day}", method = RequestMethod.GET)
+//	@ResponseBody
+//	public ResultValue getDayResult(@PathVariable("year") String year,@PathVariable("month") String month,@PathVariable("day") String day){
+//		ResultValue rv = new ResultValue();
+//		try{
+//			String resultPath = FilePath.getDatePath(year,month,day);
+//			rv = moduleService.getTotal(resultPath, rv);
+//			logger.debug("getTotal End: "+rv);
+//		}catch(Exception e){
+//			logger.error("Error day: "+e);
+//		}
+//
+//		return rv;
+//	}
 
-	@RequestMapping(value = "/result/{year}/{month}", method = RequestMethod.GET)
-	@ResponseBody
-	public ResultValue getMonthResult(@PathVariable("year") String year,@PathVariable("month") String month) {
-		ResultValue rv = new ResultValue();
-		try{
-			String resultPath = FilePath.getDatePath(year,month);
-			rv = moduleService.getTotal(resultPath, rv);
-			logger.debug("getTotal End: "+rv);
-		}catch(Exception e){
-			logger.error("Error day: "+e);
-		}
-		return rv;
-	}
-
-	@RequestMapping(value = "/result/{year}/{month}/{day}", method = RequestMethod.GET)	
-	@ResponseBody
-	public ResultValue getDayResult(@PathVariable("year") String year,@PathVariable("month") String month,@PathVariable("day") String day){
-		ResultValue rv = new ResultValue();
-		try{			
-			String resultPath = FilePath.getDatePath(year,month,day);
-			rv = moduleService.getTotal(resultPath, rv);
-			logger.debug("getTotal End: "+rv);
-		}catch(Exception e){
-			logger.error("Error day: "+e);
-		}
-		
-		return rv;
-	}
-
+	/**
+	  * 이상이 있는 로그 목록 출력
+	  * @return 이상이 있는 로그 목록
+	  */
 	@RequestMapping(value="/rest/resultlog",method = RequestMethod.GET)
 	@ResponseBody
 	public List<ReadLog> getLogList(){
@@ -108,6 +154,11 @@ public class LogController {
 		return resultLog;
 	}
 
+	/**
+	  * 입력된 IP 서버가 지니고 있는 이상이 있는 로그 출력
+	  * @param ip 출력할 로그를 가지고 있는 IP
+	  * @return 입력된 서버가 지니고 있는 이상이 있는 로그
+	  */
 	@RequestMapping(value="list",method = RequestMethod.GET)
 	@ResponseBody
 	public List<Object> getLogList(@RequestParam(required=true) String ip) {

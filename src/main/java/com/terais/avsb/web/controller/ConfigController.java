@@ -16,15 +16,25 @@ import java.security.Principal;
 import java.util.List;
 import java.util.Map;
 
+/**
+  * 환경 설정 컨트롤러
+  */
 @Controller
 @RequestMapping("config/*")
 public class ConfigController {
 
 	private static final Logger logger = LoggerFactory.getLogger(ConfigController.class);
 
+	/**
+	 * bean 등록된 ConfigAPIServiceImpl 클래스 객체
+	 */
 	@Autowired
 	private ConfigAPIServiceImpl configService;
 
+	/**
+	  * 환경 설정 페이지 뷰 포인트
+	  * @return 환경 설정 페이지
+	  */
 	@RequestMapping(value="view", method=RequestMethod.GET)
 	public ModelAndView configHome(){
 		logger.debug("config view");
@@ -37,6 +47,10 @@ public class ConfigController {
 	}
 
 
+	/**
+	  * 읽어낸 로그 파일 결과물을 저장해놓는 기간 설정
+	  * @param rotate 저장 기간
+	  */
 	@RequestMapping(value="log", method=RequestMethod.POST)
 	public void configLogRotate(@RequestParam String rotate){
 
@@ -61,6 +75,10 @@ public class ConfigController {
 
 	}
 
+	/**
+	  * 스케줄러 검사 결과물 저장 개수 설정
+	  * @param count 저장 개수
+	  */
 	@RequestMapping(value="report", method=RequestMethod.POST)
 	public void configReportCount(@RequestParam String count){
 
@@ -82,11 +100,14 @@ public class ConfigController {
 
 	}
 
+	/**
+	  * 서버 등록
+	  * @param server 등록할 서버 IP
+	  * @param httpStatus http:// | https://
+	  */
 	@RequestMapping(value="server", method=RequestMethod.POST)
 	public void addSubServer(@RequestParam String server,@RequestParam String httpStatus){
-
 		try{
-
 			logger.debug("server : "+server);
 			boolean ipRes = RegularExpression.checkIP(server);
 			boolean checkHttp = httpStatus.equals("http://")||httpStatus.equals("https://")?true:false;
@@ -96,8 +117,6 @@ public class ConfigController {
 				configService.setSubIP(ip);
 			}
 			logger.debug(PropertiesData.subIp.toString());
-
-
 		}catch (NullPointerException err){
 			logger.error("Null point error ["+server+"] => err : "+err);
 		}catch (Exception err){
@@ -106,6 +125,25 @@ public class ConfigController {
 
 	}
 
+	/**
+	  * 서버 목록 출력
+	  * @return 서버 목록
+	  */
+	@RequestMapping(value="server/list", method=RequestMethod.GET)
+	@ResponseBody
+	public List<String[]> getServerList(){
+		return configService.getSubIP();
+	}
+
+	@RequestMapping(value="server/port/change", method=RequestMethod.POST)
+	public void setServerPort(@RequestParam String port){
+		configService.setServerPort(port);
+	}
+
+	/**
+	  * 서버 삭제
+	  * @param delItems 삭제할 서버 리스트
+	  */
 	@RequestMapping(value="serverlist", method=RequestMethod.POST)
 	public void delServers(@RequestParam(value="items[]") List<String> delItems){
 
@@ -120,6 +158,10 @@ public class ConfigController {
 
 	}
 
+	/**
+	  * 감염현황 차트 리로드 시간 설정
+	  * @param time 리로드 간격
+	  */
 	@RequestMapping(value="malchart/time", method=RequestMethod.POST)
 	public void modifyMalwareChartTime(@RequestParam String time){
 
@@ -144,6 +186,10 @@ public class ConfigController {
 
 	}
 
+	/**
+	  * 실시간 차트 리로드 시간 설정
+	  * @param time 리로드 간격
+	  */
 	@RequestMapping(value="current/time", method=RequestMethod.POST)
 	public void modifyCurrentChartTime(@RequestParam String time){
 
@@ -168,6 +214,10 @@ public class ConfigController {
 
 	}
 
+	/**
+	  * 실시간 로그 리로드 시간 설정
+	  * @param time 리로드 간격
+	  */
 	@RequestMapping(value="current/log", method=RequestMethod.POST)
 	public void modifyCurrentLogTime(@RequestParam String time){
 		try{

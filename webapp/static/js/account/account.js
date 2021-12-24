@@ -215,6 +215,7 @@ function getAccountList() {
 		url:"/account/list",
 		method:"GET",
 		data:{},
+		cache:false,
 		error: function(err_res){
 
 		},

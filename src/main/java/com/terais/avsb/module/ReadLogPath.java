@@ -8,10 +8,18 @@ import org.slf4j.LoggerFactory;
 
 import com.terais.avsb.core.PropertiesData;
 
+/**
+  * 로그 경로를 읽어오는 클래스
+  */
 public class ReadLogPath {
-	
+
 	private static final Logger logger = LoggerFactory.getLogger(ReadLogPath.class);
 	
+	/**
+	  * 로그파일을 감지하지 못했을 때 임시 로그 파일을 생성하는 메소드
+	  * @param folder 임시 로그 폴더
+	  * @param file 임시 로그 파일
+	  */
 	public static void checkLogPath(File folder, File file){
 		try {
 			if(!folder.exists()){
@@ -25,6 +33,9 @@ public class ReadLogPath {
 		}
 	}
 	
+	/**
+	  * 로그 관련 경로를 세팅하는 메소드
+	  */
 	public static void readLogPath(){
 		String filePath = FilePath.enginePathFile;
 		File file = new File(filePath);

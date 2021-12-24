@@ -1,12 +1,14 @@
 function getServerList(){
 	$.ajax({
-		url:"/etc/subip",
+		url:"/config/server/list",
 		method:"GET",
 		data:{},
+		cache:false,
 		error: function(err_res){
 		},
 		success: function(suc_res){
-			serverList(suc_res)
+			// console.log("suc_res",suc_res)
+			serverList(suc_res);
 		}
 	})
 }
@@ -15,21 +17,28 @@ function serverList(data){
 	var listBody = document.getElementById("serverList");
 
 	for(var i=0;i<data.length;i++){
+		if(data[i][0]==="http://"){
+			data[i][0]="HTTP";
+		}else if(data[i][0]=="https://"){
+			data[i][0]="HTTPS";
+		}else{
+			continue;
+		}
 		var listTr = document.createElement("tr");
 		var listFirstTd = document.createElement("td");
-		if(data[i]!="127.0.0.1") {
+		if(data[i][1]!="127.0.0.1") {
 			var check = document.createElement("input");
 
 			check.setAttribute("type", "checkbox");
 			check.setAttribute("class", "server");
-			check.setAttribute("items", data[i]);
+			check.setAttribute("items", data[i][1]);
 
 			listFirstTd.setAttribute("class", "cb-center");
 			listFirstTd.appendChild(check);
 		}
 		var listSecondTd = document.createElement("td");
 		var listSpan = document.createElement("span");
-		var subIp = document.createTextNode(data[i]);
+		var subIp = document.createTextNode(data[i][1]+" / "+data[i][0]);
 		listSpan.appendChild(subIp);
 		listSecondTd.appendChild(listSpan);
 		
@@ -110,8 +119,19 @@ function notice(context){
 		type: "info",
 		msg: context,
 		position: "center",
-		timeout: 1000,
+		timeout: 3000,
 		bgcolor: "#072b38",
+		fade: true,
+	});
+}
+
+function noticeAlert(context){
+	notif({
+		type: "info",
+		msg: "<b>"+context+"</b>",
+		position: "center",
+		timeout: 3000,
+		bgcolor: "#9d2020",
 		fade: true,
 	});
 }
@@ -130,6 +150,45 @@ function rotateLogConfig(){
 	});
 }
 
+function checkNumber(event) {
+	if(event.key >= 0 && event.key <= 9) {
+		console.log("return",true);
+		return true;
+	}else {
+		console.log("return",false);
+		return false;
+	}
+}
+
+function changePort(){
+	var port = (document.getElementById('server-port').value).trim();
+
+
+	console.log(port)
+
+	if(port>=6000 && port<49151){
+		$.ajax({
+			url:"/config/server/port/change",
+			method: "POST",
+			data:{
+				port:port
+			},
+			error: function(){
+				noticeAlert('로컬 포트가 변경에 실패했습니다.');
+				return;
+			},
+			success: function(){
+				notice('로컬 포트가 변경 되었습니다.');
+			}
+		})
+	}else{
+		noticeAlert('설정 할 수 있는 포트 범위 : 6000~49151');
+
+	}
+	document.getElementById('server-port').value = "";
+	document.getElementById('server-port').focus();
+}
+
 function addSubServer() {
 	var server = document.getElementById('server').value;
 	var ipReg = /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
@@ -141,7 +200,10 @@ function addSubServer() {
 		$.ajax({
 			url: "/config/server",
 			method: "POST",
-			data: {server: server},
+			data: {
+				server: server,
+				httpStatus:HTTP
+			},
 			error: function (err_res) {
 				// console.log("sub server is unregisted!")
 			},
@@ -153,6 +215,9 @@ function addSubServer() {
 			}
 		});
 		
+	}else if(HTTPCheck == false){
+		notice("SSL 인증서 적용 여부에 대해서 확인 바랍니다.");
+		document.getElementById('server').focus();
 	}else{
 		notice('올바른 아이피가 아닙니다. 다시 입력 바랍니다.');
 		document.getElementById('server').focus();

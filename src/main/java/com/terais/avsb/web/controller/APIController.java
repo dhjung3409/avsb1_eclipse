@@ -15,15 +15,25 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 import com.terais.avsb.service.impl.APIServiceImpl;
 import com.terais.avsb.vo.APILog;
 
+/**
+  *
+  */
 @Controller
 @RequestMapping(value = "/api")
 public class APIController {
 
     private static final Logger logger = LoggerFactory.getLogger(APIController.class);
 
+    /**
+     *
+     */
     @Autowired
     private APIServiceImpl apiService;
 
+    /**
+      *
+      * @param apiLog
+      */
     @RequestMapping(value = "log",method=RequestMethod.POST)
     public void insertLog(@RequestParam APILog apiLog){
         String ip = null;

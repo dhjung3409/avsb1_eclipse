@@ -19,17 +19,50 @@ import com.terais.avsb.module.FilePath;
 import com.terais.avsb.service.LocalScanSchedulerService;
 import com.terais.avsb.vo.ScanSchedule;
 
+/**
+  * 스케줄러 등록 데이터 등록, 삭제 그리고 스케줄러 결과 리포트 데이터 삭제 기능을 지니는 클래스
+  */
 @Service
 public class LocalScanSchedulerServiceImpl implements LocalScanSchedulerService {
 	
 
 	private static final Logger logger = LoggerFactory.getLogger(LocalScanSchedulerServiceImpl.class);
 
+	/**
+	 * Gson 객체에서 사용 할 List<ScanSchedule> TypeToken
+	 */
 	private static final Type type = new TypeToken<List<ScanSchedule>>() {}.getType();
 
+//	/**
+//	 * 작성일 : 2021. 12. 17.<br>
+//	 * 작성자 : DooHee Lee<br>
+//	 * 변경이력 : None<br>
+//	 * Method 설명 : 스케줄러 검사 등록 데이터가 들어왔을 때  데이터에 포함된 해당 경로에 문제가 있는지 확인하는 메소드<br>
+//	 * @param data - Map<String,String> - 스케줄에 등록하려는 데이터<br>
+//	 * @return checkResult - Map<String,Object> - 스케줄러 등록 결과<br>
+//	 */
+
+	/**
+	   스케줄러 검사 등록 데이터가 들어왔을 때  데이터에 포함된 해당 경로에 문제가 있는지 확인하고 등록하는 메소드
+	   @param data 스케줄에 등록하려는 데이터
+	   @return checkResult 스케줄러 등록 결과
+	*/
 	public Map<String,Object> checkFile(Map<String,String> data){
 		logger.debug("insert schedule checkFile: "+data.toString());
 		Map<String,Object> checkResult = new HashMap<String, Object>();
+		if(data.get("path").lastIndexOf("/")==(data.get("path").length()-1)||data.get("path").indexOf("//")!=-1){
+			logger.info("inputFullPath: "+data.get("path"));
+			String[] splitPath = data.get("path").split("/");
+			String fullPath = "";
+			for(String split:splitPath){
+				if(split.equals("")){
+					continue;
+				}
+				fullPath=fullPath+"/"+split;
+				logger.info("fullPath: "+fullPath);
+			}
+			data.put("path",fullPath);
+		}
 		File file = new File(data.get("path"));
 		if(!file.exists()){
 			checkResult.put("message",2);
@@ -45,6 +78,11 @@ public class LocalScanSchedulerServiceImpl implements LocalScanSchedulerService 
 		return checkResult;
 	}
 
+	/**
+	  * 스케줄러 등록 데이터를 Type 종류에 따라 분류해서 등록 검사를 진행시키는 메소드
+	  * @param data 스케줄에 등록하려는 데이터
+	  * @return 스케줄러  등록 결과
+	  */
 	public Map<String, Object> partSelect(Map<String,String> data){
 		int result= -1;
 		if(data.get("type").equals("once")){
@@ -66,6 +104,11 @@ public class LocalScanSchedulerServiceImpl implements LocalScanSchedulerService 
 		return resultMap;
 	}
 
+	/**
+	  * 스케줄러 등록 데이터 중 Type 키가 once 값인 경우 시간 비교로 등록 여부 검사를 진행하는 메소드
+	  * @param data 스케줄에 등록하려는 데이터
+	  * @return result 스케줄러  등록 결과
+	  */
 	public int registerScheduler(Map<String,String> data){
 		logger.debug("registScheduler start");
 		String scheduleFilePath = FilePath.scheduler;
@@ -94,6 +137,11 @@ public class LocalScanSchedulerServiceImpl implements LocalScanSchedulerService 
 		return result;
 	}
 
+	/**
+	  * 스케줄러 등록 데이터 중 Type 키가 repeat 값인 경우 시간 비교로 등록 여부 검사를 진행하는 메소드
+	  * @param data 스케줄에 등록하려는 데이터
+	  * @return 스케줄러  등록 결과
+	  */
 	public int registerRepeatScheduler(Map<String,String> data){
 		logger.debug("registerRepeatScheduler start");
 		logger.debug("data: "+data.toString());
@@ -105,11 +153,11 @@ public class LocalScanSchedulerServiceImpl implements LocalScanSchedulerService 
 		Date now = new Date();
 		cl.setTime(now);
 		String nowTime = yearSdf.format(now);
-		String schduleDate = sdf.format(now)+" "+date;
+		String scheduleDate = sdf.format(now)+" "+date;
 		int result=-1;
 		try {
-			logger.debug("Comparison Register Date: " + yearSdf.parse(nowTime).after(yearSdf.parse(schduleDate)) + "");
-			if (yearSdf.parse(nowTime).after(yearSdf.parse(schduleDate))) {
+			logger.debug("Comparison Register Date: " + yearSdf.parse(nowTime).after(yearSdf.parse(scheduleDate)) + "");
+			if (yearSdf.parse(nowTime).after(yearSdf.parse(scheduleDate))) {
 				logger.debug("Register Day Exception Scan Date.");
 				if(data.get("period").equals("weekly")){
 					cl.add(Calendar.DATE,7);
@@ -133,6 +181,13 @@ public class LocalScanSchedulerServiceImpl implements LocalScanSchedulerService 
 		return result;
 	}
 
+	/**
+	  * 스케줄러 등록 데이터에 시간과 경로가 이미 등록되어있는지 확인하는 메소드
+	  * @param path 등록 경로
+	  * @param date 등록 시간
+	  * @param list - 이미 등록된 스케줄 리스트
+	  * @return 이미 등록된 스케줄과의 중복 여부 | 5 : 이미 등록된 스케줄 | 6 : 상위 경로로 이미 등록된 스케줄 | -1 : 스케줄러에 중복 경로 없음
+	  */
 	public int checkOverlap(String path, String date,List<ScanSchedule> list){
 		int result =-1;
 		try {
@@ -161,6 +216,13 @@ public class LocalScanSchedulerServiceImpl implements LocalScanSchedulerService 
 		return -1;
 	}
 
+	/**
+	  * 스케줄러 등록 시 문제되는 점은 없는지 확인하고 문제 없는 경우 스케줄러에 등록시키는 클래스
+	  * @param scheduleFilePath 스케줄 데이터 파일 경로
+	  * @param data 스케줄에 등록 할 데이터
+	  * @param date 스케줄 가동 시간
+	  * @return Num 등록 확인 결과
+	  */
 	public int checkFile(String scheduleFilePath,Map<String,String> data,String date){
 		logger.debug("insert schedule int checkFile");
 		File file = new File(scheduleFilePath);
@@ -169,7 +231,7 @@ public class LocalScanSchedulerServiceImpl implements LocalScanSchedulerService 
 
 			File pathFile = new File(data.get("path"));
 			if (pathFile.exists() == false) {
-				logger.debug("Not Exist File.");
+				logger.debug("Not Exists File.");
 				return 2;
 			} else if (pathFile.canRead() == false) {
 				logger.debug("Can Not Read This File.");
@@ -184,9 +246,10 @@ public class LocalScanSchedulerServiceImpl implements LocalScanSchedulerService 
 				}
 
 				if (ScanScheduleList.scanSchedule.size() >= 12) {
-					logger.debug("Can Register 10 Path.");
+					logger.debug("Can Register 12 Path.");
 					return 4;
 				}
+
 				logger.debug("size Check");
 				ScanSchedule scanSchedule = setScanSchedule(data, PropertiesData.schedulerSeq++,date);
 				logger.debug("set Schedule");
@@ -214,6 +277,13 @@ public class LocalScanSchedulerServiceImpl implements LocalScanSchedulerService 
 		return 0;
 	}
 
+	/**
+	  * ScanSchedule 객체에 스케줄 데이터를 저장하는 메소드
+	  * @param data 객체에 저장 할 스케줄 데이터
+	  * @param no 스케줄 등록 번호
+	  * @param date 스케줄 작동 시기
+	  * @return 데이터를 저장한 ScanSchedule 객체
+	  */
 	public ScanSchedule setScanSchedule(Map<String,String> data,int no,String date){
 		logger.debug(date);
 		ScanSchedule scanSchedule = new ScanSchedule();
@@ -230,6 +300,12 @@ public class LocalScanSchedulerServiceImpl implements LocalScanSchedulerService 
 		return scanSchedule;
 	}
 
+	/**
+	  * 등록된 스케줄러, 스케줄러 결과 리포트를 삭제하는 메소드
+	  * @param no 제거할 스케줄러 고유 번호
+	  * @param path 스케줄러 혹은 결과 리포트 데이터가 저장된 파일 경로
+	  * @param ss 스케줄러 혹은 결과 리포트 데이터 리스트
+	  */
 	public void deleteScanScheduler(List<String> no,String path, List<ScanSchedule> ss){
 		logger.debug("no: "+no.toString());
 		String deleteInfo = "";
@@ -268,6 +344,10 @@ public class LocalScanSchedulerServiceImpl implements LocalScanSchedulerService 
 
 	}
 
+	/**
+	  * 스케줄러 결과 리포트 관련 파일 제거 메소드
+	  * @param fileName - 제거할 log.txt 파일 경로
+	  */
 	public void deleteResultFile(String fileName){
 		List<String> filePaths = new ArrayList<String>();
 		filePaths.add(FilePath.tmpFolder+"/"+fileName);

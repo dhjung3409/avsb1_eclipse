@@ -18,17 +18,31 @@ import java.util.HashMap;
 import java.util.Map;
 
 
+/**
+  * 로그인의 성공 실패 여부를 판단하는 클래스
+  */
 public class AuthenticationProviderServiceImpl implements AuthenticationProvider{
 
 	private static final Logger logger = LoggerFactory.getLogger(AuthenticationProviderServiceImpl.class);
 	
+	/**
+	 * bean 등록된 LoginServiceImpl 클래스 객체
+	 */
 	@Autowired
 	private LoginServiceImpl loginService;
 	
+	/**
+	 * bean 등록 된 AccountServiceImpl 클래스 객체
+	 */
 	@Autowired
 	private AccountServiceImpl accountService;
 	
-	public Authentication authenticate(Authentication authentication) throws AuthenticationException {
+	/**
+	  * /login 페이지에 입력된 정보와 보유하고 있는 계정 정보를 대조해서 일치 했을 때 로그인 시켜주는 메소드
+	  * @param authentication /login 페이지에서 받아온 로그인 정보
+	  * @return 로그인 성공한 계정 정보
+	  */
+	public Authentication authenticate(Authentication authentication){
 		
 		String userId = authentication.getPrincipal().toString();
 		String userPw = authentication.getCredentials().toString();
@@ -50,7 +64,7 @@ public class AuthenticationProviderServiceImpl implements AuthenticationProvider
 		logger.debug("Password Correct");
 		loginInfo.setUserPw(userPw);
 		accountService.editAccount(loginInfo, true, "PUT");
-		try {
+		//try {
 			String accountId = PasswordAlgorithm.decrypt(loginInfo.getUserId());
 			String accountRole;
 			if(PropertiesData.licenseStatus==false) {
@@ -62,9 +76,9 @@ public class AuthenticationProviderServiceImpl implements AuthenticationProvider
 			loginInfo.setUserName(accountName);
 			loginInfo.setUserId(accountId);
 			loginInfo.setUserRole(accountRole);
-		} catch (Exception e) {
+		/*} catch (Exception e) {
 			logger.error("Authentication Exception: "+e.getMessage());
-		}
+		}*/
 		logger.debug("Set Authorities: "+loginInfo.getAuthorities());
 		logger.info("Login user: "+userId);
 		Map<String,String> userInfo = new HashMap<String, String>();
@@ -76,6 +90,7 @@ public class AuthenticationProviderServiceImpl implements AuthenticationProvider
 		return user;
 	}
 	
+
 	public boolean supports(Class<?> arg0) {
 		return true;
 	}

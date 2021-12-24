@@ -23,26 +23,45 @@ import org.springframework.stereotype.Component;
 
 import com.terais.avsb.module.FilePath;
 
+/**
+  * 실시간 검사 현황을 일정 주기로 확인하는 클래스
+  */
 @Component
 public class CurrentCountScheduler {
 
 	private static final Logger logger = LoggerFactory.getLogger(CurrentCountScheduler.class);
 
+	/**
+	 * 라이센스 기간 중 연도의 십의 자리 수
+	 */
 	public static String LI_D1="3";
 
+	/**
+	 * 일정 주기 간격으로 카운팅 한 실시간 검사 수를 저장한 리스트
+	 */
 	private static List<Integer> countList = new ArrayList<Integer>();	
 
 
+	/**
+	  * 실시간 겁사 현황을 가져오는 메소드
+	  * @return 실시간 검사현황
+	  */
 	public static List<Integer> getCountList(){
 		return countList;
 	}
 
+	/**
+	  * countList 기본값을 부여하는 메소드
+	  */
 	public static void initList(){
 		while(countList.size()<6){
 			countList.add(0);
 		}		
 	}
 
+	/**
+	  * 실시간 검사 수를 확인해 countList에 저장하는 메소드
+	  */
 	public void countCurrent(){
 		if(PropertiesData.licenseStatus==false){
 			logger.debug("License is Expired: "+PropertiesData.licenseExpire);

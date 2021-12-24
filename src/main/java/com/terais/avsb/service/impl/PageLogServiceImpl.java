@@ -18,13 +18,19 @@ import com.terais.avsb.dto.ReadLog;
 import com.terais.avsb.module.FilePath;
 import com.terais.avsb.service.PageLogService;
 
+/**
+  * log.json 파일에 저장된 상세 검사 결과들을 통합해 가져오는 클래스
+  */
 @Service
 public class PageLogServiceImpl implements PageLogService{
 
 	private static final Logger logger = LoggerFactory.getLogger(PageLogServiceImpl.class);
 
+	/**
+	  * LOCAL 서버에서 NORMAL_FILE 검사 결과를 제외한 검사 결과를 저장해 놓은 log.json 데이터 통합해서 가져오는 메소드
+	  * @return log.json 파일들에 저장된 데이터 통합 리스트
+	  */
 	public List<ReadLog> getPageLog() {
-		long beforeTime = System.currentTimeMillis();
 		Date date = new Date();
 		Calendar cl = Calendar.getInstance();
 		cl.setTime(date);
@@ -58,21 +64,23 @@ public class PageLogServiceImpl implements PageLogService{
 		} catch (IOException e) {
 			logger.error("Get Page Log IOException: "+e.getMessage());
 		}
-
-		long afterTime = System.currentTimeMillis();
-		long differTime = (afterTime-beforeTime);
-		logger.debug("test time: "+differTime);
 		logger.debug("logList: "+logList);
 		return logList;
 	}
-	public Object getLogObject(ReadLog readLog){
-		List<Object> log = new ArrayList<Object>();
-		log.add(readLog.getNo());
-		log.add(readLog.getDate());
-		log.add(readLog.getClient_ip());
-		log.add(readLog.getTarget());
-		log.add(readLog.getResult());
-		return log;
-	}
+	
+//	/**
+//	  *
+//	  * @param readLog
+//	  * @return
+//	  */
+//	public Object getLogObject(ReadLog readLog){
+//		List<Object> log = new ArrayList<Object>();
+//		log.add(readLog.getNo());
+//		log.add(readLog.getDate());
+//		log.add(readLog.getClient_ip());
+//		log.add(readLog.getTarget());
+//		log.add(readLog.getResult());
+//		return log;
+//	}
 	
 }

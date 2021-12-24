@@ -3,21 +3,36 @@ package com.terais.avsb.vo;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.terais.avsb.core.SimpleDateFormatCore;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.text.ParseException;
 import java.util.Comparator;
 import java.util.Date;
 
+/**
+  * 최근 검사 로그 VO
+  */
 public class CurrentLogVO implements  Comparable<CurrentLogVO>,Comparator<CurrentLogVO> {
-
+    /**
+     * 검사가 진행된 IP
+     */
     @JsonProperty
     private String ip;
+
+    /**
+     * 검사 시간
+     */
     @JsonProperty
     private String time;
+
+    /**
+     * 검사 경로
+     */
     @JsonProperty
     private String path;
+
+    /**
+     * 검사 결과
+     */
     @JsonProperty
     private String result;
 

@@ -22,10 +22,16 @@ import com.terais.avsb.core.PasswordAlgorithm;
 import com.terais.avsb.core.PropertiesData;
 import com.terais.avsb.vo.LoginVO;
 
+/**
+  * 기본 계정 생성 클래스
+  */
 public class DefaultAccount {
 
 	private static final Logger logger = LoggerFactory.getLogger(DefaultAccount.class);
 
+	/**
+	  * 기본 계정정보 JSON 파일 생성 메소드
+	  */
 	public static void createDefaultAccount(){
 		Gson gson = null;
 		File file = null;
@@ -77,6 +83,10 @@ public class DefaultAccount {
 		}
 	}
 	
+	/**
+	  * 기본 계정정보 생성 메소드
+	  * @return 기본 계정정보 객체
+	  */
 	public static LoginVO defaultWrite(){
 		Gson gson = null;
 		File file = null;
@@ -129,6 +139,10 @@ public class DefaultAccount {
 		
 	}
 
+	/**
+	  * 새로 생성할 계정 고유 번호를 가져오는 메소드
+	  * @return 새로 생성될 계정 고유 번호
+	  */
 	public static long getNo(){
 		Properties prop = new Properties();
 		long no = 0;
@@ -154,6 +168,10 @@ public class DefaultAccount {
 		return no;
 	}
 
+	/**
+	  * 계정 생성시 고유 번호를 갱신하는 메소드
+	  * @return no - long - 갱신된 계정 고유 번호
+	  */
 	public static long checkAccountNo(){
 		List<LoginVO> list = PathAndConvertGson.convertGson(FilePath.accountFile);
 		long no = 0;

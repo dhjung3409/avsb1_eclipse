@@ -7,46 +7,154 @@ import java.util.*;
 import com.terais.avsb.cron.CurrentCountScheduler;
 import com.terais.avsb.cron.LogReadScheduler;
 import com.terais.avsb.cron.ScanScheduler;
-import com.terais.avsb.cron.SubIPCheckSchduler;
+import com.terais.avsb.cron.SubIPCheckScheduler;
 import com.terais.avsb.module.DefaultAccount;
 import com.terais.avsb.module.FilePath;
 import com.terais.avsb.vo.ScanSchedule;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import sun.security.util.Password;
 
 
+/**
+  * AVSB 내부에서 사용되는 static 객체를 모아놓은 클래스
+  */
 public class PropertiesData {
 
-	private static final Logger logger = LoggerFactory.getLogger(PathAndConvertGson.class);
+	private static final Logger logger = LoggerFactory.getLogger(PropertiesData.class);
 
+	/**
+	 * API 사용 여부
+	 */
 	public static String useApi = null;
-	public static String installPath = null;
-	public static String installDate = null;
-	public static String reportCount = null;
-	public static Set<String> subIp = new HashSet<String>();
-	public static Map<String,Boolean> ipConnect =new HashMap<String, Boolean>();
-	public static String port = null;
-	public static String worker = null;
-	public static String logStatus = null;
-	public static long accountCount = -1;
-	public static String dateTerm = null;
-	public static String resReloadTime = null;
-	public static String currentReloadTime = null;
-	public static String logReloadTime = null;
-	public static String useEngine = "NoneEngine";
-	public static boolean licenseStatus = false;
-	public static boolean licenseMonthStatus = true;
-	public static int licenseRemain = -1;
-	public static int schedulerSeq = 0;
-	public static int reportSeq = 0;
-	public static String engine = null;
-	public static String enginePath = null;
-	public static boolean isEnginePath=true;
-	public static String licenseExpire = PasswordAlgorithm.LI_Y1+ SubIPCheckSchduler.LI_Y2+PathAndConvertGson.LI_Y3+CurrentLog.LI_Y4+FilePath.LI_DA+ ScanScheduler.LI_M1+ LogReadScheduler.LI_M2+FilePath.LI_DA+ CurrentCountScheduler.LI_D1+ScanScheduleList.LI_D2;
-	public static String osName = null;
-	public static String HTTP = "http://";
 	
+	/**
+	 * 설치된 경로
+	 */
+	public static String installPath = null;
+	
+	/**
+	 * 설치한 날짜
+	 */
+	public static String installDate = null;
+	
+	/**
+	 * 저장이 가능한 리포트의 개수
+	 */
+	public static String reportCount = null;
+	
+	/**
+	 * 페이지와 연결된 IP 목록
+	 */
+	public static Set<String> subIp = new HashSet<String>();
+	
+	/**
+	 * 해당 IP와 연결여부 목록
+	 */
+	public static Map<String,Boolean> ipConnect =new HashMap<String, Boolean>();
+	
+	/**
+	 * 솔루션이 사용하는 포트
+	 */
+	public static String port = null;
+	
+	/**
+	 * 엔진 로그파일의 개수
+	 */
+	public static String worker = null;
+	
+	/**
+	 * 로그 읽기 상태
+	 */
+	public static String logStatus = null;
+	
+	/**
+	 * 계정 등록 번호
+	 */
+	public static long accountCount = -1;
+	
+	/**
+	 * 로그 데이터 저장 기간 설정
+	 */
+	public static String dateTerm = null;
+	
+	/**
+	 * 악성코드 감염 현황 표시 갱신 주기
+	 */
+	public static String resReloadTime = null;
+	
+	/**
+	 * 실시간 검사 현황 표시 갱신 주기
+	 */
+	public static String currentReloadTime = null;
+	
+	/**
+	 * 실시간 검사 로그 표시 갱신 주기
+	 */
+	public static String logReloadTime = null;
+	
+	/**
+	 * 사용하는 엔진 종
+	 */
+	public static String useEngine = "NoneEngine";
+	
+	/**
+	 * 라이센스의 유효성 여부
+	 */
+	public static boolean licenseStatus = false;
+	
+	/**
+	 * 라이센스 만료 한달 전 여부
+	 */
+	public static boolean licenseMonthStatus = true;
+	
+	/**
+	 * 라이센스 잔여 날짜
+	 */
+	public static int licenseRemain = -1;
+	
+	/**
+	 *  검사 스케줄러 등록 번호
+	 */
+	public static int schedulerSeq = 0;
+
+	/**
+	 * 검사 결과물 등록 번호
+	 */
+	public static int reportSeq = 0;
+	
+	/**
+	 * 엔진 종류
+	 */
+	public static String engine = null;
+	
+	/**
+	 * 엔진 경로
+	 */
+	public static String enginePath = null;
+	
+	/**
+	 * 올바른 엔진 경로 여부 확인
+	 */
+	public static boolean isEnginePath=true;
+	
+	/**
+	 * 라이센스 기간
+	 */
+	public static String licenseExpire = PasswordAlgorithm.LI_Y1+ SubIPCheckScheduler.LI_Y2+PathAndConvertGson.LI_Y3+CurrentLog.LI_Y4+FilePath.LI_DA+ ScanScheduler.LI_M1+ LogReadScheduler.LI_M2+FilePath.LI_DA+ CurrentCountScheduler.LI_D1+ScanScheduleList.LI_D2;
+	
+	/**
+	 * OS 종류
+	 */
+	public static String osName = null;
+	
+	/**
+	 * SSL 인증서 사용으로 HTTP 혹은 HTTPS 여부
+	 */
+	public static String HTTP = "https://";
+	
+	/**
+	  * 설정 프로퍼티에 저장된 데이터를 가져오는 메소드
+	  */
 	public static void callConfig(){
 		String configFile = FilePath.configFile;
 		Properties prop = getProp(configFile);
@@ -71,6 +179,12 @@ public class PropertiesData {
 		prop.clear();
 		
 	}
+	
+	/**
+	  * 설정 파일을 불러오는 중 파일 손상으로 문제가 생겼을 때 입력되는 기본 값들
+	  * @param prop - 설정 파일 프로퍼티 데이터
+	  * @param path - 설정 파일 경로
+	  */
 	public static void setErrorConfig(Properties prop,String path){
 		Date date = new Date();
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
@@ -89,12 +203,23 @@ public class PropertiesData {
 		setProp(prop,path);
 
 	}
+	
+	/**
+	  * 설정 값을 Properties에 저장하는 메소드
+	  * @param prop - 저장할 Properties
+	  * @param key - 저장할 Properties의 키값
+	  * @param value - 저장해야 하는 설정 값
+	  * @return String
+	  */
 	public static String setValue(Properties prop,String key,String value){
 		prop.setProperty(key,value);
 		return value;
 
 	}
 	
+	/**
+	  * 연결할 IP 정보를 불러오는 메소드
+	  */
 	public static void callSubIp(){
 		String ipConfigFile = FilePath.IpConfigFile;		
 		Properties prop = getProp(ipConfigFile);
@@ -120,6 +245,9 @@ public class PropertiesData {
 		prop.clear();
 	}
 	
+	/**
+	  * Properties에 저장된 로그파일을 읽어들이는 상태, 로그파일의 개수를 불러오는 메소드
+	  */
 	public void callWorker(){
 		String workerFile = FilePath.workName;
 		Properties prop = getProp(workerFile);
@@ -138,6 +266,9 @@ public class PropertiesData {
 		prop.clear();
 	}
 
+	/**
+	  * 스케줄러, 리포트 등록 번호를 불러들이는 메소드
+	  */
 	public static void callSchedulerSeq(){
 		Properties prop = getProp(FilePath.tmpSeq);
 		try {
@@ -160,6 +291,10 @@ public class PropertiesData {
 		prop.clear();
 	}
 
+	/**
+	  * 스케줄러, 리포트 등록 번호 불러오기를 파일 손상으로 실패했을 때, 최근 등록 값을 불러오고 파일에 저장해놓는 메소드
+	  * @param type "scheduler" "report" 불러올 파일의 타입을 저장한 객체
+	  */
 	public static void setErrorSchedule(String type){
 		List<ScanSchedule> ss = null;
 		if(type.equals("scheduler")) {
@@ -180,10 +315,14 @@ public class PropertiesData {
 		}
 	}
 
-	public static void setScheduleReportSeq(String name){
+	/**
+	  * 스케줄러, 리포트 최근 등록 번호를 저장하는 메소드
+	  * @param type "scheduler" "report" 불러올 파일의 타입을 저장한 객체
+	  */
+	public static void setScheduleReportSeq(String type){
 		Properties prop = getProp(FilePath.tmpSeq);
 
-		if(name.equals("scheduler")){
+		if(type.equals("scheduler")){
 			logger.debug("scheduler: "+PropertiesData.schedulerSeq);
 			prop.setProperty("scheduler", String.valueOf(PropertiesData.schedulerSeq));
 		}else{
@@ -193,6 +332,9 @@ public class PropertiesData {
 		setProp(prop,FilePath.tmpSeq);
 	}
 	
+	/**
+	  * 계정 등록 번호를 불러오는 메소드
+	  */
 	public static void callAccountSeq(){
 		String accountSeq = FilePath.accountCountFile;
 		Properties prop = getProp(accountSeq);
@@ -211,6 +353,9 @@ public class PropertiesData {
 		prop.clear();
 	}
 
+	/**
+	  * 엔진 이름을 불러오는 메소드
+	  */
 	public static void callEngineInfo(){
 		String engineFile = FilePath.enginePathFile;
 		Properties prop = getProp(engineFile);
@@ -235,6 +380,11 @@ public class PropertiesData {
 		prop.clear();
 	}
 
+	/**
+	  * Properties를 불러오는 메소드
+	  * @param filePath Properties의 경로
+	  * @return 불러온 Properties
+	  */
 	public static Properties getProp(String filePath){
 		Properties pro = new Properties();
 		FileInputStream fis = null;
@@ -258,6 +408,11 @@ public class PropertiesData {
 		return pro;
 	}
 
+	/**
+	  * Properties를 저장하는 메소드
+	  * @param pro Properties 데이터가 저장되어있는 객체
+	  * @param path Properties 데이터를 저장할 경로
+	  */
 	public static void setProp(Properties pro, String path){
 		File file = new File(path);
 		FileOutputStream fos = null;
