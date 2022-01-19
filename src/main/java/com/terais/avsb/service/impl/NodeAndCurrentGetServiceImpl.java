@@ -10,7 +10,6 @@ import com.terais.avsb.vo.CurrentLogVO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
 
 import com.google.gson.Gson;
 import com.terais.avsb.core.PropertiesData;
@@ -54,13 +53,6 @@ public class NodeAndCurrentGetServiceImpl implements NodeAndCurrentGetService {
 		logger.debug("IP");
 		String result = null;
 		try{
-//			RestTemplate rest = null;
-//			if(httpIP[0].equals("https://")){
-//				rest = TimeOutRestTemplate.getHttpsRestTemplate();
-//			}else{
-//				rest = TimeOutRestTemplate.getHttpRestTemplate();
-//			}
-
 			String url = httpIP[0]+httpIP[1]+":"+PropertiesData.port+"/"+select+"/rest/"+option;
 			result = RestURI.getRequestURL(url);
 		}catch(Exception e){
@@ -167,11 +159,7 @@ public class NodeAndCurrentGetServiceImpl implements NodeAndCurrentGetService {
 		for(String ip : ipList){
 			logger.debug("getRest start");
 			String ipInfo=ip.substring(ip.indexOf("$")+1);
-//			if(currentReload.equals("0")) {
 			json = PropertiesData.ipConnect.get(ipInfo)?getRest(ip, "dashboard", "chart"):null;
-//			}else{
-//				json = PropertiesData.ipConnect.get(ipInfo)?getRest(ip, "dashboard", option+"?reloadCount="+PropertiesData.currentReloadTime):null;
-//			}
 			if(json==null){
 				continue;
 			}

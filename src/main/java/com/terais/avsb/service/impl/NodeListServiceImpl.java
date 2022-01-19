@@ -35,11 +35,6 @@ public class NodeListServiceImpl implements NodeListService{
 
 	private static final Logger logger = LoggerFactory.getLogger(NodeListServiceImpl.class);
 
-//	/**
-//	 *
-//	 */
-//	@Autowired
-//	private ServletContext servletContext;
 
 	/**
 	  * Local 서버가 가지고 있는 악성코드 감염 현황 데이터를 가져오는 메소드
@@ -47,7 +42,6 @@ public class NodeListServiceImpl implements NodeListService{
 	  * @return Local 서버 악성코드 감염 현황
 	  */
 	public Map<String, String> getResultValue(String period) {
-//		logger.debug("context: "+servletContext.getRealPath("/resource"));
 		Map<String, String> result = new HashMap<String,String>();
 		Properties prop = new Properties();
 		List<String> dates = getDateProp(period);
@@ -193,43 +187,6 @@ public class NodeListServiceImpl implements NodeListService{
 		return month;
 	}
 
-//	/**
-//	  *
-//	  * @return
-//	  */
-//	public Map<String,String> getTypeAndIPAddress(){
-//		Map<String, String> result = new HashMap<String,String>();
-//		InetAddress ip=null;
-//		try {
-//			ip = InetAddress.getLocalHost();
-//
-//			if(ip.getHostAddress().contains("127.0.")){
-//				result.put("ip", "localhost");
-//			}else {
-//				result.put("ip", ip.getHostAddress());
-//			}
-//			logger.info(result.get("ip"));
-//			logger.info(result.get("type"));
-//		} catch (UnknownHostException e) {
-//			logger.error("Get IP UnknownHostException: "+e.getMessage());
-//		}
-//
-//
-//		return result;
-//	}
-
-//	/**
-//	  * Local 서버의 악성코드 현황
-//	  * @param period
-//	  * @return
-//	  */
-//	public Map<String, String> getSumNode(String period){
-//		Map<String,String> node = new HashMap<String,String>();
-//		node.putAll(getResultValue(period));
-//		logger.debug(node.toString());
-//		return node;
-//	}
-	
 	/**
 	  * Local 실시간 검사 현황 데이터를 가져오는 메소드
 	  * @return Local 실시간 검사 현황 데이터
@@ -241,34 +198,6 @@ public class NodeListServiceImpl implements NodeListService{
 		chart.put("count",CurrentCountScheduler.getCountList());
 		return chart;
 	}
-	
-//	/**
-//	  *
-//	  * @return
-//	  */
-//	public List<Map<String,String>> getNodeList(){
-//		List<Map<String,String>> nodeList = new ArrayList<Map<String,String>>();
-//		return nodeList;
-//	}
-
-//	/**
-//	  *
-//	  * @param reloadCount
-//	  * @return
-//	  */
-//	public Map<String,Object> getReloadChart(String reloadCount){
-//		Map<String,String> node = new HashMap<String,String>();
-//		Map<String,Object> chart = new HashMap<String, Object>();
-//		chart.putAll(node);
-//		List<Object> current = new ArrayList<Object>();
-//		int currentCount = Integer.parseInt(reloadCount);
-//		for(int i=6-(currentCount/10);i<6;i++){
-//			current.add(CurrentCountScheduler.getCountList().get(i));
-//		}
-//		chart.put("count",current);
-//		return chart;
-//	}
-
 
 	/**
 	  * Local 최근 검사 로그를 가져오는 메소드

@@ -47,7 +47,7 @@ public class LogReadScheduler {
 	/**
 	 * 라이센스 기간 중 달의 일의 자리 수
 	 */
-	public static String LI_M2="5";
+	public static String LI_M2="1";
 
 	/**
 	 * Gson 객체에서 사용 할 List<ReadLog>의 TypeToken

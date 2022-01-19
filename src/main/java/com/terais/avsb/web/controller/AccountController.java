@@ -47,21 +47,6 @@ public class AccountController {
 		return mav;
 	}
 
-
-//	/**
-//	  *
-//	  * @param prin
-//	  * @return
-//	  */
-//	@RequestMapping(value="/test",method=RequestMethod.GET)
-//	@ResponseBody
-//	public List<Object> getAccounts(Principal prin){
-//
-//		String name = prin!=null?prin.getName():null;
-//		List<Object> accountList = accountService.viewAccountList(name);
-//		return accountList;
-//	}
-
 	/**
 	  * 계정 삭제
 	  * @param delItems 삭제할 계정 고유 번호 리스트
@@ -142,25 +127,6 @@ public class AccountController {
 		
 		return account;
 	}
-
-//	/**
-//	  * @Method Name : eraseAccountDetail
-//	  * @작성일 : 2021. 12. 17.
-//	  * @작성자 : DooHee Jung
-//	  * @변경이력 : None
-//	  * @Method 설명 :
-//	  * @param accountNo
-//	  * @return
-//	  */
-//	@RequestMapping(value="/{accountNo}",method=RequestMethod.DELETE)
-//	@ResponseBody
-//	public LoginVO eraseAccountDetail(@PathVariable("accountNo") long accountNo){
-//		LoginVO vo = new LoginVO();
-//		vo.setNo(accountNo);
-//		LoginVO account=accountService.editAccount(vo, false, "DELETE");
-//
-//		return account;
-//	}
 
 	/**
 	  * 로그인한 계정 패스워드 변경

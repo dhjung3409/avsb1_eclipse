@@ -14,6 +14,7 @@ import java.net.*;
 import java.security.*;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
+import java.util.concurrent.TimeoutException;
 
 /**
   * Rest 요청을 보내는 클래스
@@ -21,34 +22,6 @@ import java.security.cert.X509Certificate;
 public class RestURI {
 
 	private static final Logger logger = LoggerFactory.getLogger(RestURI.class);
-
-//    public static String getRequestUri(RestTemplate rest, String uri){
-//        ResponseEntity<String> response=null;
-//        String result = null;
-//        try{
-//            logger.info("URI: "+uri);
-//            rest.getRequestFactory();
-//            logger.info("getRequestFactory");
-//            response = rest.getForEntity(uri, String.class);
-//            logger.info("getForEntity");
-//            HttpStatus status = response.getStatusCode();
-//            logger.info("getHttpStatus");
-//            if(status.toString().equals("200")&&response.getBody()!=null){
-//                logger.info("RestURI if: "+response.getBody());
-//                result= response.getBody().toString();
-//
-//            }else if (response.getBody()==null) {
-//                result="this is null";
-//            }else{
-//                logger.info("RestURI if else");
-//            }
-//            logger.info("RestURI end");
-//        }catch(Exception e){
-//            logger.error("Exception : "+e.getMessage());
-//        }
-//        logger.info("result: "+result);
-//        return result;
-//    }
 
     /**
       * API 요청 URL 연결을 시도하는 메소드
@@ -65,15 +38,6 @@ public class RestURI {
         InputStream input = null;
         try {
             webURL = new URL(url);
-//            con = webURL.openConnection();
-//
-//            if(url.contains("https://")){
-//                con.setRequestProperty("User-Agent","Mozilla/5.0");
-//            }
-//            logger.info("Header Fields: "+con.getHeaderFields().isEmpty());
-//            if(con.getHeaderFields().isEmpty()){
-//                return null;
-//            }
             if(webURL.getProtocol().equals("https")){
                 input=getHttpsURLConnection(webURL);
             }else{
@@ -131,9 +95,12 @@ public class RestURI {
         InputStream input = null;
         try {
             con = (HttpURLConnection) url.openConnection();
+            con.setConnectTimeout(1000);
+            con.setReadTimeout(1000);
             input=con.getInputStream();
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.error("HTTP Connection IOException: "+url);
+            logger.error("Error Message: "+e.getMessage());
         }
 
         return input;
@@ -149,20 +116,11 @@ public class RestURI {
         HttpsURLConnection con=null;
         InputStream input = null;
         try {
-
-
-//            TrustManager tm = new X509TrustManager() {
-//                public void checkClientTrusted(X509Certificate[] chain, String authType) throws CertificateException {}
-//                public void checkServerTrusted(X509Certificate[] chain, String authType) throws CertificateException {}
-//                public X509Certificate[] getAcceptedIssuers() {return null;}
-//            };
             KeyStore key = KeyStore.getInstance("PKCS12");
             FileInputStream fis = new FileInputStream("./tomcat/conf/.teraKey");
             key.load(fis,"teralab".toCharArray());
             TrustManagerFactory tmf = TrustManagerFactory.getInstance("SunX509");
             tmf.init(key);
-//            KeyManagerFactory keyManager = KeyManagerFactory.getInstance("SunX509");
-//            keyManager.init(key,"teralab".toCharArray());
             SSLContext sc =SSLContext.getInstance("TLS");
             sc.init(null,tmf.getTrustManagers(),new SecureRandom());
 
@@ -173,25 +131,29 @@ public class RestURI {
             con.setConnectTimeout(1000);
             input=con.getInputStream();
         }catch(ConnectException e){
-            logger.error("NotConnect: "+webURL);
+            logger.error("HTTPS Connection NotConnect: "+webURL);
+            logger.error("Error Message: "+e.getMessage());
         }catch(SSLHandshakeException e){
-            logger.error("SSLHandshake Error: "+e.getMessage());
-            e.printStackTrace();
+            logger.error("HTTPS Connection SSLHandshake Error: "+e.getMessage());
+            logger.error("Error Message: "+e.getMessage());
         }catch(SSLException e){
-            logger.error("SSLException: "+e.getMessage());
+            logger.error("HTTPS Connection SSLException: "+e.getMessage());
+            logger.error("Error Message: "+e.getMessage());
         }catch(IOException e) {
-            logger.error("IOException Error: "+webURL);
-            e.printStackTrace();
+            logger.error("HTTPS Connection IOException Error: "+webURL);
+            logger.error("Error Message: "+e.getMessage());
         }catch (NoSuchAlgorithmException e) {
-            logger.error("NoSuchAlgorithmException Error: "+webURL);
-            e.printStackTrace();
+            logger.error("HTTPS Connection NoSuchAlgorithmException Error: "+webURL);
+            logger.error("Error Message: "+e.getMessage());
         } catch (KeyManagementException e) {
-            logger.error("KeyManagementException Error: "+webURL);
-            e.printStackTrace();
+            logger.error("HTTPS Connection KeyManagementException Error: "+webURL);
+            logger.error("Error Message: "+e.getMessage());
         } catch (KeyStoreException e) {
-            e.printStackTrace();
+            logger.error("HTTPS Connection KeyStoreException Error: "+webURL);
+            logger.error("Error Message: "+e.getMessage());
         } catch (CertificateException e) {
-            e.printStackTrace();
+            logger.error("HTTPS Connection CertificateException Error: "+webURL);
+            logger.error("Error Message: "+e.getMessage());
         }
 
         return input;

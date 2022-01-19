@@ -12,8 +12,9 @@
 		<div id='user-wrapper'>
 			<div id='btn-user'>
 				<div class="dropdown pull-right" id="drop-down-menu">
+					<span id="server-time-text"> ServerTime: </span><span id="server-time">xxxx/xx/xx xx:xx</span><span id="license"></span>
 					<a id="dLabel" data-target="#" href="/dashboard" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
-						<span class="txt-white"><span id="server-time-text"> ServerTime: </span><span id="server-time">xxxx/xx/xx xx:xx</span><span id="license"></span><span id="muserName"></span>님 반갑습니다 ( <span id="muserRole"></span> )</span><span class="caret"></span>
+						<span class="txt-white"><span id="muserName"></span>님 반갑습니다 ( <span id="muserRole"></span> )</span><span class="caret"></span>
 					</a>
 					<ul class="dropdown-menu" aria-labelledby="dLabel">
 						<div class='menu-hover' style="cursor: pointer;border: 1px solid #cecece;" id='password-reset' ><span class='drop-menu' data-toggle="modal" data-target="#resetModal">Password Reset</span></div>

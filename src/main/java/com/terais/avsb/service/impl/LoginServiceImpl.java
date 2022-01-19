@@ -49,9 +49,7 @@ public class LoginServiceImpl implements LoginService,UserDetailsService{
 				}
 			}
 			
-		}/* catch (FileNotFoundException e) {
-			logger.error("getLogin FileNotFoundException Failed: "+e.getMessage());
-		}*/ catch (Exception e) {
+		}catch (Exception e) {
 			logger.error("getLogin Exception Failed: "+e.getMessage());
 		}
 		return null;

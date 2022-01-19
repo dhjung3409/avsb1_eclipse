@@ -32,48 +32,6 @@ public class CommonController {
 	@Autowired
 	private LoginServiceImpl loginService;
 
-//	/**
-//	  *
-//	  * @return
-//	  */
-//	@RequestMapping(value = "/current/detect", method = RequestMethod.GET)
-//	@ResponseBody
-//	public List<Integer> getCheckMinute() {
-//		List<Integer> list = null;
-//		 list = CurrentCountScheduler.getCountList();
-//		return list;
-//	}
-
-//	/**
-//	  *
-//	  * @return
-//	  */
-//	@RequestMapping(value = "/currnet/count/refresh", method = RequestMethod.POST)
-//	public Map<String, Boolean> restCheck() {
-//		Map<String, Boolean> map = null;
-//		return map;
-//	}
-//
-//	/**
-//	  *
-//	  * @return
-//	  */
-//	@RequestMapping(value = "/currnet/result/log", method = RequestMethod.GET)
-//	public List<String> getCheckLog() {
-//		List<String> log = null;
-//		return log;
-//	}
-
-//	/**
-//	  *
-//	  * @return
-//	  */
-//	@RequestMapping(value = "/currnet/result/refresh", method = RequestMethod.POST)
-//	public Map<String, Boolean> resetCheckLog() {
-//		Map<String, Boolean> map = null;
-//		return map;
-//	}
-
 	/**
 	  * 등록된 IP 출력
 	  * @return 등록된 IP
@@ -107,26 +65,6 @@ public class CommonController {
 		logger.debug("details: "+auth.getDetails().getClass());
 		return loginService.getLoginUser(auth);
 	}
-
-//	/**
-//	  *
-//	  */
-//	@RequestMapping(value="debug",method = RequestMethod.GET)
-//	public void debugBreak(){
-//		logger.info("stop");
-//	}
-
-//	/**
-//	  *
-//	  * @return
-//	  */
-//	@RequestMapping(value="status/check", method=RequestMethod.GET)
-//	@ResponseBody
-//	public boolean getLicenseStatus(){
-//		boolean result = false;
-//		result = PropertiesData.licenseStatus;
-//		return result;
-//	}
 
 	/**
 	  * 현재 시간 출력

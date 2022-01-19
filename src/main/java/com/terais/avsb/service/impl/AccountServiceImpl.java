@@ -144,11 +144,7 @@ public class AccountServiceImpl implements AccountService{
 					}
 					accountList.add(loginVO);					
 					break;
-				}/*else if(loginVO.getNo()==user.getNo()&&method.equals("DELETE")){
-					accountList.remove(i);
-					loginVO=null;
-					break;
-				}*/else{
+				}else{
 					loginVO=null;
 					continue;
 				}			

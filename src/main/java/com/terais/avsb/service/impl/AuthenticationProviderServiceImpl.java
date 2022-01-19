@@ -64,21 +64,18 @@ public class AuthenticationProviderServiceImpl implements AuthenticationProvider
 		logger.debug("Password Correct");
 		loginInfo.setUserPw(userPw);
 		accountService.editAccount(loginInfo, true, "PUT");
-		//try {
-			String accountId = PasswordAlgorithm.decrypt(loginInfo.getUserId());
-			String accountRole;
-			if(PropertiesData.licenseStatus==false) {
-				accountRole = "expired";
-			}else{
-				accountRole = PasswordAlgorithm.decrypt(loginInfo.getUserRole());
-			}
-			String accountName = PasswordAlgorithm.decrypt(loginInfo.getUserName());		
-			loginInfo.setUserName(accountName);
-			loginInfo.setUserId(accountId);
-			loginInfo.setUserRole(accountRole);
-		/*} catch (Exception e) {
-			logger.error("Authentication Exception: "+e.getMessage());
-		}*/
+		String accountId = PasswordAlgorithm.decrypt(loginInfo.getUserId());
+		String accountRole;
+		if(PropertiesData.licenseStatus==false) {
+			accountRole = "expired";
+		}else{
+			accountRole = PasswordAlgorithm.decrypt(loginInfo.getUserRole());
+		}
+		String accountName = PasswordAlgorithm.decrypt(loginInfo.getUserName());
+		loginInfo.setUserName(accountName);
+		loginInfo.setUserId(accountId);
+		loginInfo.setUserRole(accountRole);
+
 		logger.debug("Set Authorities: "+loginInfo.getAuthorities());
 		logger.info("Login user: "+userId);
 		Map<String,String> userInfo = new HashMap<String, String>();

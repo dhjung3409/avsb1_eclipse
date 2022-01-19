@@ -22,6 +22,7 @@ public class ReadLogPath {
 	  */
 	public static void checkLogPath(File folder, File file){
 		try {
+//			folder.
 			if(!folder.exists()){
 				folder.mkdir();
 			}
@@ -29,7 +30,7 @@ public class ReadLogPath {
 				file.createNewFile();
 			}
 		} catch (IOException e) {
-			e.printStackTrace();
+			logger.error("Failed path config");
 		}
 	}
 	
@@ -60,7 +61,8 @@ public class ReadLogPath {
 		path = PropertiesData.enginePath;
 		logger.debug("path:" + path);
 		File engineFile = new File(path);
-		if(!engineFile.exists()){
+		logger.info("dummy logFile : "+path.contains(FilePath.libsFolder));
+		if(!engineFile.exists()||(path.contains(FilePath.libsFolder))){
 			path=FilePath.libsFolder+"/log";
 			FilePath.logPath=path;
 			PropertiesData.isEnginePath=false;

@@ -9,17 +9,9 @@ import com.terais.avsb.core.PropertiesData;
 /**
   * AVSB 구동에 필요한 폴더, 파일 경로를 저장한 클래스
   */
-public class FilePath {	
+public class FilePath {
 
 	public static String defaultName = PathAndConvertGson.getOSFolder();
-
-//	public static String uploadFolder = defaultName+"/upload";
-//	public static String uploadExtractFolder = uploadFolder+"/extract";
-//	public static String extractFolder = defaultName+"/extract";
-//	public static String uploadFile = "";
-//	public static String uploadFileSavePath = uploadFolder+"/vaccine_file.tar";
-//	public static String secondFileSavePath = uploadFolder+"/vaccine_file_0.tar";
-	
 	/**
 	 * 로그 폴더 경로
 	 */

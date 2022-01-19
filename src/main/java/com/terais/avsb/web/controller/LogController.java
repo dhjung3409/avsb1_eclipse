@@ -35,12 +35,6 @@ public class LogController {
 
 	private static final Logger logger = LoggerFactory.getLogger(LogController.class);
 
-//	/**
-//	 * @FieldName : moduleService - [ModuleServiceImpl]
-//	 */
-//	@Autowired
-//	private ModuleServiceImpl moduleService;
-
 	/**
 	 * bean 등록된 PageLogServiceImpl 클래스 객체
 	 */
@@ -66,75 +60,6 @@ public class LogController {
 		
 		return mav;
 	}
-
-//	/**
-//	  * @Method Name : getYearResult
-//	  * @작성일 : 2021. 12. 17.
-//	  * @작성자 : DooHee Jung
-//	  * @변경이력 : None
-//	  * @Method 설명 :
-//	  * @param year
-//	  * @return
-//	  */
-//	@RequestMapping(value = "/result/{year}", method = RequestMethod.GET)
-//	@ResponseBody
-//	public ResultValue getYearResult(@PathVariable("year") String year){
-//		ResultValue rv = new ResultValue();
-//		try{
-//			String resultPath = FilePath.getDatePath(year);
-//			rv = moduleService.getTotal(resultPath, rv);
-//			logger.debug("getTotal End: "+rv);
-//		}catch(Exception e){
-//			logger.error("Error day: "+e);
-//		}
-//		return rv;
-//	}
-//
-//	/**
-//	  * @Method Name : getMonthResult
-//	  * @작성일 : 2021. 12. 17.
-//	  * @작성자 : DooHee Jung
-//	  * @변경이력 : None
-//	  * @Method 설명 :
-//	  * @param year
-//	  * @param month
-//	  * @return
-//	  */
-//	@RequestMapping(value = "/result/{year}/{month}", method = RequestMethod.GET)
-//	@ResponseBody
-//	public ResultValue getMonthResult(@PathVariable("year") String year,@PathVariable("month") String month) {
-//		ResultValue rv = new ResultValue();
-//		try{
-//			String resultPath = FilePath.getDatePath(year,month);
-//			rv = moduleService.getTotal(resultPath, rv);
-//			logger.debug("getTotal End: "+rv);
-//		}catch(Exception e){
-//			logger.error("Error day: "+e);
-//		}
-//		return rv;
-//	}
-//
-//	/**
-//	  *
-//	  * @param year
-//	  * @param month
-//	  * @param day
-//	  * @return
-//	  */
-//	@RequestMapping(value = "/result/{year}/{month}/{day}", method = RequestMethod.GET)
-//	@ResponseBody
-//	public ResultValue getDayResult(@PathVariable("year") String year,@PathVariable("month") String month,@PathVariable("day") String day){
-//		ResultValue rv = new ResultValue();
-//		try{
-//			String resultPath = FilePath.getDatePath(year,month,day);
-//			rv = moduleService.getTotal(resultPath, rv);
-//			logger.debug("getTotal End: "+rv);
-//		}catch(Exception e){
-//			logger.error("Error day: "+e);
-//		}
-//
-//		return rv;
-//	}
 
 	/**
 	  * 이상이 있는 로그 목록 출력

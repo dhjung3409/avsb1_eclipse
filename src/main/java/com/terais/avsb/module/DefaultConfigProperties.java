@@ -51,9 +51,6 @@ public class DefaultConfigProperties {
 		}finally{
 			if(file.exists()){
 				PropertiesData.callConfig();
-//				String date = PropertiesData.installDate;
-//				String[] copyDate = date.split("-");
-//				FilePath.copyDateLicense = FilePath.getDatePath(copyDate[0],copyDate[1],copyDate[2])+"/.license";
 			}
 			prop.clear();
 		}

@@ -6,12 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
-  * @FileName : LocalScanSchedulerService.java
-  * @Project : AVSB1
-  * @Date : 2021. 12. 17.
-  * @작성자 : DooHee Jung
-  * @변경이력 : None
-  * @프로그램 설명 :
+  *
   */
 public interface LocalScanSchedulerService {
 	public Map<String,Object> checkFile(Map<String,String> data);

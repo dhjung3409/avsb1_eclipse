@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import com.terais.avsb.cron.SubIPCheckScheduler;
 import com.terais.avsb.vo.CurrentLogVO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,6 +48,7 @@ public class DashboardController {
 	  */
 	@RequestMapping(value="view", method=RequestMethod.GET)
 	public ModelAndView dashBoardHome(){
+		SubIPCheckScheduler.searchEnginePath();
 		ModelAndView mav = new ModelAndView();
 		List<Map<String,String>> nodeList = new ArrayList<Map<String,String>>();
 		List<Map<String,Object>> chartList = new ArrayList<Map<String,Object>>();
@@ -97,22 +99,6 @@ public class DashboardController {
 		return nodeService.getCurrentLastLog(ip);
 	}
 
-//	/**
-//	  * @Method Name : getReloarChart
-//	  * @작성일 : 2021. 12. 17.
-//	  * @작성자 : DooHee Jung
-//	  * @변경이력 : None
-//	  * @Method 설명 :
-//	  * @param reloadCount
-//	  * @return
-//	  */
-//	@RequestMapping(value="/rest/chart/reload",method=RequestMethod.GET)
-//	@ResponseBody
-//	public Map<String,Object> getReloarChart(@RequestParam String reloadCount){
-//		logger.debug("getChart Start");
-//		return nodeService.getReloadChart(reloadCount);
-//	}
-
 	/**
 	  * 등록된 서버들 중 연결 가능한 서버로부터 감염현황 차트 데이터 받아와 출력
 	  * @param period 월 | 주 | 일
@@ -134,21 +120,6 @@ public class DashboardController {
 		logger.debug("getServerChart Start");
 		return getService.getChart();
 	}
-	
-//	/**
-//	  * @Method Name : getServersReloadChart
-//	  * @작성일 : 2021. 12. 17.
-//	  * @작성자 : DooHee Jung
-//	  * @변경이력 : None
-//	  * @Method 설명 :
-//	  * @return
-//	  */
-//	@RequestMapping(value="/server/chart/reload",method=RequestMethod.GET)
-//	@ResponseBody
-//	public List<Object> getServersReloadChart(){
-//		logger.debug("getServerChart Start");
-//		return getService.getChart("chart/reload","1");
-//	}
 
 	/**
 	  * 등록된 서버들 중 연결 가능한 서버로부터 최근 로그 데이터 받아와 출력

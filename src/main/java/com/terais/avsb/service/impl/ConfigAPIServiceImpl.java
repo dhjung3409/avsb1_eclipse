@@ -27,11 +27,6 @@ public class ConfigAPIServiceImpl implements ConfigAPIService{
 
 	private static final Logger logger = LoggerFactory.getLogger(ConfigAPIServiceImpl.class);
 
-//	/**
-//	 * @FieldName : sendFileIP - [String]
-//	 */
-//	private String sendFileIP = "";
-
 	/**
 	  * PropertiesData 클래스에 저장된 Properties 데이터를 파일에 입력시키는 클래스
 	  * @param prop Properties 데이터를 담아놓을 객체

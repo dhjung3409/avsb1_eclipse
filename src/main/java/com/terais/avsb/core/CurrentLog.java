@@ -23,7 +23,7 @@ public class CurrentLog {
     /**
      * 라이센스 기간 중 연도의 일의 자리 수
      */
-    public static String LI_Y4="2";
+    public static String LI_Y4="3";
 
     /**
      * 최근에 기록된 50개 로그를 가지고 있는 List

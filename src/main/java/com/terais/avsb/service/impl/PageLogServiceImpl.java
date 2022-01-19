@@ -67,20 +67,6 @@ public class PageLogServiceImpl implements PageLogService{
 		logger.debug("logList: "+logList);
 		return logList;
 	}
-	
-//	/**
-//	  *
-//	  * @param readLog
-//	  * @return
-//	  */
-//	public Object getLogObject(ReadLog readLog){
-//		List<Object> log = new ArrayList<Object>();
-//		log.add(readLog.getNo());
-//		log.add(readLog.getDate());
-//		log.add(readLog.getClient_ip());
-//		log.add(readLog.getTarget());
-//		log.add(readLog.getResult());
-//		return log;
-//	}
+
 	
 }

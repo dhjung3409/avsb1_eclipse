@@ -45,9 +45,6 @@ public class SystemInfoServiceImpl implements SystemInfoService {
 	  * @return 등록된 IP 서버 목록
 	  */
 	public List<Object> getServerList() {
-//		Set<String> ips = PropertiesData.subIp;
-
-
 		Map<Object, Object> ipConnect = null;
 		List<Object> ipStatus =new ArrayList<Object>();
 		String engineInfo = null;
@@ -73,13 +70,6 @@ public class SystemInfoServiceImpl implements SystemInfoService {
 	  */
 	public String getEngineVersion(String ip){
 		String[] httpIP=ip.split("\\$");
-//		RestTemplate rest = null;
-//		if(httpIP[0].equals("https://")){
-//			rest = TimeOutRestTemplate.getHttpsRestTemplate();
-//		}else{
-//			rest = TimeOutRestTemplate.getHttpRestTemplate();
-//		}
-
 		String url = httpIP[0]+httpIP[1]+":"+PropertiesData.port+"/system/rest/server/engine";
 		String result = RestURI.getRequestURL(url);
 		String version;

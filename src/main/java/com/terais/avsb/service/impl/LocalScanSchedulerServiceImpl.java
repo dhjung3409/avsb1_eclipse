@@ -33,15 +33,6 @@ public class LocalScanSchedulerServiceImpl implements LocalScanSchedulerService 
 	 */
 	private static final Type type = new TypeToken<List<ScanSchedule>>() {}.getType();
 
-//	/**
-//	 * 작성일 : 2021. 12. 17.<br>
-//	 * 작성자 : DooHee Lee<br>
-//	 * 변경이력 : None<br>
-//	 * Method 설명 : 스케줄러 검사 등록 데이터가 들어왔을 때  데이터에 포함된 해당 경로에 문제가 있는지 확인하는 메소드<br>
-//	 * @param data - Map<String,String> - 스케줄에 등록하려는 데이터<br>
-//	 * @return checkResult - Map<String,Object> - 스케줄러 등록 결과<br>
-//	 */
-
 	/**
 	   스케줄러 검사 등록 데이터가 들어왔을 때  데이터에 포함된 해당 경로에 문제가 있는지 확인하고 등록하는 메소드
 	   @param data 스케줄에 등록하려는 데이터
