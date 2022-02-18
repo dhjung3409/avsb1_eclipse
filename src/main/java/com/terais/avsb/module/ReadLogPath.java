@@ -1,12 +1,13 @@
 package com.terais.avsb.module;
 
-import java.io.*;
-import java.util.Properties;
-
+import com.terais.avsb.core.PropertiesData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.terais.avsb.core.PropertiesData;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.Properties;
 
 /**
   * 로그 경로를 읽어오는 클래스
@@ -46,8 +47,11 @@ public class ReadLogPath {
 		try {
 			if(!file.exists()){
 				file.createNewFile();
-				prop.setProperty("engine","NoneEngine");
+				prop.setProperty("engine","0");
 				prop.setProperty("ahnlab_engine","");
+				prop.setProperty("hauri_engine","");
+				prop.setProperty("alyac_engine","");
+				prop.setProperty("tachyon_engine","");
 				fos = new FileOutputStream(file);
 				prop.store(fos,filePath);
 			}
@@ -56,9 +60,22 @@ public class ReadLogPath {
 			// TODO Auto-generated catch block
 			logger.error("ReadLog Failed: "+e.getMessage());
 		}finally {
-			PropertiesData.useEngine=PropertiesData.engine;
+			int engineNum = PropertiesData.engine;
+			if(engineNum==1){
+				PropertiesData.useEngine="TSEngine";
+			}else if(engineNum==2){
+				PropertiesData.useEngine="VrSDK";
+			}else if(engineNum==3){
+				PropertiesData.useEngine="Alyac";
+			}else if(engineNum==4){
+				PropertiesData.useEngine="Tachyon";
+			}else{
+				PropertiesData.useEngine="None";
+			}
+
 		}
 		path = PropertiesData.enginePath;
+		File fileName = new File(path);
 		logger.debug("path:" + path);
 		File engineFile = new File(path);
 		logger.info("dummy logFile : "+path.contains(FilePath.libsFolder));
@@ -66,14 +83,23 @@ public class ReadLogPath {
 			path=FilePath.libsFolder+"/log";
 			FilePath.logPath=path;
 			PropertiesData.isEnginePath=false;
-		}else{
-			FilePath.logPath=path+"/log";
+		}else if(PropertiesData.engine==1){
+			FilePath.logPath=fileName.getParent();
 			FilePath.v3option=PropertiesData.enginePath+"/v3daemon/option.cfg";
 			FilePath.copyV3option=FilePath.v3option.replace("option","copy_option");
 			FilePath.v3File = path+"/etc/rc.d/v3scan_server";
+		}else if(PropertiesData.engine==2){
+			FilePath.logPath=fileName.getParent();
+			File logDir = new File(FilePath.logPath);
+			if(logDir.exists()==false){
+				logDir.mkdirs();
+			}else{
+
+			}
+			FilePath.directoryFileList = FilePath.logPath+"/fileList.txt";
 		}
 		logger.debug(FilePath.logPath);
-		FilePath.logFile = FilePath.logPath+"/v3scan_res.log";
+		FilePath.logFile = path;
 
 	}
 }

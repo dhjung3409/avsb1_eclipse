@@ -6,6 +6,8 @@ import com.terais.avsb.core.PropertiesData;
   * 서버의 OS 종류를 확인하는 클래스
   */
 public class CheckOS {
+
+    public static String osSeparator = "/";
     
 	/**
       * AVSB가 실행된 서버의 os 종류를 확인하는 메소드
@@ -15,6 +17,7 @@ public class CheckOS {
         String bit = System.getProperty("os.arch");
         if(os.contains("win")){
             PropertiesData.osName="win";
+            osSeparator="\\";
         }else if(os.contains("linux")&&bit.contains("64")){
             PropertiesData.osName="linux64";
         }else if(os.contains("hp")&&bit.contains("64")){

@@ -1,18 +1,18 @@
 package com.terais.avsb.module;
 
-import java.io.File;
-import java.io.IOException;
-
-import javax.servlet.ServletContextEvent;
-import javax.servlet.ServletContextListener;
-
-import com.terais.avsb.core.*;
+import com.ahnlab.v3engine.V3Scanner;
+import com.terais.avsb.core.CurrentLog;
+import com.terais.avsb.core.PropertiesData;
+import com.terais.avsb.core.ScanScheduleList;
+import com.terais.avsb.cron.CurrentCountScheduler;
+import com.terais.avsb.cron.LogReadScheduler;
+import com.terais.avsb.lib.ViRobotLog;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.ahnlab.v3engine.V3Scanner;
-import com.terais.avsb.cron.CurrentCountScheduler;
-import com.terais.avsb.cron.LogReadScheduler;
+import javax.servlet.ServletContextEvent;
+import javax.servlet.ServletContextListener;
+import java.io.File;
 
 
 /**
@@ -30,18 +30,18 @@ public class InitMethod implements ServletContextListener{
 	  * AVSB 초기화 동작 메소드
 	  */
 	public void init(){
+		CheckOS.osCheck();
 		logger.info("java version: "+System.getProperty("java.version"));
 		LogReadScheduler logRead=null;
 		logger.info("server started!");
 		System.out.println(System.getProperty("user.dir"));
 		DefaultFolder.makeDefaultFolder();
-
 		ReadLogPath.readLogPath();
 		LicenseCheck lc = new LicenseCheck();
 		logger.debug("license status: "+ PropertiesData.licenseStatus);
 		LicenseCheck.checkPeriod();
 
-		CheckOS.osCheck();
+
 		File configFile = new File(FilePath.configFile);
 		File logFolder = new File(FilePath.logPath);
 		File logFile = new File(FilePath.logFile);
@@ -57,12 +57,22 @@ public class InitMethod implements ServletContextListener{
 		logRead = new LogReadScheduler();
 		logRead.nowSetDateFile();
 		logRead.makeResultDirectory();
+		logRead.initLogElement();
+		logRead.setResultMap();
 		if(PropertiesData.licenseStatus) {
 			logRead.readLog();
 		}
 		CurrentCountScheduler.initList();
-		logger.debug("Properties Path:" + FilePath.v3properties);
-		V3Scanner.setConfPropertiesPath(FilePath.v3properties);
+
+		if(PropertiesData.engine==1) {
+			logger.debug("Properties Path:" + FilePath.v3properties);
+			V3Scanner.setConfPropertiesPath(FilePath.v3properties);
+		}else if(PropertiesData.engine==2){
+			logger.info("Properties Path : "+FilePath.vrsdkProperties);
+			ViRobotLog.setConfigPropertiesPath(FilePath.vrsdkProperties);
+			logger.info("Properties setting");
+		}
+		logger.info("setting if end");
 
 	}
 

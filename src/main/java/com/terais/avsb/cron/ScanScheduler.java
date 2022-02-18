@@ -7,6 +7,7 @@ import com.terais.avsb.core.PropertiesData;
 import com.terais.avsb.core.ScanScheduleList;
 import com.terais.avsb.core.SimpleDateFormatCore;
 import com.terais.avsb.dto.ScanResult;
+import com.terais.avsb.lib.ViRobotLog;
 import com.terais.avsb.module.FilePath;
 import com.terais.avsb.vo.ScanSchedule;
 import org.slf4j.Logger;
@@ -42,6 +43,25 @@ public class ScanScheduler {
 	 */
 	private static Map<String,Integer> resCount = new HashMap<String, Integer>();
 
+	private static Map<String,Integer> resultMap = new HashMap<String, Integer>();
+
+	public static void initResultMap(){
+		int engine = PropertiesData.engine;
+		if(engine==1){
+			resultMap.put("normal",0);
+			resultMap.put("infected",1);
+			resultMap.put("disinfected",2);
+			resultMap.put("delete",4);
+
+		}else if(engine==2){
+			resultMap.put("normal",2);
+			resultMap.put("infected",3);
+			resultMap.put("disinfected",2);
+			resultMap.put("delete",4);
+		}else{
+
+		}
+	}
 
 	/**
 	  * resCount 초기화 메소드
@@ -143,6 +163,7 @@ public class ScanScheduler {
 					list.remove(i--);
 				}
 			}else{
+
 				continue;
 			}
 		}
@@ -305,47 +326,29 @@ public class ScanScheduler {
 					sr.setFilepath(scanFile.getCanonicalPath());
 
 					if (scanFile.exists() == false) {
-						sr = null;
+						sr.setResult("Failed - ERROR 1010");
 					} else if (scanFile.canRead() == false) {
 						sr.setSize((scanFile.length() / 1024) + "kb");
-						sr.setResult("Can Not Read File.");
+						sr.setResult("Failed - ERROR 1011");
 						resCount.put("Failed", resCount.get("Failed") + 1);
 					} else if (line.equals(scanFile.getCanonicalPath()) == false) {
 						sr.setSize((scanFile.length() / 1024) + "kb");
 						sr.setName("Symbolic");
-						sr.setResult("Symbolic File");
+						sr.setResult("Failed - ERROR 1011");
 						resCount.put("Failed", resCount.get("Failed") + 1);
-					} else {
+					}else {
 						Properties prop = new Properties();
 						String check = null;
 						logger.debug("검사 파일: " + file.getPath());
-						int result;
 						check = scanFile.getCanonicalPath();
 						byte[] encoding = check.getBytes("UTF-8");
 						String checkPath = new String(encoding, "UTF-8");
-						result = V3Scanner.scanFile(checkPath, prop);
-						logger.debug("result: " + result);
-						logger.debug("result log: " + prop.getProperty(V3Const.PROP_KEY_MORE_INFO));
-						if (result == 0) {
-							sr = null;
-							resCount.put("Normal", resCount.get("Normal") + 1);
-						} else if (result == 1) {
-							sr.setSize((scanFile.length() / 1024) + "kb");
-							sr.setName(prop.getProperty(V3Const.PROP_KEY_MALWARE_CATEGORY));
-							sr.setResult("Infected");
-							resCount.put("Infected", resCount.get("Infected") + 1);
-						} else if (result == 2 || result == 4) {
-							sr.setSize((scanFile.length() / 1024) + "kb");
-							sr.setName(prop.getProperty(V3Const.PROP_KEY_MALWARE_CATEGORY));
-							sr.setResult("Cured");
-							resCount.put("Cured", resCount.get("Cured") + 1);
-						} else {
-							sr.setSize((scanFile.length() / 1024) + "kb");
-							sr.setName("Anonymous");
-							sr.setResult("Failed");
-							resCount.put("Failed", resCount.get("Failed") + 1);
+						if(PropertiesData.engine==1) {
+							sr = v3scanFile(prop, checkPath, sr, scanFile);
+						}else{
+							sr = vrsdkScanFile(prop,checkPath,sr,scanFile);
 						}
-						prop = null;
+						prop.clear();
 					}
 					if (sr != null) {
 						list.add(sr);
@@ -394,6 +397,158 @@ public class ScanScheduler {
 		}else{
 
 		}
+	}
+
+	public ScanResult v3scanFile(Properties prop, String checkPath, ScanResult sr,File scanFile){
+		int result = V3Scanner.scanFile(checkPath, PropertiesData.scanOption,prop);
+		logger.debug("result: " + result);
+		logger.debug("result log: " + prop.getProperty(V3Const.PROP_KEY_MORE_INFO));
+		if (result == 0) {
+			sr = null;
+			resCount.put("Normal", resCount.get("Normal") + 1);
+		} else if (result == 1) {
+			sr.setSize((scanFile.length() / 1024) + "kb");
+			sr.setName(prop.getProperty(V3Const.PROP_KEY_MALWARE_CATEGORY));
+			sr.setResult("Infected");
+			resCount.put("Infected", resCount.get("Infected") + 1);
+		} else if (result == 2 || result == 4) {
+			sr.setSize((scanFile.length() / 1024) + "kb");
+			sr.setName(prop.getProperty(V3Const.PROP_KEY_MALWARE_CATEGORY));
+			sr.setResult("Cured");
+			resCount.put("Cured", resCount.get("Cured") + 1);
+		} else {
+			sr.setSize((scanFile.length() / 1024) + "kb");
+			sr.setName("Anonymous");
+			sr.setResult("Failed - "+failReason(result));
+			resCount.put("Failed", resCount.get("Failed") + 1);
+		}
+
+		return sr;
+	}
+
+	public ScanResult vrsdkScanFile(Properties prop, String checkPath, ScanResult sr, File scanFile){
+		int result = ViRobotLog.scanFile(checkPath,PropertiesData.scanOption, prop);
+		logger.debug("result: " + result);
+		if(PropertiesData.scanOption==0) {
+			if (result == 2) {
+				sr = null;
+				resCount.put("Normal", resCount.get("Normal") + 1);
+			} else if (result == 3 || result ==4) {
+				sr.setSize((scanFile.length() / 1024) + "kb");
+				sr.setName(prop.getProperty(ViRobotLog.AVSB_MALWARE_NAME));
+				sr.setResult("Infected");
+				resCount.put("Infected", resCount.get("Infected") + 1);
+			} else {
+				sr.setSize((scanFile.length() / 1024) + "kb");
+				sr.setName("Anonymous");
+				sr.setResult("Failed - "+failReason(result));
+				resCount.put("Failed", resCount.get("Failed") + 1);
+			}
+		}else{
+			if (result == 2) {
+				sr = null;
+				resCount.put("Normal", resCount.get("Normal") + 1);
+			} else if (result == 3 || result ==5 || result == 6 || result == 7 || result == 9) {
+				sr.setSize((scanFile.length() / 1024) + "kb");
+				sr.setName(prop.getProperty(V3Const.PROP_KEY_MALWARE_CATEGORY));
+				sr.setResult("Cured");
+				resCount.put("Cured", resCount.get("Cured") + 1);
+			} else {
+				sr.setSize((scanFile.length() / 1024) + "kb");
+				sr.setName("Anonymous");
+				sr.setResult("Failed - "+failReason(result));
+				resCount.put("Failed", resCount.get("Failed") + 1);
+			}
+		}
+		return sr;
+	}
+
+	public String failReason (int result){
+		String reason = "";
+		if(PropertiesData.scanOption==0){
+			reason = detectFailReason(result);
+		}else{
+			reason = disinfectFailReason(result);
+		}
+
+		return reason;
+	}
+
+	public String detectFailReason(int result){
+		String reason = "";
+		if(PropertiesData.engine==1){
+			switch(result){
+				case -1:
+					reason = "ERROR 1014";
+					break;
+				case -7:
+					reason = "ERROR 1020";
+					break;
+				case -5:
+					reason = "ERROR 1013";
+					break;
+				default:
+					reason = "ERROR 1019";
+					break;
+			}
+		}else{
+			switch(result){
+				case 1:
+				case 6:
+				case 7:
+					reason = "ERROR 1014";
+					break;
+				case -42:
+					reason = "ERROR 1013";
+					break;
+				default:
+					reason = "ERROR 1019";
+			}
+		}
+		return reason;
+	}
+
+	public String disinfectFailReason(int result){
+		String reason = "";
+		if(PropertiesData.engine==1){
+			switch(result){
+				case 3:
+					reason = "ERROR 1021";
+					break;
+				case 5:
+				case 6:
+				case -1:
+					reason = "ERROR 1014";
+					break;
+				case -7:
+					reason = "ERROR 1020";
+					break;
+				case -5:
+					reason = "ERROR 1013";
+					break;
+				default:
+					reason = "ERROR 1019";
+					break;
+			}
+		}else{
+			switch(result){
+				case 1:
+					reason = "ERROR 1021";
+					break;
+				case 4:
+				case 8:
+				case 11:
+					reason = "ERROR 1014";
+					break;
+				case -42:
+					reason = "ERROR 1013";
+					break;
+				default:
+					reason = "ERROR 1019";
+					break;
+			}
+		}
+		return reason;
 	}
 
 	/**

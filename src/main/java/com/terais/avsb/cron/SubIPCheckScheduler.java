@@ -121,17 +121,26 @@ public class SubIPCheckScheduler {
             logger.debug("hauri", hauri);
             logger.debug("alyac", alyac);
             logger.debug("tachyon", tachyon);
+            File file = null;
             if (ahnlab != null) {
-                FilePath.logPath = ahnlab + "/log";
-                FilePath.logFile = FilePath.logPath + "/v3scan_res.log";
+                file = new File(ahnlab);
+                FilePath.logPath = file.getParent();
+                FilePath.logFile = ahnlab;
             } else if (hauri != null) {
-                FilePath.logPath = hauri;
+                file = new File(hauri);
+                FilePath.logPath = file.getParent();
+                FilePath.logFile = hauri;
             } else if (alyac != null) {
-                FilePath.logPath = alyac;
+                file = new File(alyac);
+                FilePath.logPath = file.getParent();
+                FilePath.logFile = alyac;
             } else if (tachyon != null) {
-                FilePath.logPath = tachyon;
+                file = new File(tachyon);
+                FilePath.logPath = file.getParent();
+                FilePath.logFile = tachyon;
             } else {
-
+                FilePath.logPath = FilePath.libsFolder+"/log";
+                FilePath.logFile = FilePath.logPath+"/dummy.log";
             }
 
             logFile = new File(FilePath.logFile);

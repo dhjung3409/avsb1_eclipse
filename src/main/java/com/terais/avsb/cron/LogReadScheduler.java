@@ -1,38 +1,25 @@
 package com.terais.avsb.cron;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.RandomAccessFile;
-import java.lang.reflect.Type;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.*;
-
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.stream.JsonReader;
 import com.terais.avsb.core.CurrentLog;
-import com.terais.avsb.core.PathAndConvertGson;
+import com.terais.avsb.core.PropertiesData;
+import com.terais.avsb.dto.ReadLog;
+import com.terais.avsb.module.FilePath;
 import com.terais.avsb.module.LicenseCheck;
 import com.terais.avsb.module.ReadLogPath;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.core.task.TaskExecutor;
 import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Component;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonParseException;
-import com.google.gson.reflect.TypeToken;
-import com.google.gson.stream.JsonReader;
-import com.terais.avsb.core.PropertiesData;
-import com.terais.avsb.dto.ReadLog;
-import com.terais.avsb.module.FilePath;
+import java.io.*;
+import java.lang.reflect.Type;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 
 /**  
@@ -50,9 +37,75 @@ public class LogReadScheduler {
 	public static String LI_M2="1";
 
 	/**
+	 * 로그에 찍히는 필드 값을 담아두는 객체
+	 */
+	private static Map<String, String> logElement = new HashMap<String, String>();
+
+	/**
+	 * 로그 결과물 키 값에 번호 값을 담아두는 객체
+	 */
+	private static Map<String,Integer> resultMap = new HashMap<String,Integer>();
+
+	/**
+	 * 로그 결과물을 종류별로 나누어 카운팅 하는 객체
+	 */
+	private static Map<String, Integer> resultCount = new HashMap<String, Integer>();
+
+	private static int logNum=0;
+
+	/**
+	 * Gson 라이브러리 객체
+	 */
+	private static final Gson gson = new GsonBuilder().setPrettyPrinting().create();
+
+	/**
 	 * Gson 객체에서 사용 할 List<ReadLog>의 TypeToken
 	 */
 	private static final Type type = new TypeToken<List<ReadLog>>() {}.getType();
+
+
+	/**
+	 * 로그 결과 카운팅 객체의 초기화
+	 */
+	public void setResultCount(){
+		resultCount.put("normal",0);
+		resultCount.put("infected",0);
+		resultCount.put("disinfected",0);
+		resultCount.put("deleteFail",0);
+		resultCount.put("failed",0);
+	}
+
+	/**
+	 * 로그 결과 키 값, 번호 값 Map 객체의 초기화
+	 */
+	public void setResultMap(){
+		resultMap.put("NORMAL_FILE",0);
+		resultMap.put("INFECTED",1);
+		resultMap.put("SCAN_CURE_DELETE_FAIL_BY_CONFIGURE",2);
+		resultMap.put("SCAN_FAILED",3);
+		resultMap.put("SCAN_CURE_DELETE_SUCCESS",4);
+		resultMap.put("Normal",5);
+		resultMap.put("Infected",6);
+		resultMap.put("InfectedSuspicious",7);
+		resultMap.put("Error",8);
+		resultMap.put("Skip",9);
+		resultMap.put("Failed",10);
+		resultMap.put("Disinfected",11);
+		resultMap.put("Delete",12);
+		resultMap.put("DeleteFail",13);
+	}
+
+
+	/**
+	 * 로그 요소 생성 initMethod에서 한번 실행
+	 */
+	public void initLogElement(){
+		logElement.put("target","target=");
+		logElement.put("targetSize","targetSize=");
+		logElement.put("ClientIP","ClientIP=");
+		logElement.put("scanTime","scanTime=");
+		logElement.put("scanResult","scanResult=");
+	}
 
 	/**
 	  * 라이센스 상태를 확인하는 스케줄러
@@ -240,7 +293,7 @@ public class LogReadScheduler {
 	  * 로그 정보를 읽어들여 저장하는 메소드
 	  */
 	@Scheduled(cron="10 0/5 * * * *")
-	public void readLog() {
+	public void readLog(){
 		if(PropertiesData.licenseStatus==false){
 			logger.debug("License is Expired: "+PropertiesData.licenseExpire);
 			return;
@@ -251,564 +304,156 @@ public class LogReadScheduler {
 			logger.error("This is not engine path: "+PropertiesData.enginePath);
 			return;
 		}
-		List<String> divFiles = checkDivFile();
-		delDivFile(divFiles);
+		String logFolder = FilePath.logPath;
+		String logFile = FilePath.logFile.substring(FilePath.logFile.lastIndexOf("/")+1);
+		Properties prop = getResultProperties(FilePath.todayResult);
 
-		logger.debug("Thread: {}",Thread.currentThread().getName());
-		logger.debug("readLog start");
-		File dirFile = new File(FilePath.logPath);
-		logger.debug(dirFile.getPath());
-		String workName = FilePath.workName;
-		
-		String logFile = FilePath.readTodayLogFile;
-		String tmpLogJson = FilePath.tmpLogJson;
-		
-		String resultName = FilePath.todayResult;				
-		File f = new File(resultName);
-		Properties addResult = new Properties();
-		if(!f.exists()){
-			FileOutputStream fos=null;
-			try {
-				f.createNewFile();
-				addResult.setProperty("total", "0");
-				addResult.setProperty("normal", "0");
-				addResult.setProperty("infected", "0");
-				addResult.setProperty("disinfected", "0");
-				addResult.setProperty("failed", "0");
-				addResult.setProperty("deleteFail", "0");
-				fos = new FileOutputStream(f);
-				addResult.store(fos, resultName);
-			} catch (IOException e1) {
-				// TODO Auto-generated catch block
-				logger.error("create new result file failed");
-			}finally{
-				try {
-					if(fos!=null) {
-						fos.close();
-					}
-				} catch (IOException e) {
-					logger.error("Result File Output IOException: "+e.getMessage());
-				}
-			}
+		try {
+			logNum = Integer.parseInt(getProperties(prop, "num"));
+		}catch(NumberFormatException e){
+			logger.error("result properties num value is not number");
+			logNum = 0;
 		}
-		Properties p = new Properties();  		
-		
-		int normal=0;
-		int infected=0;
-		int disinfected=0;
-		int failed=0;
-		int deleteFail=0;
-		Map<String,String> logToLogJson=new HashMap<String,String>();
-		Map<String,String> mappingKeyLogtoJson=new HashMap<String,String>();
-		Map<String,Integer> resultKeyAndValue=new HashMap<String,Integer>();
-		
-		Map<String, String> resultText = new HashMap<String,String>();
-
-		Properties pro = new Properties();   
-		int worker=0;
-		String status=null;
-		FileOutputStream fos=null;
-		FileInputStream fis=null;
-    	
-    	File workFile = new File(workName);
-    	List<File> files=null;
-		boolean checkNull=false;
-    	try { 
-    		files = checkFile(dirFile.listFiles());
-    		Properties workPro=null;
-	    	if(!workFile.exists()){
-	    		workFile.createNewFile();
-	    		workPro = new Properties();
-	    		
-	    		workPro.setProperty("worker", String.valueOf(files.size()));
-	    		workPro.setProperty("status", "normal");
-	    		fos = new FileOutputStream(workFile);	    		
-				workPro.store(fos, workName);				
-	    		fos=null;
-	    		new PropertiesData().callWorker();
-	    	}else if(PropertiesData.worker==null){
-	    		new PropertiesData().callWorker();
-	    	}
-	    	
-	    	if(Integer.parseInt(PropertiesData.worker)!=files.size()){
-	    		logger.debug("Before Save worker: "+PropertiesData.worker);
-	    		workPro = new Properties();	    		
-	    		workPro.setProperty("worker", String.valueOf(files.size()));
-	    		workPro.setProperty("status", PropertiesData.logStatus);
-	    		fos = new FileOutputStream(workFile);	    		
-				workPro.store(fos, workName);				
-	    		fos=null;
-	    		PropertiesData.worker=String.valueOf(files.size());
-	    	}
-	    	
-	    	logger.debug("After Save worker: "+PropertiesData.worker);
-	    	worker = Integer.parseInt(PropertiesData.worker);
-	    	status = PropertiesData.logStatus;
-	    	if(worker==0){
-				logger.debug("Not exist LogFile");
-				return;
-			}
-	    	fis=null;
-    	} catch (IOException e) {
-			// TODO Auto-generated catch block
-			logger.error("Worker Properties Check IOException: "+e.getMessage());
+		setResultCount();
+		System.out.println("logFolder : "+(logFolder));
+		System.out.println("logFile : "+(logFile));
+		if(logFolder.equals("")||logFile.equals("")){
+			System.err.println("This is not log File");
+			return;
 		}
-    	
-    	   		
-    	
-    	logger.debug("Thread: "+worker);
-		boolean checkLastLine;
-		List<String> newTempList=null;
-		List<ReadLog> logJsonList=null;
-		List<String> readLog=null;
-		try{
-			if(files!=null){
-				Collections.sort(files,new AscendingFile());
+
+		File logDir = new File(logFolder);
+
+		List<File> logList = LogReadScheduler.checkFile(logDir.listFiles(),logFile);
+
+		Collections.sort(logList,new AscendingFile());
+
+		File lastLog = new File(FilePath.tmpLogFile);
+
+		List<String> lastLogList = addLogList(lastLog);
+
+		List<String> newLastLog = new ArrayList<String>();
+
+		List<ReadLog> readLog = new ArrayList<ReadLog>();
+		for(File file : logList){
+			if(checkLastLine(file,lastLogList,newLastLog)==false){
+				continue;
 			}
-
-	    	File logJson=new File(logFile);
-	    	File jsonTemp = new File(tmpLogJson);
-	    	
-	    	if(!logJson.exists()){
-	    		logJson.createNewFile();
-				initJson(logJson);
-	    	}
-
-	    	if(!jsonTemp.exists()){
-	    		jsonTemp.createNewFile();
-				initJson(jsonTemp);
-	    	}
-
-	    	JsonReader logJsonReader=new JsonReader(new FileReader(logJson));
-
-	    	JsonReader jsonTempReader = new JsonReader(new FileReader(jsonTemp));
-
-			logJsonList =new Gson().fromJson(logJsonReader, type);
-
-			if(logJsonList==null){
-				logJsonList=new ArrayList<ReadLog>();
-			}
-
-	    	List<String> jsonTempList = new Gson().fromJson(jsonTempReader, List.class);
-
-			if(jsonTempList==null){
-				jsonTempList = new ArrayList<String>();
-			}
-
-
-	    	newTempList = new ArrayList<String>();
-
-	    	checkNull = status.equals("normal");
-
-	    	for ( int i=0; i< worker; i++){
-				logger.debug("readLogFile: "+files.get(i).getCanonicalPath());
-    			if(f.exists()){    		  
-    	    		try{
-    	    			fis = new FileInputStream(resultName);
-    	    			p.load(fis);
-    	    			normal = Integer.parseInt(p.get("normal").toString());
-    	    	    	infected = Integer.parseInt(p.get("infected").toString());
-    	    	    	disinfected = Integer.parseInt(p.get("disinfected").toString());
-    	    	    	failed = Integer.parseInt(p.get("failed").toString());
-    	    	    	deleteFail=Integer.parseInt(p.get("deleteFail").toString());	    	    	    	
-    	    		}catch(Exception e ){
-    	    			logger.error("ReadLog Prop load Exception: "+e.getMessage());
-    	    		}    		
-    	    	}
-    			
-    			File file = new File(files.get(i).getPath());	    					
-    	
-    			List<String> lastLine=getLastLine(file);
-    			logger.debug("lastLines: "+lastLine.toString());
-    			logger.debug("jsonTempListttt" +
-						".: "+jsonTempList.toString());
-
-    			int lineCount = 0;
-    			for(int num=0;num<lastLine.size();num++){
-    				checkLastLine = jsonTempList.contains(lastLine.get(num));
-    				if(checkLastLine==false){
-						logger.debug(lastLine.get(num));
-    				}else {
-						logger.debug(lastLine.get(num));
-						newTempList.add(lastLine.get(num));
-    					++lineCount;
-    				}
-    			}
-
-    			if(lineCount==lastLine.size()){
-    				logger.debug("file pass");
-    				continue;
-    			}
-    			
-    			logger.debug("continue next");
-
-				divLogFile(files.get(i).getCanonicalPath());
-    			resultKeyAndValue.put("NORMAL_FILE", normal);
-    			resultKeyAndValue.put("INFECTED", infected);
-    			resultKeyAndValue.put("SCAN_CURE_DELETE_SUCCESS", disinfected);
-    			resultKeyAndValue.put("SCAN_FAILED", failed);
-    			resultKeyAndValue.put("SCAN_CURE_DELETE_FAIL_BY_CONFIGURE", deleteFail);
-    						
-    			resultText.put("SCAN_FAILED", "failed");
-    			resultText.put("SCAN_CURE_DELETE_SUCCESS", "disinfected");
-    			resultText.put("INFECTED", "infected");
-    			resultText.put("NORMAL_FILE", "normal");	
-    			resultText.put("SCAN_CURE_DELETE_FAIL_BY_CONFIGURE", "deleteFail");
-    			
-    			logToLogJson.put("date", "scanTime=");
-    			logToLogJson.put("target", "target=");
-    			logToLogJson.put("client_ip", "ClientIP=");
-    			logToLogJson.put("result", "scanResult=");
-    			
-    			
-    			if(file.exists()){	
-
-    				readLog=new ArrayList<String>();
-    				if(file.length()>(1024*1024*20)){
-    					logger.debug("readLog if");
-						readLog = getLogString(readLog,jsonTempList);
-					}else {
-    					logger.debug("readLog else");
-						readLog = getReadLog(readLog,file);
-
-					}
-					logger.info("readLog Size: "+readLog.size());
-					int readCheck = -1;
-					for(String checkString : jsonTempList){
-						int checkInt = readLog.indexOf(checkString);
-						if(readCheck<checkInt){
-							readCheck=checkInt;
-						}
-					}
-					logger.debug(readCheck+"");
-					if(readLog.size()==(readCheck+1)){
-						newTempList.addAll(lastLine);
-						continue;
-					}
-    				String line=null;
-    				int cnt=0;
-					logger.debug("last Read Log: "+readLog.get(readLog.size()-1));
-    				for(readCheck=readCheck+1; readCheck<readLog.size(); readCheck++){
-    					line=readLog.get(readCheck);
-    					++cnt;
-    					ReadLog readLine= insertLog(line,logToLogJson,resultKeyAndValue,mappingKeyLogtoJson,logJsonList);
-
-
-						for(ReadLog log :logJsonList){
-							if(readLine==null){
-								break;
-							}else if(readLine.getDate().equals(log.getDate()) && readLine.getTarget().equals(log.getTarget()) && readLine.getResult().equals(log.getResult())){
-								readLine=null;
-								break;
-							}
-						}
-
-    					if(readLine!=null){
-							if(readLine!=null) {
-								logJsonList.add(readLine);
-							}
-    					}
-    				}
-    				logger.debug("logJsonList: "+logJsonList.toString());
-    				String tempLine = null;
-    				logger.debug(readLog.isEmpty()+"");
-    				int readLogSize = readLog.size()>5?5:readLog.size();
-    				for(int lastCount=0;lastCount<readLogSize;lastCount++){
-						tempLine=readLog.get(readLog.size()-1-lastCount);
-						logger.debug("tempLine"+tempLine);
-						newTempList.add(tempLine);
-    				}
-
-					logger.debug("newTempList: "+newTempList.toString());
-    				int total=0;
-					for(String key : resultKeyAndValue.keySet()){
-						addResult.setProperty(resultText.get(key), resultKeyAndValue.get(key).toString());
-						total += resultKeyAndValue.get(key);
-					}
-					addResult.setProperty("total", String.valueOf(total));
-					fos = new FileOutputStream(resultName);
-					addResult.store(fos, resultName);	
-    				fos=null;
-    			}
-
-    		}
-
-			logger.info("readLog End");
-		}catch(NullPointerException e){
-			logger.error("NullPointerException: "+e.getCause());
-			initJson(tmpLogJson,logFile,pro,workName);
-		}catch(JsonParseException e){
-			logger.error("JsonParseException: "+e.getMessage());
-			initJson(tmpLogJson,logFile,pro,workName);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			logger.error("IOException: "+e.getMessage());
-		}finally{
-			FileWriter lastWriter = null;
-			FileWriter jsonWriter = null;
+			System.out.println(file.getPath());
 			try {
-				if(readLog!=null){
-					readLog.clear();
-				}
-				lastWriter = new FileWriter(tmpLogJson);
-				jsonWriter = new FileWriter(logFile);
-				if(checkNull==false){
-					pro.setProperty("worker", PropertiesData.worker);
-					pro.setProperty("status", "normal");
-					PropertiesData.logStatus="normal";
-					fos = new FileOutputStream(workName);
-					pro.store(fos, workName);
-				}
-
-				PathAndConvertGson.gson.toJson(newTempList,lastWriter);
-				PathAndConvertGson.gson.toJson(logJsonList,jsonWriter);
-				lastWriter.flush();
-				jsonWriter.flush();
-				lastWriter.close();
-				jsonWriter.close();
+				divLogFile(file.getCanonicalPath());
 			} catch (IOException e) {
-				logger.error("LogRead Data Return IOException");
-			}finally {
-				readLog = null;
-				logToLogJson = null;
-				mappingKeyLogtoJson = null;
-				resultKeyAndValue = null;
-				newTempList = null;
-				logJsonList = null;
-				fos = null;
-				fis = null;
-				jsonWriter = null;
-				lastWriter = null;
-
+				e.printStackTrace();
 			}
+			if(file.length()>(1024*1024)*20) {
+				getLogString(readLog, lastLogList,newLastLog);
+			}else{
+				getReadLog(readLog,file,lastLogList,newLastLog);
+			}
+
+		}
+
+		setResultProperties(prop);
+		saveProperties(prop,FilePath.todayResult);
+		if(prop!=null){
+			prop.clear();
+		}
+		System.out.println("New Log List : "+newLastLog);
+		writeFile(newLastLog);
+		System.out.println("ReadLog List : "+readLog.toString());
+		if(readLog.isEmpty()){
+			logger.debug("ReadLog Not add");
+		}else {
+			getReadLog(gson, readLog);
+			writeGson(readLog);
 		}
 	}
 
 	/**
-	  * 로그파일의 모든 로그 정보를 가져오는 메소드
-	  * @param readLog 읽어들인 로그를 저장하는 리스트
-	  * @param file 읽어들일 로그 파일
-	  * @return 로그 파일의 모든 로그 정보를 저장한 리스트
-	  */
-	public List<String> getReadLog(List<String> readLog, File file){
+	 * @param file
+	 * @return
+	 */
+	public List<String> addLogList(File file){
+		List<String> logList = new ArrayList<String>();
 		FileReader fr = null;
 		BufferedReader bfr = null;
+		if(file.exists()==false){
+			return logList;
+		}
 		try {
-			fr=new FileReader(file);
+			fr = new FileReader(file);
 			bfr = new BufferedReader(fr);
-			String line;
-			while((line=bfr.readLine())!=null){
-				if(line.contains(FilePath.dummyFile)){
-					continue;
-				}
-				readLog.add(line);
+			String line = "";
+			while((line= bfr.readLine())!=null){
+				logList.add(line);
 			}
-
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
 		} catch (IOException e) {
 			e.printStackTrace();
-		}finally {
-			fr=null;
-			bfr=null;
-		}
-		return readLog;
-	}
-
-
-	/**
-	  * log.json 파일과 .log_tmp.json 파일이 손상된 경우 빈 JSON 파일로 바꾸는 메소드
-	  * @param tmpLogJson .log_tmp.json 파일의 경로
-	  * @param logFilePath log.json 파일의 경로
-	  * @param pro worker.ini 파일에 저장할 정보를 가지고 있는 Properties
-	  * @param workName worker.ini 파일의 경로
-	  */
-	public void initJson(String tmpLogJson, String logFilePath, Properties pro, String workName){
-		File logFile = new File(logFilePath);
-		File tmpFile = new File(tmpLogJson);
-    	FileOutputStream fos=null;
-		try {		
-			logger.debug("cathchError start");
-			pro.setProperty("worker",PropertiesData.worker);
-			pro.setProperty("status", "NullError OR JsonParseError");
-			PropertiesData.logStatus="NullError OR JsonParseError";
-			fos = new FileOutputStream(workName);
-			pro.store(fos, workName);
-			initJson(tmpFile);
-			initJson(logFile);
-	    	logger.debug("catchError end");
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			logger.error("catchError(): FileNotFoundException: "+e.getMessage());
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			logger.error("catchError(): IOException: "+e.getMessage());
-		}finally {
-			fos=null;
-		}
-	}
-
-	/**
-	  * 해당 파일을 빈 JSON 파일로 생성하는 메소드
-	  * @param file 빈 JSON 파일로 만들 파일
-	  */
-	public void initJson(File file){
-		FileWriter fw=null;
-		try {
-			logger.debug("Init File: "+file.getCanonicalPath());
-			fw = new FileWriter(file);
-			fw.write("[]");
-			fw.flush();
-			logger.debug("Init File end");
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			logger.error("catchError(): FileNotFoundException: "+e.getMessage());
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			logger.error("catchError(): IOException: "+e.getMessage());
-		}finally{
-			try {
-				if(fw!=null) {
-					fw.close();
+		} finally{
+			if(fr !=null){
+				try {
+					fr.close();
+				} catch (IOException e) {
+					e.printStackTrace();
 				}
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				logger.error("catchError(): IOException: "+e.getMessage());
-			}finally {
-				fw=null;
 			}
 
-		}
-	}
-
-	/**
-	  * 로그의 result 값을 분류해 카운팅 하고 그 값을 result 파일에 저장, Normal 이외의 결과값을 log.json 파일에 저장하는 메소드
-	  * @param line 읽어들인 로그 한 줄
-	  * @param logToLogJson result 파일에 로그 결과값을 분류하는 Map 객체
-	  * @param resultKeyAndValue 분류된 결과값을 카운팅하는 Map 객체
-	  * @param mappingKeyLogToJson 로그 한 줄의 날짜, 결과값, IP, 경로의 값들을 저장한 Map 객체
-	  * @param logJsonList ReadLog 객체에 맞춰서 로그의 정보를 저장한 리스트
-	  * @return 읽어들인 로그 한 줄의 정보를 담은 ReadLog 객체
-	  */
-	public ReadLog insertLog(String line,Map<String,String> logToLogJson,Map<String,Integer> resultKeyAndValue,Map<String,String> mappingKeyLogToJson,List<ReadLog> logJsonList){
-		ReadLog readLog=new ReadLog();	
-		if(line==null)return null;
-		List<String> logs = new ArrayList<String>(Arrays.asList(line.split(" ")));
-		int num=0;
-
-		for(int k=0;k<logs.size();k++){								
-			String log = logs.get(k);
-			for (String key : logToLogJson.keySet()) {
-				if(log.indexOf(logToLogJson.get(key))!=-1){
-					log=getItemsLog(num,log,logs,logToLogJson.get(key));
-					mappingKeyLogToJson.put(key, log);
-					if(key=="result"){
-						mapPlus(resultKeyAndValue,log);
-						logger.debug(log+": "+resultKeyAndValue.get(log));
-					}
-				}								
-			}								
-			num++;
-		}
-
-		if(mappingKeyLogToJson.get("result").equals("NORMAL_FILE")){
-			mappingKeyLogToJson.clear();
-			logs.clear();
-			return null;
-		}
-		logger.debug("result: "+mappingKeyLogToJson.get("result"));
-		readLog.setClient_ip(mappingKeyLogToJson.get("client_ip"));
-		readLog.setDate(mappingKeyLogToJson.get("date"));
-		readLog.setResult(mappingKeyLogToJson.get("result"));
-		readLog.setTarget(mappingKeyLogToJson.get("target"));
-		long no = logJsonList.isEmpty()?0:logJsonList.size()+1;
-		readLog.setNo(no);
-		mappingKeyLogToJson.clear();
-		logs.clear();
-		logs=null;
-		return readLog;
-	}
-
-	/**
-	  * 해당 파일이 v3scan_res.log 파일인지 확인하는 메소드
-	  * @param files 확인할 파일의 리스트
-	  * @return 확인된 로그파일들
-	  */
-	public static List<File> checkFile(File[] files){
-		List<File> returnFiles = new ArrayList<File>();
-		try{
-			for(File file:files){
-				String path = file.getPath().toString();
-				long fileSize = file.length();
-				if(path.indexOf("v3scan_res.log")!=-1&&fileSize>0&&file.isFile()&&file.canRead()&&path.indexOf("swp")==-1){
-					returnFiles.add(file);
-				}		
+			if(bfr!=null){
+				try {
+					bfr.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
 			}
-			Collections.sort(returnFiles);
-		}catch(Exception e){
-			logger.error("checkFile error");
 		}
-		return returnFiles;
+
+		return logList;
 	}
 
 	/**
-	  * 검사 결과를 카운팅하는 메소드
-	  * @param resultKeyAndValue 결과 카운팅 값을 가지고 있는 객체
-	  * @param key 결과의 종류
-	  */
-	public void mapPlus(Map<String,Integer> resultKeyAndValue,String key){
-		int scanResult = resultKeyAndValue.get(key)+1;
-		resultKeyAndValue.put(key, scanResult);
-	}
-
-	/**
-	  * 키값을 배제한 로그값을 추출하는 메소드
-	  * @param num 리스트에 존재하는 값의 위치
-	  * @param log 추출해야 하는 로그 값
-	  * @param logs 필요한 로그 값이 저장되어있는 리스트
-	  * @param item 키값
-	  * @return 추출한 로그 값
-	  */
-	public String getItemsLog(int num, String log, List<String> logs, String item){
-		log=log.replace(item, "");
-
-		if(item=="target="){
-			log=getTarget(num,logs,log);
-		}else if(item=="scanTime="){
-			log+=" "+logs.get(++num).toString();
+	 * @param file
+	 * @param tmpLogList
+	 * @param newLogList
+	 * @return
+	 */
+	public boolean checkLastLine(File file,List<String> tmpLogList,List<String> newLogList){
+		List<String> lastLogList = getLastLine(file);
+		if(lastLogList.size()<1){
+			return false;
 		}
-		
-		log=log.replace(",", "");
-		
-		return log;
-	}
-
-	/**
-	  * Target 경로를 구하기 위한 함수
-	  * @param num 리스트 내에 필요한 로그 값을 가지고 있는 위치
-	  * @param logs 필요한 로그 값이 저장되어있는 리스트
-	  * @param log 추출해야 하는 로그 값
-	  * @return 추출한 Target 경로 로그 값
-	  */
-	public String getTarget(int num, List<String> logs, String log){
-		try{
-
-			if(logs.get(num).indexOf(",")!=-1)return log;			
-			
-			for(int i=num+1;i<logs.size();i++){
-				log+=" "+logs.get(i).toString();
-				if(logs.get(i).indexOf(",")!=-1)break;			
+		for(String log : lastLogList){
+			if(checkLastLineDetail(tmpLogList,log)==false){
+				System.out.println("different log : "+log);
+				return true;
 			}
-			
-		}catch(Exception e){
-			logger.error("getTarget() error");
+			newLogList.add(log);
 		}
-		return log;
+		return false;
 	}
 
 	/**
-	  * 로그 파일 내부에 저장된 로그 중 중복 체크를 위해 사용 될 마지막 5 라인을 추출하는 메소드
-	  * @param file 로그 파일
-	  * @return 추출된 마지막 5 라인
-	  */
+	 * @param tmpLogList
+	 * @param log
+	 * @return
+	 */
+	public boolean checkLastLineDetail(List<String> tmpLogList, String log){
+		boolean result = false;
+		for(String tmpLog : tmpLogList){
+			if(tmpLog.contains(log)){
+				result=true;
+				break;
+			}
+		}
+		return result;
+	}
+
+	/**
+	 * 로그 파일 내부에 저장된 로그 중 중복 체크를 위해 사용 될 마지막 5 라인을 추출하는 메소드
+	 * @param file 로그 파일
+	 * @return 추출된 마지막 5 라인
+	 */
 	public List<String> getLastLine(File file){
 		List<String> lastLines=new ArrayList<String>();
 		RandomAccessFile raFile;
@@ -817,7 +462,7 @@ public class LogReadScheduler {
 			raFile = new RandomAccessFile(file,"r");
 			raFileSize = raFile.length()-1;
 			raFileSize--;
-			lastLines=CurrentLog.getLines(lastLines,5,raFile,raFileSize);
+			lastLines= CurrentLog.getLines(lastLines,5,raFile,raFileSize);
 			if(raFile!=null) {
 				raFile.close();
 			}
@@ -832,6 +477,239 @@ public class LogReadScheduler {
 			raFileSize=0;
 		}
 		return lastLines;
+	}
+
+	/**
+	 * @param path
+	 * @return
+	 */
+	public static Properties getResultProperties(String path){
+		Properties prop = new Properties();
+		File file = new File(path);
+
+		FileInputStream fis = null;
+		try {
+			if(file.getParentFile().canWrite()==false){
+				System.err.println("Can not create file");
+				return prop;
+			}else if(file.getParentFile().canWrite()&&file.exists()==false){
+				file.createNewFile();
+			}
+			fis = new FileInputStream(file);
+			prop.load(fis);
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return prop;
+	}
+
+	/**
+	 * @param prop
+	 */
+	public static void setResultProperties(Properties prop){
+		int total = 0;
+		for(String key : resultCount.keySet()){
+			int propSum = 0;
+			int propValue = 0;
+			try{
+				propValue = Integer.parseInt(getProperties(prop,key));
+				System.out.println("Prop "+key+" : "+propValue);
+				System.out.println("resultCount "+key+" : "+resultCount.get(key));
+			}catch(NumberFormatException e){
+				System.out.println("Key is not number");
+			}
+			propSum=resultCount.get(key)+propValue;
+			total=total+propSum;
+			resultCount.put(key,propSum);
+			setProperties(prop,key, String.valueOf(propSum));
+		}
+		setProperties(prop,"total", String.valueOf(total));
+		setProperties(prop,"num", String.valueOf(logNum));
+	}
+
+	/**
+	 * @param prop
+	 * @param key
+	 * @return
+	 */
+	public static String getProperties(Properties prop,String key){
+		return prop.getProperty(key);
+	}
+
+	/**
+	 * @param prop
+	 * @param key
+	 * @param value
+	 */
+	public static void setProperties(Properties prop,String key,String value){
+		prop.setProperty(key,value);
+	}
+
+	/**
+	 * @param prop
+	 * @param path
+	 */
+	public static void saveProperties(Properties prop,String path){
+		File file = new File(path);
+		FileOutputStream fos=null;
+		try {
+			fos = new FileOutputStream(file);
+			prop.store(fos,path);
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	/**
+	 * @param lines
+	 */
+	public static void writeFile(List<String> lines){
+		File file = new File(FilePath.tmpLogFile);
+		FileWriter fw=null;
+		try {
+			fw = new FileWriter(file);
+			for(String line : lines) {
+				fw.write(line+"\n");
+			}
+			fw.flush();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}finally {
+			if(fw!=null){
+				try {
+					fw.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+	}
+
+	/**
+	 * @param readLog
+	 */
+	public static void writeGson(List<ReadLog> readLog){
+		File file = new File(FilePath.readTodayLogFile);
+		FileWriter fw = null;
+		try {
+			fw = new FileWriter(file);
+			gson.toJson(readLog,fw);
+			fw.flush();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}finally {
+			if(fw!=null){
+				try {
+					fw.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+
+	}
+
+	/**
+	 * @param gson
+	 * @param readLog
+	 */
+	public void getReadLog(Gson gson,List<ReadLog> readLog){
+		File file = new File(FilePath.readTodayLogFile);
+		if(file.exists()==false){
+			System.err.println("Not Exists File");
+			return;
+		}
+
+		FileReader fr = null;
+		List<ReadLog> fileLog = null;
+		try {
+			fr = new FileReader(file);
+			JsonReader reader = new JsonReader(fr);
+			fileLog = gson.fromJson(reader,type);
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}
+		if(fileLog!=null){
+			readLog.addAll(fileLog);
+		}
+
+	}
+
+
+	/**
+	  * 로그파일의 모든 로그 정보를 가져오는 메소드
+	  * @param readLog 읽어들인 로그를 저장하는 리스트
+	  * @param file 읽어들일 로그 파일
+	  * @return 로그 파일의 모든 로그 정보를 저장한 리스트
+	  */
+	public List<ReadLog> getReadLog(List<ReadLog> readLog, File file,List<String> lastLines,List<String> newLastline){
+		FileReader fr = null;
+		BufferedReader bfr = null;
+		List<String> lineList = new ArrayList<String>();
+		int lastCount = 0;
+		boolean lastCheck = false;
+		try {
+			fr=new FileReader(file);
+			bfr = new BufferedReader(fr);
+			String line;
+			while((line=bfr.readLine())!=null){
+				if(line.contains(FilePath.dummyFile)){
+					continue;
+				}
+				if(lastCheck==false){
+					if(lastLines.contains(line)){
+						lastCount++;
+						System.out.println("lastCount : "+lastCount);
+					}
+
+					setReadLogList(readLog,line);
+
+					if(lastCount>=5){
+						lastCheck=true;
+						readLog.clear();
+						setResultCount();
+					}
+				}else{
+					setReadLogList(readLog,line);
+				}
+
+				getLastLogList(lineList,line);
+			}
+
+		} catch (IOException e) {
+			e.printStackTrace();
+		}finally {
+			fr=null;
+			bfr=null;
+		}
+		newLastline.addAll(lineList);
+		return readLog;
+	}
+
+	/**
+	  * 해당 파일이 지정된 로그 파일인지 확인하는 메소드
+	  * @param files 확인할 파일의 리스트
+	  * @return 확인된 로그파일들
+	  */
+	public static List<File> checkFile(File[] files,String logName) {
+		List<File> returnFiles = new ArrayList<File>();
+		try {
+			for (File file : files) {
+				String path = file.getCanonicalPath().toString();
+				long fileSize = file.length();
+				if (path.contains(logName) && fileSize > 0 && file.isFile() && file.canRead() && path.contains("swp") == false) {
+					returnFiles.add(file);
+				}
+			}
+			Collections.sort(returnFiles);
+		} catch (Exception e) {
+//            logger.error("checkFile error");
+		}
+		return returnFiles;
 	}
 
 	/**
@@ -928,9 +806,10 @@ public class LogReadScheduler {
 	  * @param lastLines 중복 검사 확인을 위한 이전 마지막 읽어낸 로그
 	  * @return 로그가 담긴 리스트
 	  */
-	public List<String> getLogString(List<String> list,List<String> lastLines){
+	public List<ReadLog> getLogString(List<ReadLog> list,List<String> lastLines,List<String> newlastLines){
 		logger.debug("getLogString start");
 		List<String> fileList = checkDivFile();
+		List<String> lineList = new ArrayList<String>();
 		File file = null;
 		FileReader fr = null;
 		BufferedReader bfr = null;
@@ -950,22 +829,27 @@ public class LogReadScheduler {
 						bfr = new BufferedReader(fr);
 						String line;
 						while ((line = bfr.readLine()) != null) {
+
+							if (line.contains(FilePath.dummyFile)) {
+								continue;
+							}
+
 							if (lastCheck == false) {
 								if (lastLines.contains(line)) {
 									lastCount++;
 								}
-
+								setReadLogList(list,line);
 								if (lastCount >= 5) {
 									lastCheck = true;
+									list.clear();
+									setResultCount();
 								}
 							} else {
-								if (line.contains(FilePath.dummyFile)) {
-									continue;
-								} else {
-									list.add(line);
-								}
+								setReadLogList(list,line);
 							}
+							getLastLogList(lineList,line);
 						}
+
 						logger.debug("getLogString end while start");
 					} catch (IOException e) {
 						logger.error("DivLogRead IOException: "+e.getMessage());
@@ -975,20 +859,134 @@ public class LogReadScheduler {
 					}
 				}
 			}
-			if(lastCheck==false&&i==fileList.size()-1){
-				i=-1;
-				lastCheck=true;
-			}
 		}
 		logger.debug("getLogString end for start");
-
+		newlastLines.addAll(lineList);
 		delDivFile(fileList);
 		logger.debug("getLogString end");
 		return list;
 	}
 
-}
+	/**
+	 * @param logList
+	 * @param line
+	 */
+	public static void setReadLogList(List<ReadLog> logList,String line){
 
+		ReadLog readLog = setLogData(line);
+		if(readLog.getResult()==null){
+			return;
+		}
+		String scanResult = setResult(readLog.getResult());
+		resultCount.put(scanResult,resultCount.get(scanResult)+1);
+		if(scanResult.equals("normal")==false){
+			++logNum;
+			logList.add(readLog);
+		}
+	}
+
+	/**
+	 * @param line
+	 * @return
+	 */
+	public static ReadLog setLogData(String line){
+		String[] split = line.split(" ");
+		ReadLog readLog = new ReadLog();
+		readLog.setNo(logNum);
+		String date = "";
+		boolean check = false;
+		for(String data : split){
+			if(data.contains(logElement.get("scanTime"))){
+				date=data;
+				check = true;
+			}else if(check){
+				check=false;
+				date = date+" "+data;
+				setReadLog(readLog, date);
+			}else {
+				setReadLog(readLog, data);
+			}
+		}
+		return readLog;
+	}
+
+	/**
+	 * @param readlog
+	 * @param data
+	 */
+	public static void setReadLog(ReadLog readlog,String data){
+		if(data.contains(logElement.get("target"))){
+			readlog.setTarget(data.replace(",","").replace(logElement.get("target"),""));
+		}else if(data.contains(logElement.get("ClientIP"))){
+			readlog.setClient_ip(data.replace(",","").replace(logElement.get("ClientIP"),""));
+		}else if(data.contains(logElement.get("scanTime"))){
+			readlog.setDate(data.replace(",","").replace(logElement.get("scanTime"),""));
+		}else if(data.contains(logElement.get("scanResult"))){
+			readlog.setResult(data.replace(",","").replace(logElement.get("scanResult"),""));
+		}else{
+			return;
+		}
+	}
+
+	/**
+	 * @param result
+	 * @return
+	 */
+	public static String setResult(String result){
+		String setting = null;
+		switch (resultMap.get(result)){
+			case 0:
+			case 5:
+				setting="normal";
+				break;
+			case 1:
+			case 6:
+			case 7:
+				setting="infected";
+				break;
+			case 4:
+			case 11:
+			case 12:
+				setting="disinfected";
+				break;
+			case 2:
+			case 13:
+				setting="deleteFail";
+				break;
+			case 3:
+			case 8:
+			case 9:
+			case 10:
+				setting="failed";
+				break;
+			default:
+				break;
+		}
+		return setting;
+	}
+
+	/**
+	 * @param lineList
+	 * @param line
+	 */
+	public static void getLastLogList(List<String> lineList,String line){
+		keepList(lineList);
+		if(lineList.size()==5) {
+			lineList.remove(0);
+		}
+		lineList.add(line);
+	}
+
+	/**
+	 * @param lineList
+	 */
+	public static void keepList(List<String> lineList){
+		while(lineList.size()>5){
+			lineList.remove(0);
+		}
+	}
+
+}
 
 /**
   * 배열 정렬 클래스

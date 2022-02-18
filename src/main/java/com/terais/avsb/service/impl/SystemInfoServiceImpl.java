@@ -1,21 +1,20 @@
 package com.terais.avsb.service.impl;
 
 
-import java.util.*;
-
+import com.ahnlab.v3engine.V3Const;
+import com.ahnlab.v3engine.V3Scanner;
 import com.google.gson.Gson;
+import com.terais.avsb.core.PropertiesData;
+import com.terais.avsb.lib.ViRobotLog;
+import com.terais.avsb.module.FilePath;
 import com.terais.avsb.module.IpListSortByIp;
 import com.terais.avsb.module.RestURI;
+import com.terais.avsb.service.SystemInfoService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
 
-import com.ahnlab.v3engine.V3Const;
-import com.ahnlab.v3engine.V3Scanner;
-import com.terais.avsb.core.PropertiesData;
-import com.terais.avsb.module.FilePath;
-import com.terais.avsb.service.SystemInfoService;
+import java.util.*;
 
 /**
   * 시스템에 대한 정보를 가져오는 메소드
@@ -103,12 +102,38 @@ public class SystemInfoServiceImpl implements SystemInfoService {
 	  */
 	public Map<Object, Object> getEngineInfo() {
 		Map<Object,Object> engineInfo = new HashMap<Object, Object>();
-		Properties prop = new Properties();
-		V3Scanner.scanFile(FilePath.dummyFile,0,prop);
-		String engineVersion = prop.getProperty(V3Const.PROP_KEY_TS_VERSION)+"["+prop.getProperty(V3Const.PROP_KEY_DATE_REV)+"]";
+		String engineVersion = getEngineVersion();
+		System.out.println("engineVersion : "+engineVersion);
+		if(engineVersion.equals("")){
+			engineVersion=null+"["+null+"]";
+		}
 		engineInfo.put("EngineName", PropertiesData.useEngine);
 		engineInfo.put("EngineVersion", engineVersion);
 		
 		return engineInfo;
+	}
+
+	public String getEngineVersion(){
+		Properties prop = new Properties();
+		String engineVersion = "";
+		if(PropertiesData.engine==1){
+			V3Scanner.scanFile(FilePath.dummyFile,0,prop);
+			engineVersion = prop.getProperty(V3Const.PROP_KEY_TS_VERSION) + "[" + prop.getProperty(V3Const.PROP_KEY_DATE_REV) + "]";
+		}else if(PropertiesData.engine==2){
+			ViRobotLog.scanFile(FilePath.dummyFile,prop);
+			engineVersion = prop.getProperty(ViRobotLog.AVSB_USE_ENGINE_INFO);
+		}else if(PropertiesData.engine==3){
+
+		}else if(PropertiesData.engine==4){
+
+		}else{
+			engineVersion = null;
+		}
+
+		if(prop!=null){
+			prop.clear();
+		}
+
+		return engineVersion;
 	}
 }

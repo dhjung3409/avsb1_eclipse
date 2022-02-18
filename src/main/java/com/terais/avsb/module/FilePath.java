@@ -1,16 +1,16 @@
 package com.terais.avsb.module;
 
+import com.terais.avsb.core.PathAndConvertGson;
+
+import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-
-import com.terais.avsb.core.PathAndConvertGson;
-import com.terais.avsb.core.PropertiesData;
 
 /**
   * AVSB 구동에 필요한 폴더, 파일 경로를 저장한 클래스
   */
 public class FilePath {
-
+	// "/  => separator + " "
 	public static String defaultName = PathAndConvertGson.getOSFolder();
 	/**
 	 * 로그 폴더 경로
@@ -80,7 +80,7 @@ public class FilePath {
 	/**
 	 * v3engine 로그 파일
 	 */
-	public static String logFile = logPath+"/v3scan_res.log";
+	public static String logFile = "";
 	
 	/**
 	 * v3scan_server 파일 경로
@@ -91,11 +91,26 @@ public class FilePath {
 	 * 금일 날짜 log.json 파일 경로
 	 */
 	public static String readTodayLogFile = null;
+
+//	/**
+//	 * 하우리 검사 결과 로그파일이 저장되는 폴더 경로
+//	 */
+//	public static String hauriLogPath = "";
+//
+//	/**
+//	 * 하우리 검사 결과 로그 파일 경로
+//	 */
+//	public static String hauriLogFile = "";
+
+	/**
+	 * 검사에 필요한 폴더 내부의 파일 목록이 저장된 텍스트 파일 경로
+	 */
+	public static String directoryFileList = "";
 	
 	/**
 	 * 마지막에 확인한 로그 목록이 저장된 .log_tmp.json 파일 경로
 	 */
-	public static String tmpLogJson = logFolder+"/.log_tmp.json";
+	public static String tmpLogFile = logFolder+ File.separator+".log_tmp.log";
 	
 	/**
 	 * 로그 읽기 상태, 로그 파일 개수를 담고있는 workers.ini 파일 경로
@@ -146,6 +161,11 @@ public class FilePath {
 	 * v3properties 파일 경로
 	 */
 	public static String v3properties = (libsFolder+"/vendor/ahnlab/V3Scanner.properties").trim();
+
+	/**
+	 *
+	 */
+	public static String vrsdkProperties = (libsFolder+"/vendor/hauri/avsb.properties").trim();
 	
 	/**
 	 * v3engine/v3daemon/option.cfg 파일 경로

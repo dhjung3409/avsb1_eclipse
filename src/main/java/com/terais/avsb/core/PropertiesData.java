@@ -1,9 +1,5 @@
 package com.terais.avsb.core;
 
-import java.io.*;
-import java.text.SimpleDateFormat;
-import java.util.*;
-
 import com.terais.avsb.cron.CurrentCountScheduler;
 import com.terais.avsb.cron.LogReadScheduler;
 import com.terais.avsb.cron.ScanScheduler;
@@ -13,6 +9,10 @@ import com.terais.avsb.module.FilePath;
 import com.terais.avsb.vo.ScanSchedule;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.*;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 
 /**
@@ -93,7 +93,7 @@ public class PropertiesData {
 	public static String logReloadTime = null;
 	
 	/**
-	 * 사용하는 엔진 종
+	 * 사용하는 엔진 종류
 	 */
 	public static String useEngine = "NoneEngine";
 	
@@ -125,10 +125,10 @@ public class PropertiesData {
 	/**
 	 * 엔진 종류
 	 */
-	public static String engine = null;
+	public static int engine = 0;
 	
 	/**
-	 * 엔진 경로
+	 * 엔진 경로(엔진 업데이트 기능 추가 시 프로퍼티에 따로 저장해둘 필요 있음)
 	 */
 	public static String enginePath = null;
 	
@@ -136,6 +136,11 @@ public class PropertiesData {
 	 * 올바른 엔진 경로 여부 확인
 	 */
 	public static boolean isEnginePath=true;
+
+	/**
+	 * 예약 스캐시 사용되는 옵션
+	 */
+	public static int scanOption = 0;
 	
 	/**
 	 * 라이센스 기간
@@ -360,21 +365,33 @@ public class PropertiesData {
 		String engineFile = FilePath.enginePathFile;
 		Properties prop = getProp(engineFile);
 		try {
-			enginePath = prop.get("ahnlab_engine").toString();
-			File file = new File(enginePath);
-			if(file.exists()) {
-				engine = "TSEngine";
+			if(engine==0) {
+				engine = Integer.parseInt(prop.getProperty("engine"));
 			}else{
-				engine="NoneEngine";
-				enginePath = "";
+				logger.debug("engine setting already");
 			}
+
+			if(engine==1){
+				enginePath=prop.getProperty("ahnlab_engine");
+			}else if(engine==2){
+				enginePath=prop.getProperty("hauri_engine");
+			}else if(engine==3){
+				enginePath=prop.getProperty("alyac_engine");
+			}else if(engine==4){
+				enginePath=prop.getProperty("tachyon_engine");
+			}else{
+				enginePath="";
+			}
+
+			scanOption=Integer.parseInt(prop.getProperty("scan_option","0"));
 		}catch(NullPointerException e){
 			logger.error("Call Engine Info NullPointerException: "+e.getMessage());
-			engine = "NoneEngine";
+
+			engine = 0;
 			enginePath = "";
 		}catch(Exception e){
 			logger.error("Call Engine Info Error: "+e.getMessage());
-			engine = "NoneEngine";
+			engine = 0;
 			enginePath = "";
 		}
 		prop.clear();

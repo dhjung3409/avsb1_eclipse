@@ -1,10 +1,8 @@
 package com.terais.avsb.web.controller;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
 import com.terais.avsb.cron.SubIPCheckScheduler;
+import com.terais.avsb.service.impl.NodeAndCurrentGetServiceImpl;
+import com.terais.avsb.service.impl.NodeListServiceImpl;
 import com.terais.avsb.vo.CurrentLogVO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,8 +14,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.terais.avsb.service.impl.NodeAndCurrentGetServiceImpl;
-import com.terais.avsb.service.impl.NodeListServiceImpl;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -72,7 +71,7 @@ public class DashboardController {
 	@RequestMapping(value="/rest/node",method=RequestMethod.GET)
 	@ResponseBody
 	public Map<String,String> getNode(@RequestParam String period){
-		logger.debug("getNode Start");
+		logger.info("getNode Start");
 		return nodeService.getResultValue(period);
 	}
 

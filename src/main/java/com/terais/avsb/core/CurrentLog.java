@@ -10,7 +10,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -37,7 +36,8 @@ public class CurrentLog {
       */
     public static List<String> getCurrentLog(File file){
         currentLog.clear();
-        List<File> files = LogReadScheduler.checkFile(file.listFiles());
+        String fileName = FilePath.logFile.substring(FilePath.logFile.lastIndexOf("/")+1);
+        List<File> files = LogReadScheduler.checkFile(file.listFiles(),fileName);
 
         RandomAccessFile raFile;
         long raFileSize=0;
@@ -84,7 +84,7 @@ public class CurrentLog {
         int count = 0;
         char c;
         String lastline;
-        raFileSize--;
+//        raFileSize--;
         try {
             while(true){
                 if(count>=counting){

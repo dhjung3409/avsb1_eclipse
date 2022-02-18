@@ -86,8 +86,9 @@ dependencies {
 
 		//option
 		compile files("lib/ahnlab_v3engine.jar")
-		compile files("lib/ViRobotSDK.jar")
-		compile files("lib/ayscanner.jar")
+//		compile files("lib/ViRobotSDK.jar")
+//		compile files("lib/ayscanner.jar")
+		compile files("lib/avsb_vrsdk.jar")
 		
 }
 
