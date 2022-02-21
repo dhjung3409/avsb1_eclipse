@@ -1,31 +1,21 @@
 package com.terais.avsb.service.impl;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.*;
-
-import javax.servlet.ServletContext;
-
 import com.terais.avsb.core.CurrentLog;
 import com.terais.avsb.core.PropertiesData;
-import com.terais.avsb.core.SimpleDateFormatCore;
-import com.terais.avsb.dto.Current;
-import com.terais.avsb.module.LicenseCheck;
+import com.terais.avsb.cron.CurrentCountScheduler;
+import com.terais.avsb.module.CheckOS;
+import com.terais.avsb.module.FilePath;
+import com.terais.avsb.service.NodeListService;
 import com.terais.avsb.vo.CurrentLogVO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.terais.avsb.cron.CurrentCountScheduler;
-import com.terais.avsb.module.FilePath;
-import com.terais.avsb.service.NodeListService;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 /**
   * Local 서버의 악성코드 감염 현황, 실시간 검사 현황, 최근 로그 현황 데이터를 가져오는 클래스
@@ -54,7 +44,7 @@ public class NodeListServiceImpl implements NodeListService{
 		logger.debug(dates.toString());
 		for(int i=0;i<dates.size();i++){
 
-			String logFilePath = FilePath.repoFolder+"/"+dates.get(i)+"/result";
+			String logFilePath = FilePath.repoFolder+ CheckOS.osSeparator+dates.get(i)+CheckOS.osSeparator+"result";
 			logFile = new File(logFilePath);
 			logger.debug("LogFile Length: "+logFile.length());
 			if(logFile.exists()&&logFile.length()!=0) {

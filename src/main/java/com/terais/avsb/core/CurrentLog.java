@@ -1,6 +1,7 @@
 package com.terais.avsb.core;
 
 import com.terais.avsb.cron.LogReadScheduler;
+import com.terais.avsb.module.CheckOS;
 import com.terais.avsb.module.FilePath;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,7 +37,7 @@ public class CurrentLog {
       */
     public static List<String> getCurrentLog(File file){
         currentLog.clear();
-        String fileName = FilePath.logFile.substring(FilePath.logFile.lastIndexOf("/")+1);
+        String fileName = FilePath.logFile.substring(FilePath.logFile.lastIndexOf(CheckOS.osSeparator)+1);
         List<File> files = LogReadScheduler.checkFile(file.listFiles(),fileName);
 
         RandomAccessFile raFile;

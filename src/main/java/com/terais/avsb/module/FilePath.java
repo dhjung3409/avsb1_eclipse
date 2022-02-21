@@ -15,62 +15,62 @@ public class FilePath {
 	/**
 	 * 로그 폴더 경로
 	 */
-	public static String logFolder = defaultName+"/log";
+	public static String logFolder = defaultName+CheckOS.osSeparator+"log";
 	
 	/**
 	 * info 폴더 경로
 	 */
-	public static String infoFolder = defaultName+"/info";
+	public static String infoFolder = defaultName+CheckOS.osSeparator+"info";
 	
 	/**
 	 * 설정 폴더 경로
 	 */
-	public static String configFolder = defaultName+"/config";
+	public static String configFolder = defaultName+CheckOS.osSeparator+"config";
 	
 	/**
 	 * libs 폴더 경로
 	 */
-	public static String libsFolder = defaultName+"/libs";
+	public static String libsFolder = defaultName+CheckOS.osSeparator+"libs";
 	
 	/**
 	 * 계정 폴더 경로
 	 */
-	public static String accountFolder = defaultName+"/account";
+	public static String accountFolder = defaultName+CheckOS.osSeparator+"account";
 	
 	/**
 	 * 임시 폴더 경로
 	 */
-	public static String tmpFolder = defaultName+"/tmp";
+	public static String tmpFolder = defaultName+CheckOS.osSeparator+"tmp";
 	
 	/**
 	 * 시스템 로그 폴더 경로
 	 */
-	public static String log4jLogFolder = logFolder+"/system";
+	public static String log4jLogFolder = logFolder+CheckOS.osSeparator+"system";
 	
 	/**
 	 * 로그 Repository 폴더 경로
 	 */
-	public static String repoFolder = logFolder+"/repo";
+	public static String repoFolder = logFolder+CheckOS.osSeparator+"repo";
 	
 	/**
 	 * 로그인 정보 파일 경로
 	 */
-	public static String accountFile = accountFolder+"/login.json";
+	public static String accountFile = accountFolder+CheckOS.osSeparator+"login.json";
 	
 	/**
 	 * 로그인 정보 카운팅 파일 경로
 	 */
-	public static String accountCountFile = accountFolder+"/login_seq.ini";
+	public static String accountCountFile = accountFolder+CheckOS.osSeparator+"login_seq.ini";
 	
 	/**
 	 * 설정 파일 경로
 	 */
-	public static String configFile = configFolder+"/config.properties";
+	public static String configFile = configFolder+CheckOS.osSeparator+"config.properties";
 	
 	/**
 	 * IP 설정 파일 경로
 	 */
-	public static String IpConfigFile = configFolder+"/ip_config.properties";
+	public static String IpConfigFile = configFolder+CheckOS.osSeparator+"ip_config.properties";
 	
 	/**
 	 * v3engine 로그 저장 폴더
@@ -115,7 +115,7 @@ public class FilePath {
 	/**
 	 * 로그 읽기 상태, 로그 파일 개수를 담고있는 workers.ini 파일 경로
 	 */
-	public static String workName = infoFolder+"/workers.ini";
+	public static String workName = infoFolder+CheckOS.osSeparator+"workers.ini";
 	
 	/**
 	 * 금일 날짜 result 파일 경로
@@ -125,47 +125,47 @@ public class FilePath {
 	/**
 	 * 스케줄 정보를 가지고 있는 scheduler.json 경로
 	 */
-	public static String scheduler = tmpFolder+"/scheduler.json";
+	public static String scheduler = tmpFolder+CheckOS.osSeparator+"scheduler.json";
 	
 	/**
 	 * 검사가 끝난 스케줄 정보를 가지고 있는 report.json 경로
 	 */
-	public static String report = tmpFolder+"/report.json";
+	public static String report = tmpFolder+CheckOS.osSeparator+"report.json";
 	
 	/**
 	 * 임시 라이브러리 폴더 경로
 	 */
-	public static String tmpLib = tmpFolder+"/lib";
+	public static String tmpLib = tmpFolder+CheckOS.osSeparator+"lib";
 	
 	/**
 	 * 라이센스 파일 경로
 	 */
-	public static String license = defaultName+"/license.txt";
+	public static String license = defaultName+CheckOS.osSeparator+"license.txt";
 
 	/**
 	 * scheduler.json, report.json 파일의 번호를 지니고 있는 Properties 파일 경로
 	 */
-	public static String tmpSeq = tmpFolder+"/.scheduler_report_seq.properties";
+	public static String tmpSeq = tmpFolder+CheckOS.osSeparator+".scheduler_report_seq.properties";
 	
 	/**
 	 * 엔진 경로를 가지고 있는 Properties 파일 경로
 	 */
-	public static String enginePathFile = libsFolder+"/engine_path.properties";
+	public static String enginePathFile = libsFolder+CheckOS.osSeparator+"engine_path.properties";
 	
 	/**
 	 * file_list 정보를 담고있는 JSON 파일 경로
 	 */
-	public static String fileListPath = tmpFolder+"/file_list.json";
+	public static String fileListPath = tmpFolder+CheckOS.osSeparator+"file_list.json";
 	
 	/**
 	 * v3properties 파일 경로
 	 */
-	public static String v3properties = (libsFolder+"/vendor/ahnlab/V3Scanner.properties").trim();
+	public static String v3properties = (libsFolder+CheckOS.osSeparator+"vendor"+CheckOS.osSeparator+"ahnlab"+CheckOS.osSeparator+"V3Scanner.properties").trim();
 
 	/**
 	 *
 	 */
-	public static String vrsdkProperties = (libsFolder+"/vendor/hauri/avsb.properties").trim();
+	public static String vrsdkProperties = (libsFolder+CheckOS.osSeparator+"vendor"+CheckOS.osSeparator+"hauri"+CheckOS.osSeparator+"avsb.properties").trim();
 	
 	/**
 	 * v3engine/v3daemon/option.cfg 파일 경로
@@ -195,7 +195,7 @@ public class FilePath {
 	  * @return 입력된 날짜(log/repo/yyyy/MM/dd)의 repo 폴더의 경로
 	  */
 	public static String getDatePath(String year, String month, String day){
-		return FilePath.repoFolder+"/"+year+"/"+month+"/"+day;
+		return FilePath.repoFolder+CheckOS.osSeparator+year+CheckOS.osSeparator+month+CheckOS.osSeparator+day;
 	}
 	
 	/**
@@ -205,7 +205,7 @@ public class FilePath {
 	  * @return 입력된 날짜(log/repo/yyyy/MM)의 repo 폴더의 경로
 	  */
 	public static String getDatePath(String year, String month){
-		return FilePath.repoFolder+"/"+year+"/"+month;
+		return FilePath.repoFolder+CheckOS.osSeparator+year+CheckOS.osSeparator+month;
 	}
 	
 	/**
@@ -214,7 +214,7 @@ public class FilePath {
 	  * @return 입력된 날짜(log/repo/yyyy/MM)의 repo 폴더의 경로
 	  */
 	public static String getDatePath(String year){
-		return FilePath.repoFolder+"/"+year;
+		return FilePath.repoFolder+CheckOS.osSeparator+year;
 	}
 	
 	/**
@@ -225,7 +225,7 @@ public class FilePath {
 	  * @return log.json의 경로
 	  */
 	public static String getReadLogFile(String year, String month, String day){
-		return getDatePath(year,month,day)+"/log.json";
+		return getDatePath(year,month,day)+CheckOS.osSeparator+"log.json";
 	}
 	
 	/**
@@ -237,7 +237,7 @@ public class FilePath {
 	public static String getScanResFile(String taskID,String name){
 		Date date = new Date();
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd_HHmmss");
-		return tmpFolder+"/"+sdf.format(date)+"_"+taskID+"_"+name+".text";
+		return tmpFolder+CheckOS.osSeparator+""+sdf.format(date)+"_"+taskID+"_"+name+".text";
 	}
 
 	

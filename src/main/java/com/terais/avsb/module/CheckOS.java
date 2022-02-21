@@ -16,8 +16,8 @@ public class CheckOS {
         String os = System.getProperty("os.name").toLowerCase();
         String bit = System.getProperty("os.arch");
         if(os.contains("win")){
-            PropertiesData.osName="win";
             osSeparator="\\";
+            PropertiesData.osName="win";
         }else if(os.contains("linux")&&bit.contains("64")){
             PropertiesData.osName="linux64";
         }else if(os.contains("hp")&&bit.contains("64")){

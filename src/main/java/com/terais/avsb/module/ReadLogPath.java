@@ -80,14 +80,14 @@ public class ReadLogPath {
 		File engineFile = new File(path);
 		logger.info("dummy logFile : "+path.contains(FilePath.libsFolder));
 		if(!engineFile.exists()||(path.contains(FilePath.libsFolder))){
-			path=FilePath.libsFolder+"/log";
+			path=FilePath.libsFolder+CheckOS.osSeparator+"log";
 			FilePath.logPath=path;
 			PropertiesData.isEnginePath=false;
 		}else if(PropertiesData.engine==1){
 			FilePath.logPath=fileName.getParent();
-			FilePath.v3option=PropertiesData.enginePath+"/v3daemon/option.cfg";
+			FilePath.v3option=PropertiesData.enginePath+CheckOS.osSeparator+"v3daemon"+CheckOS.osSeparator+"option.cfg";
 			FilePath.copyV3option=FilePath.v3option.replace("option","copy_option");
-			FilePath.v3File = path+"/etc/rc.d/v3scan_server";
+			FilePath.v3File = path+CheckOS.osSeparator+"etc"+CheckOS.osSeparator+"rc.d"+CheckOS.osSeparator+"v3scan_server";
 		}else if(PropertiesData.engine==2){
 			FilePath.logPath=fileName.getParent();
 			File logDir = new File(FilePath.logPath);
@@ -96,7 +96,7 @@ public class ReadLogPath {
 			}else{
 
 			}
-			FilePath.directoryFileList = FilePath.logPath+"/fileList.txt";
+			FilePath.directoryFileList = FilePath.logPath+CheckOS.osSeparator+"fileList.txt";
 		}
 		logger.debug(FilePath.logPath);
 		FilePath.logFile = path;

@@ -7,6 +7,7 @@ import com.google.gson.stream.JsonReader;
 import com.terais.avsb.core.CurrentLog;
 import com.terais.avsb.core.PropertiesData;
 import com.terais.avsb.dto.ReadLog;
+import com.terais.avsb.module.CheckOS;
 import com.terais.avsb.module.FilePath;
 import com.terais.avsb.module.LicenseCheck;
 import com.terais.avsb.module.ReadLogPath;
@@ -160,10 +161,10 @@ public class LogReadScheduler {
 	  */
 	public void setDateFile(Date date){
 		SimpleDateFormat today = new SimpleDateFormat("yyyy/MM/dd");
-		String[] todayCheck = today.format(date).split("/");
+		String[] todayCheck = today.format(date).split(CheckOS.osSeparator);
 
-		FilePath.todayResult=FilePath.getDatePath(todayCheck[0],todayCheck[1],todayCheck[2])+"/result";
-		FilePath.readTodayLogFile=FilePath.getDatePath(todayCheck[0],todayCheck[1],todayCheck[2])+"/log.json";
+		FilePath.todayResult=FilePath.getDatePath(todayCheck[0],todayCheck[1],todayCheck[2])+CheckOS.osSeparator+"result";
+		FilePath.readTodayLogFile=FilePath.getDatePath(todayCheck[0],todayCheck[1],todayCheck[2])+CheckOS.osSeparator+"log.json";
 	}
 
 
@@ -225,11 +226,11 @@ public class LogReadScheduler {
 	  */
 	public boolean getFileDate(String filePath,String checkDate,SimpleDateFormat sdf){
 		filePath = filePath.substring(filePath.indexOf("repo"));
-		filePath = filePath.replace("repo/","");
+		filePath = filePath.replace("repo"+CheckOS.osSeparator,"");
 		if(filePath.contains("log.json")){
-			filePath = filePath.replace("/log.json","");
+			filePath = filePath.replace(CheckOS.osSeparator+"log.json","");
 		}else if(filePath.contains("result")){
-			filePath = filePath.replace("/result","");
+			filePath = filePath.replace(CheckOS.osSeparator+"result","");
 		}
 		boolean afterDate = false;
 		try {
@@ -264,7 +265,7 @@ public class LogReadScheduler {
 		    if(!directory.exists())directory.mkdir();
 		    
 			for(int i=0;i<2;i++){
-			   	File repoDir = new File(filePath+"/"+(Integer.parseInt(yearCheck)+i));
+			   	File repoDir = new File(filePath+CheckOS.osSeparator+(Integer.parseInt(yearCheck)+i));
 			   	if(!repoDir.exists())repoDir.mkdir();
 			   	for(int j=1;j<=12;j++){
 			   		int days=31;
@@ -272,13 +273,13 @@ public class LogReadScheduler {
 			   		else if(j==2&&(Integer.parseInt(yearCheck)+i)%4==0&&(Integer.parseInt(yearCheck)+i)%400!=0)days=29;
 			   		else if(j==2||(Integer.parseInt(yearCheck)+i)%400==0)days=28;
 			   		String month=j<10?"0"+j:String.valueOf(j);
-			   		File monthDir = new File(filePath+"/"+(Integer.parseInt(yearCheck)+i)+"/"+month);
+			   		File monthDir = new File(filePath+CheckOS.osSeparator+(Integer.parseInt(yearCheck)+i)+CheckOS.osSeparator+month);
 			   		if(!monthDir.exists())monthDir.mkdir();
-			   		if(j==2)logger.debug((Integer.parseInt(yearCheck)+i)+"/"+month+"/"+days);
+			   		if(j==2)logger.debug((Integer.parseInt(yearCheck)+i)+CheckOS.osSeparator+month+CheckOS.osSeparator+days);
 			   		for(int k=0;k<days;k++){
 			   			String day=k<9?"0"+(k+1):String.valueOf(k+1);
-			   			File dayDir = new File(filePath+"/"+(Integer.parseInt(yearCheck)+i)
-			   					+"/"+month+"/"+day);
+			   			File dayDir = new File(filePath+CheckOS.osSeparator+(Integer.parseInt(yearCheck)+i)
+			   					+CheckOS.osSeparator+month+CheckOS.osSeparator+day);
 			   			if(!dayDir.exists())dayDir.mkdir();						
 			   		}
 			   	}
@@ -305,7 +306,7 @@ public class LogReadScheduler {
 			return;
 		}
 		String logFolder = FilePath.logPath;
-		String logFile = FilePath.logFile.substring(FilePath.logFile.lastIndexOf("/")+1);
+		String logFile = FilePath.logFile.substring(FilePath.logFile.lastIndexOf(CheckOS.osSeparator)+1);
 		Properties prop = getResultProperties(FilePath.todayResult);
 
 		try {
@@ -720,7 +721,7 @@ public class LogReadScheduler {
 		File file = new File(logFile);
 		if(file.length()>(1024*1024)*20){
 			int page = 0;
-			String divFilePath = FilePath.tmpLib+"/log.txt";
+			String divFilePath = FilePath.tmpLib+CheckOS.osSeparator+"log.txt";
 			String filePath=divFilePath+"."+page;
 			File divFile = new File(filePath);
 			FileWriter fw = null;

@@ -1,6 +1,7 @@
 package com.terais.avsb.cron;
 
 import com.terais.avsb.core.PropertiesData;
+import com.terais.avsb.module.CheckOS;
 import com.terais.avsb.module.FilePath;
 import com.terais.avsb.module.RestURI;
 import org.slf4j.Logger;
@@ -139,8 +140,8 @@ public class SubIPCheckScheduler {
                 FilePath.logPath = file.getParent();
                 FilePath.logFile = tachyon;
             } else {
-                FilePath.logPath = FilePath.libsFolder+"/log";
-                FilePath.logFile = FilePath.logPath+"/dummy.log";
+                FilePath.logPath = FilePath.libsFolder+ CheckOS.osSeparator+"log";
+                FilePath.logFile = FilePath.logPath+CheckOS.osSeparator+"dummy.log";
             }
 
             logFile = new File(FilePath.logFile);

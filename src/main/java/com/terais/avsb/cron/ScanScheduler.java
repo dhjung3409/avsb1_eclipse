@@ -8,6 +8,7 @@ import com.terais.avsb.core.ScanScheduleList;
 import com.terais.avsb.core.SimpleDateFormatCore;
 import com.terais.avsb.dto.ScanResult;
 import com.terais.avsb.lib.ViRobotLog;
+import com.terais.avsb.module.CheckOS;
 import com.terais.avsb.module.FilePath;
 import com.terais.avsb.vo.ScanSchedule;
 import org.slf4j.Logger;
@@ -360,7 +361,7 @@ public class ScanScheduler {
 				saveResultProp(reportPath);
 				saveJsonFile(logPath, list);
 				ss.setResult("finish");
-				ss.setReport(logPath.replace(FilePath.tmpFolder + "/", ""));
+				ss.setReport(logPath.replace(FilePath.tmpFolder + CheckOS.osSeparator, ""));
 				ss.setEndDate(SimpleDateFormatCore.sdf.format(new Date()));
 				ScanScheduleList.scanSchedule.set(index, ss);
 				saveJsonFile(FilePath.scheduler, ScanScheduleList.scanSchedule);
@@ -689,8 +690,8 @@ public class ScanScheduler {
 		ScanSchedule report = ScanScheduleList.scanReport.get(0);
 		String reportLog = report.getReport();
 		String reportReport = report.getReport().replace("log","report");
-		File logFile = new File(FilePath.tmpFolder+"/"+reportLog);
-		File reportFile = new File(FilePath.tmpFolder+"/"+reportReport);
+		File logFile = new File(FilePath.tmpFolder+CheckOS.osSeparator+reportLog);
+		File reportFile = new File(FilePath.tmpFolder+CheckOS.osSeparator+reportReport);
 		PathAndConvertGson.deleteFile(logFile);
 		PathAndConvertGson.deleteFile(reportFile);
 	}

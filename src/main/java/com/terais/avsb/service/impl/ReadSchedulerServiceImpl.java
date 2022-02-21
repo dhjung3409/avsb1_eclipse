@@ -4,8 +4,8 @@ import com.terais.avsb.core.PathAndConvertGson;
 import com.terais.avsb.core.PropertiesData;
 import com.terais.avsb.dto.ScanResult;
 import com.terais.avsb.dto.ScanResultCount;
+import com.terais.avsb.module.CheckOS;
 import com.terais.avsb.module.FilePath;
-import com.terais.avsb.module.LicenseCheck;
 import com.terais.avsb.service.ReadSchedulerService;
 import com.terais.avsb.vo.ScanSchedule;
 import org.slf4j.Logger;
@@ -16,7 +16,10 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
 
 /**
   * 스케줄러 검사 관련 데이터들을 다루는 클래스
@@ -64,12 +67,12 @@ public class ReadSchedulerServiceImpl implements ReadSchedulerService {
             }
         }
         String reportFilePath = ss.getReport().replace("log","report");
-        reportFilePath = FilePath.tmpFolder+"/"+reportFilePath;
+        reportFilePath = FilePath.tmpFolder+ CheckOS.osSeparator+reportFilePath;
         ScanResultCount src = getScanReport(reportFilePath);
         if(src.checkZero()){
             src=null;
         }
-        String logFilePath = FilePath.tmpFolder+"/"+ss.getReport();
+        String logFilePath = FilePath.tmpFolder+CheckOS.osSeparator+ss.getReport();
         logger.debug("ReportPath: "+logFilePath);
         File reportFile = new File(logFilePath);
         if(!reportFile.exists()){
@@ -127,7 +130,7 @@ public class ReadSchedulerServiceImpl implements ReadSchedulerService {
         prop.setProperty("Cured","0");
         prop.setProperty("Failed","0");
         PropertiesData.setProp(prop, path);
-        logger.error(path.substring(path.lastIndexOf("/"))+" File Initialization");
+        logger.error(path.substring(path.lastIndexOf(CheckOS.osSeparator))+" File Initialization");
     }
 
 

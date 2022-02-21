@@ -1,23 +1,25 @@
 package com.terais.avsb.service.impl;
 
-import java.io.*;
-import java.lang.reflect.Type;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.*;
-
+import com.google.gson.reflect.TypeToken;
 import com.terais.avsb.core.PathAndConvertGson;
 import com.terais.avsb.core.PropertiesData;
 import com.terais.avsb.core.ScanScheduleList;
 import com.terais.avsb.core.SimpleDateFormatCore;
+import com.terais.avsb.module.CheckOS;
+import com.terais.avsb.module.FilePath;
+import com.terais.avsb.service.LocalScanSchedulerService;
+import com.terais.avsb.vo.ScanSchedule;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-import com.google.gson.reflect.TypeToken;
-import com.terais.avsb.module.FilePath;
-import com.terais.avsb.service.LocalScanSchedulerService;
-import com.terais.avsb.vo.ScanSchedule;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.lang.reflect.Type;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 /**
   * 스케줄러 등록 데이터 등록, 삭제 그리고 스케줄러 결과 리포트 데이터 삭제 기능을 지니는 클래스
@@ -41,15 +43,22 @@ public class LocalScanSchedulerServiceImpl implements LocalScanSchedulerService 
 	public Map<String,Object> checkFile(Map<String,String> data){
 		logger.debug("insert schedule checkFile: "+data.toString());
 		Map<String,Object> checkResult = new HashMap<String, Object>();
-		if(data.get("path").lastIndexOf("/")==(data.get("path").length()-1)||data.get("path").indexOf("//")!=-1){
+		if(data.get("path").lastIndexOf(CheckOS.osSeparator)==(data.get("path").length()-1)||data.get("path").indexOf(CheckOS.osSeparator+CheckOS.osSeparator)!=-1){
 			logger.info("inputFullPath: "+data.get("path"));
-			String[] splitPath = data.get("path").split("/");
+			String[] splitPath = data.get("path").split(CheckOS.osSeparator);
 			String fullPath = "";
+			if(PropertiesData.osName.equals("win")){
+				fullPath=FilePath.defaultName.substring(0,FilePath.defaultName.indexOf(CheckOS.osSeparator))+CheckOS.osSeparator;
+			}else{
+				fullPath=CheckOS.osSeparator;
+			}
+
 			for(String split:splitPath){
 				if(split.equals("")){
 					continue;
 				}
-				fullPath=fullPath+"/"+split;
+
+				fullPath+=CheckOS.osSeparator+split;
 				logger.info("fullPath: "+fullPath);
 			}
 			data.put("path",fullPath);
@@ -341,8 +350,8 @@ public class LocalScanSchedulerServiceImpl implements LocalScanSchedulerService 
 	  */
 	public void deleteResultFile(String fileName){
 		List<String> filePaths = new ArrayList<String>();
-		filePaths.add(FilePath.tmpFolder+"/"+fileName);
-		filePaths.add(FilePath.tmpFolder+"/"+fileName.replace("log","report"));
+		filePaths.add(FilePath.tmpFolder+CheckOS.osSeparator+fileName);
+		filePaths.add(FilePath.tmpFolder+CheckOS.osSeparator+fileName.replace("log","report"));
 
 		for(String filePath:filePaths) {
 			File file = new File(filePath);
